@@ -6,6 +6,7 @@ import logging
 
 import requests
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -29,7 +30,7 @@ class YouTubeTranscriptApi():
 
 
     @staticmethod
-    def get_transcripts(*video_ids, continue_after_error=False):
+    def get_transcripts(video_ids, continue_after_error=False):
         """
         Retrieves the transcripts for a list of videos.
 
