@@ -6,6 +6,8 @@ import logging
 
 import requests
 
+from .html_unescaping import unescape
+
 
 logger = logging.getLogger(__name__)
 
@@ -112,7 +114,7 @@ class _TranscriptParser():
     def parse(self):
         return [
             {
-                'text': re.sub(self.HTML_TAG_REGEX, '', xml_element.text),
+                'text': re.sub(self.HTML_TAG_REGEX, '', unescape(xml_element.text)),
                 'start': float(xml_element.attrib['start']),
                 'duration': float(xml_element.attrib['dur']),
             }
