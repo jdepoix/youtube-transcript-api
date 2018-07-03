@@ -4,7 +4,7 @@ This is an python API which allows you to get the transcripts/subtitles for a gi
 
 ## Install
 
-It is recommended to install this module by using pip:
+It is recommended to [install this module by using pip](https://pypi.org/project/youtube-transcript-api/):
 
 ```
 pip install youtube_transcript_api
