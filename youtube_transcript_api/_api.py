@@ -6,7 +6,7 @@ import logging
 
 import requests
 
-from .html_unescaping import unescape
+from _html_unescaping import unescape
 
 
 logger = logging.getLogger(__name__)
@@ -110,6 +110,7 @@ class _TranscriptParser():
 
     def __init__(self, plain_data):
         self.plain_data = plain_data
+        print(plain_data)
 
     def parse(self):
         return [
