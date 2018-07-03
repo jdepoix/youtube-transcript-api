@@ -2,9 +2,15 @@
 
 This is an python API which allows you to get the transcripts/subtitles for a given YouTube video. It also works for automatically generated subtitles and it does not require a headless browser, like other selenium based solutions do!
 
-## Requirements
+## Install
 
-It runs using python 2 and 3, with the only requirement being the [requests](http://docs.python-requests.org/en/master/) module. It is recommended installing it using pip:
+It is recommended to install this module by using pip:
+
+```
+pip install youtube_transcipt_api
+```
+
+If you want to use it from source, you'll have to install the dependencies manually:
 
 ```
 pip install -r requirements.txt
@@ -19,6 +25,8 @@ You could either integrate this module into an existing application, or just use
 To get a transcript for a given video you can do:
 
 ```python
+from youtube_transcipt_api import YouTubeTranscriptApi
+
 YouTubeTranscriptApi.get_transcript(video_id)
 ```
 
@@ -51,13 +59,13 @@ YouTubeTranscriptApi.get_transcripts(video_ids)
 Execute the CLI script using the video ids as parameters and the results will be printed out to the command line:
 
 ```
-./youtube_transcript_api.py <first_video_id> <second_video_id> ...
+youtube_transcript_api <first_video_id> <second_video_id> ...
 ```
 
 If you would prefer to write it into a file or pipe it into another application, you can also output the results as json using the following line:
 
 ```
-./youtube_transcript_api.py --json <first_video_id> <second_video_id> ... > transcripts.json
+youtube_transcript_api --json <first_video_id> <second_video_id> ... > transcripts.json
 ```
 
 ## Warning
