@@ -1,1 +1,1 @@
-from _api import YouTubeTranscriptApi
+from ._api import YouTubeTranscriptApi

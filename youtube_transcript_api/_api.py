@@ -6,7 +6,7 @@ import logging
 
 import requests
 
-from _html_unescaping import unescape
+from ._html_unescaping import unescape
 
 
 logger = logging.getLogger(__name__)
