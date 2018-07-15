@@ -110,7 +110,6 @@ class _TranscriptParser():
 
     def __init__(self, plain_data):
         self.plain_data = plain_data
-        print(plain_data)
 
     def parse(self):
         return [
