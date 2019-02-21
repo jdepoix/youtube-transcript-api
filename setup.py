@@ -8,13 +8,10 @@ def _get_file_content(file_name):
 def get_long_description():
     return _get_file_content('README.md')
 
-def get_requirements():
-    return list(filter(lambda line: line != '' and not line.startswith('#'), _get_file_content('requirements.txt').split('\n')))
-
 
 setuptools.setup(
     name="youtube_transcript_api",
-    version="0.1.1",
+    version="0.1.2",
     author="Jonas Depoix",
     author_email="jonas.depoix@web.de",
     description="This is an python API which allows you to get the transcripts/subtitles for a given YouTube video. It also works for automatically generated subtitles and it does not require a headless browser, like other selenium based solutions do!",
@@ -29,7 +26,9 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ),
-    install_requires=get_requirements(),
+    install_requires=[
+        'requests',
+    ],
     entry_points={
         'console_scripts': [
             'youtube_transcript_api = youtube_transcript_api.__main__:main',

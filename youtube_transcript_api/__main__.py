@@ -11,7 +11,7 @@ from ._api import YouTubeTranscriptApi
 
 def main():
     logging.basicConfig()
-    
+
     if len(sys.argv) <= 1:
         print('No YouTube video id was found')
     elif sys.argv[1] == '--json':
