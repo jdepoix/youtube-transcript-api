@@ -48,11 +48,21 @@ This will return a list of dictionaries looking somewhat like this:
 ]
 ```
 
+You can also add the `languages` param if you want to make sure the transcripts are retrieved in your desired language (it usually defaults to english).
+
+```python
+YouTubeTranscriptApi.get_transcripts(video_ids, languages=['de', 'en'])
+```
+
+It's a list of language codes in a descending priority. In this example it will first try to fetch the german transcript (`'de'`) and then fetch the english transcipt (`'en'`) if it fails to do so. As I can't provide a complete list of all working language codes with full certainty, you may have to play around with the language codes a bit, to find the one which is working for you!
+
 To get transcripts for a list fo video ids you can call:
 
 ```python
-YouTubeTranscriptApi.get_transcripts(video_ids)
+YouTubeTranscriptApi.get_transcripts(video_ids, languages=['de', 'en'])
 ```
+
+`languages` also is optional here.
 
 ### CLI
 
