@@ -46,7 +46,7 @@ def parse_args(args):
 def main():
     logging.basicConfig()
 
-    parsed_args = parse_args(sys.argv)
+    parsed_args = parse_args(sys.argv[1:])
     transcripts, _ = YouTubeTranscriptApi.get_transcripts(
         parsed_args.video_ids,
         languages=parsed_args.languages,

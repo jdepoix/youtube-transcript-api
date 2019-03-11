@@ -54,7 +54,7 @@ You can also add the `languages` param if you want to make sure the transcripts 
 YouTubeTranscriptApi.get_transcripts(video_ids, languages=['de', 'en'])
 ```
 
-It's a list of language codes in a descending priority. In this example it will first try to fetch the german transcript (`'de'`) and then fetch the english transcipt (`'en'`) if it fails to do so. As I can't provide a complete list of all working language codes with full certainty, you may have to play around with the language codes a bit, to find the one which is working for you!
+It's a list of language codes in a descending priority. In this example it will first try to fetch the german transcript (`'de'`) and then fetch the english transcript (`'en'`) if it fails to do so. As I can't provide a complete list of all working language codes with full certainty, you may have to play around with the language codes a bit, to find the one which is working for you!
 
 To get transcripts for a list fo video ids you can call:
 
@@ -72,10 +72,16 @@ Execute the CLI script using the video ids as parameters and the results will be
 youtube_transcript_api <first_video_id> <second_video_id> ...
 ```
 
+The CLI also gives you the option to provide a list of preferred languages:
+
+```
+youtube_transcript_api <first_video_id> <second_video_id> ... --languages de en
+```
+
 If you would prefer to write it into a file or pipe it into another application, you can also output the results as json using the following line:
 
 ```
-youtube_transcript_api --json <first_video_id> <second_video_id> ... > transcripts.json
+youtube_transcript_api <first_video_id> <second_video_id> ... --languages de en --json > transcripts.json
 ```
 
 ## Warning
