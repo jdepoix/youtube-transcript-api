@@ -1,5 +1,6 @@
 requests
 
 # testing
+mock
 httpretty
 coverage

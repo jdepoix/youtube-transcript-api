@@ -43,6 +43,7 @@ setuptools.setup(
         'requests',
     ],
     tests_require=[
+        'mock',
         'httpretty',
         'coverage',
     ],
