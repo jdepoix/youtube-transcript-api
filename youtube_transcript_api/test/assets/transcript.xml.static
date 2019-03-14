@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<transcript>
+    <text start="0" dur="1.54">Hey, this is just a test</text>
+    <text start="1.54" dur="4.16">this is not the original transcript</text>
+    <text start="5.7" dur="3.239">just something shorter, I made up for testing</text>
+</transcript>
