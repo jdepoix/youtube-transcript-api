@@ -46,6 +46,7 @@ setuptools.setup(
         'mock',
         'httpretty',
         'coverage',
+        'coveralls',
     ],
     test_suite='setup.get_test_suite',
     entry_points={

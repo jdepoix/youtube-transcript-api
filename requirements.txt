@@ -4,3 +4,4 @@ requests
 mock
 httpretty
 coverage
+coveralls
