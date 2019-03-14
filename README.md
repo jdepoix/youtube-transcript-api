@@ -1,5 +1,11 @@
 # YouTube Transcript/Subtitle API (including automatically generated subtitles)
 
+[![Build Status](https://travis-ci.org/jdepoix/youtube-transcript-api.svg)](https://travis-ci.org/jdepoix/youtube-transcript-api)
+[![Coverage Status](https://coveralls.io/repos/github/jdepoix/youtube-transcript-api/badge.svg?branch=master)](https://coveralls.io/github/jdepoix/youtube-transcript-api?branch=master)
+[![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](http://opensource.org/licenses/MIT)
+[![image](https://img.shields.io/pypi/v/youtube-transcript-api.svg)](https://pypi.org/project/youtube-transcript-api/)
+[![image](https://img.shields.io/pypi/pyversions/youtube-transcript-api.svg)](https://pypi.org/project/youtube-transcript-api/)
+
 This is an python API which allows you to get the transcripts/subtitles for a given YouTube video. It also works for automatically generated subtitles and it does not require a headless browser, like other selenium based solutions do!
 
 ## Install

@@ -1,0 +1,30 @@
+[run]
+source = youtube_transcript_api
+
+
+[report]
+omit =
+  */__main__.py
+
+exclude_lines =
+  pragma: no cover
+
+    # Don't complain about missing debug-only code:
+    def __unicode__
+    def __repr__
+    if self\.debug
+
+    # Don't complain if tests don't hit defensive assertion code:
+    raise AssertionError
+    raise NotImplementedError
+
+    # Don't complain if non-runnable code isn't run:
+    if 0:
+    if __name__ == .__main__.:
+
+    # Don't complain about empty stubs of abstract methods
+    @abstractmethod
+    @abstractclassmethod
+    @abstractstaticmethod
+
+show_missing = True
