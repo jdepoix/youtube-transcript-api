@@ -19,12 +19,12 @@ class TestYouTubeTranscriptApi(TestCase):
         httpretty.register_uri(
             httpretty.GET,
             'https://www.youtube.com/watch',
-            body=load_asset('youtube.html')
+            body=load_asset('youtube.html.static')
         )
         httpretty.register_uri(
             httpretty.GET,
             'https://www.youtube.com/api/timedtext',
-            body=load_asset('transcript.xml')
+            body=load_asset('transcript.xml.static')
         )
 
     def tearDown(self):
