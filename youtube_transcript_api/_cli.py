@@ -14,10 +14,13 @@ class YouTubeTranscriptCli():
     def run(self):
         parsed_args = self._parse_args()
 
+        proxies = {"http": parsed_args.http_proxy, "https": parsed_args.https_proxy}
+
         transcripts, _ = YouTubeTranscriptApi.get_transcripts(
             parsed_args.video_ids,
             languages=parsed_args.languages,
-            continue_after_error=True
+            continue_after_error=True,
+            proxies=proxies
         )
 
         if parsed_args.json:
@@ -52,6 +55,16 @@ class YouTubeTranscriptCli():
             const=True,
             default=False,
             help='If this flag is set the output will be JSON formatted.',
+        )
+        parser.add_argument(
+            '--http-proxy', dest='http_proxy',
+            default='', metavar='URL',
+            help='Use the specified HTTP proxy.'
+        )
+        parser.add_argument(
+            '--https-proxy', dest='https_proxy',
+            default='', metavar='URL',
+            help='Use the specified HTTPS proxy.'
         )
 
         return parser.parse_args(self._args)

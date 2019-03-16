@@ -38,7 +38,7 @@ class YouTubeTranscriptApi():
             self.video_id = video_id
 
     @classmethod
-    def get_transcripts(cls, video_ids, languages=None, continue_after_error=False):
+    def get_transcripts(cls, video_ids, languages=None, continue_after_error=False, proxies=None):
         """
         Retrieves the transcripts for a list of videos.
 
@@ -55,13 +55,15 @@ class YouTubeTranscriptApi():
         :return: a tuple containing a dictionary mapping video ids onto their corresponding transcripts, and a list of
         video ids, which could not be retrieved
         :rtype: ({str: [{'text': str, 'start': float, 'end': float}]}, [str]}
+        :param proxies: a dictionary mapping of http and https proxies to be used for the network requests
+        :rtype {'http': str, 'https': str} - http://docs.python-requests.org/en/master/user/advanced/#proxies
         """
         data = {}
         unretrievable_videos = []
 
         for video_id in video_ids:
             try:
-                data[video_id] = cls.get_transcript(video_id, languages)
+                data[video_id] = cls.get_transcript(video_id, languages, proxies)
             except Exception as exception:
                 if not continue_after_error:
                     raise exception
@@ -71,7 +73,7 @@ class YouTubeTranscriptApi():
         return data, unretrievable_videos
 
     @classmethod
-    def get_transcript(cls, video_id, languages=None):
+    def get_transcript(cls, video_id, languages=None, proxies=None):
         """
         Retrieves the transcript for a single video.
 
@@ -84,9 +86,11 @@ class YouTubeTranscriptApi():
         :type languages: [str]
         :return: a list of dictionaries containing the 'text', 'start' and 'duration' keys
         :rtype: [{'text': str, 'start': float, 'end': float}]
+        :param proxies: a dictionary mapping of http and https proxies to be used for the network requests
+        :rtype {'http': str, 'https': str} - http://docs.python-requests.org/en/master/user/advanced/#proxies
         """
         try:
-            return _TranscriptParser(_TranscriptFetcher(video_id, languages).fetch()).parse()
+            return _TranscriptParser(_TranscriptFetcher(video_id, languages, proxies).fetch()).parse()
         except Exception:
             logger.error(
                 YouTubeTranscriptApi.CouldNotRetrieveTranscript.ERROR_MESSAGE.format(
@@ -101,12 +105,16 @@ class _TranscriptFetcher():
     API_BASE_URL = 'https://www.youtube.com/api/{api_url}'
     LANGUAGE_REGEX = re.compile(r'(&lang=.*&)|(&lang=.*)')
 
-    def __init__(self, video_id, languages):
+    def __init__(self, video_id, languages, proxies):
         self.video_id = video_id
         self.languages = languages
+        self.proxies = proxies
 
     def fetch(self):
-        fetched_site = requests.get(self.WATCH_URL.format(video_id=self.video_id)).text
+        if self.proxies:
+            fetched_site = requests.get(self.WATCH_URL.format(video_id=self.video_id), proxies=self.proxies).text
+        else:
+            fetched_site = requests.get(self.WATCH_URL.format(video_id=self.video_id)).text
         timedtext_url_start = fetched_site.find('timedtext')
 
         for language in (self.languages if self.languages else [None,]):
@@ -128,7 +136,10 @@ class _TranscriptFetcher():
         )
         if language:
             url = re.sub(self.LANGUAGE_REGEX, '&lang={language}&'.format(language=language), url)
-        return requests.get(url).text
+        if self.proxies:
+            return requests.get(url, proxies=self.proxies).text
+        else:
+            return requests.get(url).text
 
 
 class _TranscriptParser():

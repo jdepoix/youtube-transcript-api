@@ -1,11 +1,5 @@
 # YouTube Transcript/Subtitle API (including automatically generated subtitles)
 
-[![Build Status](https://travis-ci.org/jdepoix/youtube-transcript-api.svg)](https://travis-ci.org/jdepoix/youtube-transcript-api)
-[![Coverage Status](https://coveralls.io/repos/github/jdepoix/youtube-transcript-api/badge.svg?branch=master)](https://coveralls.io/github/jdepoix/youtube-transcript-api?branch=master)
-[![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](http://opensource.org/licenses/MIT)
-[![image](https://img.shields.io/pypi/v/youtube-transcript-api.svg)](https://pypi.org/project/youtube-transcript-api/)
-[![image](https://img.shields.io/pypi/pyversions/youtube-transcript-api.svg)](https://pypi.org/project/youtube-transcript-api/)
-
 This is an python API which allows you to get the transcripts/subtitles for a given YouTube video. It also works for automatically generated subtitles and it does not require a headless browser, like other selenium based solutions do!
 
 ## Install
@@ -89,6 +83,25 @@ If you would prefer to write it into a file or pipe it into another application,
 ```
 youtube_transcript_api <first_video_id> <second_video_id> ... --languages de en --json > transcripts.json
 ```
+
+### Proxy
+
+You can pass a proxy to use during the network requests
+
+Code:
+```python
+from youtube_transcript_api import YouTubeTranscriptApi
+
+YouTubeTranscriptApi.get_transcript(video_id, proxy={"http": "http://user:pass@domain:port", "https": "https://user:pass@domain:port"})
+
+```
+
+CLI:
+```
+youtube_transcript_api <first_video_id> <second_video_id> --http-proxy http://user:pass@domain:port --https-proxy https://user:pass@domain:port
+```
+
+Find out more about using proxies and the type of proxies you can use here: http://docs.python-requests.org/en/master/user/advanced/#proxies
 
 ## Warning
 
