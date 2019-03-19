@@ -39,6 +39,7 @@ class TestYouTubeTranscriptCli(TestCase):
         self.assertEqual(parsed_args.json, True)
         self.assertEqual(parsed_args.languages, ['de', 'en'])
         self.assertEqual(parsed_args.http_proxy, 'http://user:pass@domain:port')
+        self.assertEqual(parsed_args.https_proxy, '')
 
         parsed_args = YouTubeTranscriptCli(
             'v1 v2 --languages de en --json --https-proxy https://user:pass@domain:port'.split()
@@ -47,6 +48,7 @@ class TestYouTubeTranscriptCli(TestCase):
         self.assertEqual(parsed_args.json, True)
         self.assertEqual(parsed_args.languages, ['de', 'en'])
         self.assertEqual(parsed_args.https_proxy, 'https://user:pass@domain:port')
+        self.assertEqual(parsed_args.http_proxy, '')
 
     def test_argument_parsing__only_video_ids(self):
         parsed_args = YouTubeTranscriptCli('v1 v2'.split())._parse_args()
@@ -94,7 +96,7 @@ class TestYouTubeTranscriptCli(TestCase):
             ['v1', 'v2'],
             languages=['de', 'en'],
             continue_after_error=True,
-            proxies={"http": "", "https": ""}
+            proxies=None
         )
 
     def test_run__json_output(self):

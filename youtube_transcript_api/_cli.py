@@ -14,7 +14,9 @@ class YouTubeTranscriptCli():
     def run(self):
         parsed_args = self._parse_args()
 
-        proxies = {"http": parsed_args.http_proxy, "https": parsed_args.https_proxy}
+        proxies = None
+        if parsed_args.http_proxy != '' or parsed_args.https_proxy != '':
+            proxies = {"http": parsed_args.http_proxy, "https": parsed_args.https_proxy}
 
         transcripts, _ = YouTubeTranscriptApi.get_transcripts(
             parsed_args.video_ids,

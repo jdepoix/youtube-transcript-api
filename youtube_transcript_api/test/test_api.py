@@ -5,7 +5,7 @@ import os
 
 import httpretty
 
-from youtube_transcript_api._api import YouTubeTranscriptApi
+from youtube_transcript_api._api import YouTubeTranscriptApi, _TranscriptFetcher
 
 
 def load_asset(filename):
@@ -103,8 +103,9 @@ class TestYouTubeTranscriptApi(TestCase):
         YouTubeTranscriptApi.get_transcript.assert_any_call(video_id_2, None, None)
 
     def test_get_transcript__with_proxies(self):
+        proxies = {'http': '', 'https:': ''}
         transcript = YouTubeTranscriptApi.get_transcript(
-            'GJLlxj_dtq8', proxies={'http': '', 'https:': ''}
+            'GJLlxj_dtq8', proxies=proxies
         )
 
         self.assertEqual(
@@ -115,3 +116,6 @@ class TestYouTubeTranscriptApi(TestCase):
                 {'text': 'just something shorter, I made up for testing', 'start': 5.7, 'duration': 3.239}
             ]
         )
+        YouTubeTranscriptApi.get_transcript = MagicMock()
+        YouTubeTranscriptApi.get_transcripts(['GJLlxj_dtq8'], proxies=proxies)
+        YouTubeTranscriptApi.get_transcript.assert_any_call('GJLlxj_dtq8', None, proxies)
