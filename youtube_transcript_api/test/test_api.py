@@ -5,7 +5,7 @@ import os
 
 import httpretty
 
-from youtube_transcript_api._api import YouTubeTranscriptApi, _TranscriptFetcher
+from youtube_transcript_api._api import YouTubeTranscriptApi
 
 
 def load_asset(filename):
