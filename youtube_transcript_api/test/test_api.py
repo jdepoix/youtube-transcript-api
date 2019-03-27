@@ -82,8 +82,8 @@ class TestYouTubeTranscriptApi(TestCase):
 
         YouTubeTranscriptApi.get_transcripts([video_id_1, video_id_2], languages=languages)
 
-        YouTubeTranscriptApi.get_transcript.assert_any_call(video_id_1, languages)
-        YouTubeTranscriptApi.get_transcript.assert_any_call(video_id_2, languages)
+        YouTubeTranscriptApi.get_transcript.assert_any_call(video_id_1, languages, None)
+        YouTubeTranscriptApi.get_transcript.assert_any_call(video_id_2, languages, None)
         self.assertEqual(YouTubeTranscriptApi.get_transcript.call_count, 2)
 
     def test_get_transcripts__stop_on_error(self):
@@ -99,5 +99,23 @@ class TestYouTubeTranscriptApi(TestCase):
 
         YouTubeTranscriptApi.get_transcripts(['video_id_1', 'video_id_2'], continue_after_error=True)
 
-        YouTubeTranscriptApi.get_transcript.assert_any_call(video_id_1, None)
-        YouTubeTranscriptApi.get_transcript.assert_any_call(video_id_2, None)
+        YouTubeTranscriptApi.get_transcript.assert_any_call(video_id_1, None, None)
+        YouTubeTranscriptApi.get_transcript.assert_any_call(video_id_2, None, None)
+
+    def test_get_transcript__with_proxies(self):
+        proxies = {'http': '', 'https:': ''}
+        transcript = YouTubeTranscriptApi.get_transcript(
+            'GJLlxj_dtq8', proxies=proxies
+        )
+
+        self.assertEqual(
+            transcript,
+            [
+                {'text': 'Hey, this is just a test', 'start': 0.0, 'duration': 1.54},
+                {'text': 'this is not the original transcript', 'start': 1.54, 'duration': 4.16},
+                {'text': 'just something shorter, I made up for testing', 'start': 5.7, 'duration': 3.239}
+            ]
+        )
+        YouTubeTranscriptApi.get_transcript = MagicMock()
+        YouTubeTranscriptApi.get_transcripts(['GJLlxj_dtq8'], proxies=proxies)
+        YouTubeTranscriptApi.get_transcript.assert_any_call('GJLlxj_dtq8', None, proxies)
