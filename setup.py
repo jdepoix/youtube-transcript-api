@@ -24,7 +24,7 @@ def get_test_suite():
 
 setuptools.setup(
     name="youtube_transcript_api",
-    version="0.1.3",
+    version="0.1.4",
     author="Jonas Depoix",
     author_email="jonas.depoix@web.de",
     description="This is an python API which allows you to get the transcripts/subtitles for a given YouTube video. It also works for automatically generated subtitles and it does not require a headless browser, like other selenium based solutions do!",
