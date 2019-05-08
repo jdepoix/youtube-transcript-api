@@ -1,5 +1,6 @@
 # YouTube Transcript/Subtitle API (including automatically generated subtitles)
 
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BAENLEW8VUJ6G&source=url)
 [![Build Status](https://travis-ci.org/jdepoix/youtube-transcript-api.svg)](https://travis-ci.org/jdepoix/youtube-transcript-api)
 [![Coverage Status](https://coveralls.io/repos/github/jdepoix/youtube-transcript-api/badge.svg?branch=master)](https://coveralls.io/github/jdepoix/youtube-transcript-api?branch=master)
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](http://opensource.org/licenses/MIT)
@@ -100,7 +101,7 @@ from youtube_transcript_api import YouTubeTranscriptApi
 YouTubeTranscriptApi.get_transcript(video_id, proxies={"http": "http://user:pass@domain:port", "https": "https://user:pass@domain:port"})
 ```
 
-As the `proxies` dict is passed on to the `requests.get(...)` call, it follows the [format used by the requests library](http://docs.python-requests.org/en/master/user/advanced/#proxies)
+As the `proxies` dict is passed on to the `requests.get(...)` call, it follows the [format used by the requests library](http://docs.python-requests.org/en/master/user/advanced/#proxies).
 
 Using the CLI:
 
@@ -112,3 +113,9 @@ youtube_transcript_api <first_video_id> <second_video_id> --http-proxy http://us
 ## Warning
 
  This code uses an undocumented part of the YouTube API, which is called by the YouTube web-client. So there is no guarantee that it won't stop working tomorrow, if they change how things work. I will however do my best to make things working again as soon as possible if that happens. So if it stops working, let me know!
+
+## Donation
+
+If this project makes you happy by reducing your development time, you can make me happy by treating me to a cup of coffee :)
+
+[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BAENLEW8VUJ6G&source=url)
