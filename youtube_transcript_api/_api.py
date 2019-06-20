@@ -27,8 +27,13 @@ class YouTubeTranscriptApi():
 
         ERROR_MESSAGE = (
             'Could not get the transcript for the video {video_url}! '
-            'Most likely subtitles have been disabled by the uploader or the video is no longer '
-            'available.'
+            'This usually happens if one of the following things is the case:\n'
+            ' - subtitles have been disabled by the uploader\n'
+            ' - none of the language codes you provided are valid\n'
+            ' - none of the languages you provided are supported by the video\n'
+            ' - the video is no longer available.\n\n'
+            'If none of these things is the case, please create an issue at '
+            'https://github.com/jdepoix/youtube-transcript-api/issues'
         )
 
         def __init__(self, video_id):
