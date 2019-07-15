@@ -18,17 +18,17 @@ class YouTubeTranscriptCli():
         if parsed_args.http_proxy != '' or parsed_args.https_proxy != '':
             proxies = {"http": parsed_args.http_proxy, "https": parsed_args.https_proxy}
 
-        transcripts, _ = YouTubeTranscriptApi.get_transcripts(
+        transcripts, unretrievable_videos = YouTubeTranscriptApi.get_transcripts(
             parsed_args.video_ids,
             languages=parsed_args.languages,
             continue_after_error=True,
             proxies=proxies
         )
 
-        if parsed_args.json:
-            return json.dumps(transcripts)
-        else:
-            return pprint.pformat(transcripts)
+        return '\n\n'.join(
+            [str(YouTubeTranscriptApi.CouldNotRetrieveTranscript(video_id)) for video_id in unretrievable_videos]
+            + [json.dumps(transcripts) if parsed_args.json else pprint.pformat(transcripts)]
+        )
 
     def _parse_args(self):
         parser = argparse.ArgumentParser(

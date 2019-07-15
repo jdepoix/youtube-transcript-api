@@ -9,14 +9,9 @@ from xml.etree import ElementTree
 
 import re
 
-import logging
-
 import requests
 
 from ._html_unescaping import unescape
-
-
-logger = logging.getLogger(__name__)
 
 
 class YouTubeTranscriptApi():
@@ -57,11 +52,11 @@ class YouTubeTranscriptApi():
         :param continue_after_error: if this is set the execution won't be stopped, if an error occurs while retrieving
         one of the video transcripts
         :type continue_after_error: bool
+        :param proxies: a dictionary mapping of http and https proxies to be used for the network requests
+        :type proxies: {'http': str, 'https': str} - http://docs.python-requests.org/en/master/user/advanced/#proxies
         :return: a tuple containing a dictionary mapping video ids onto their corresponding transcripts, and a list of
         video ids, which could not be retrieved
         :rtype: ({str: [{'text': str, 'start': float, 'end': float}]}, [str]}
-        :param proxies: a dictionary mapping of http and https proxies to be used for the network requests
-        :rtype {'http': str, 'https': str} - http://docs.python-requests.org/en/master/user/advanced/#proxies
         """
         data = {}
         unretrievable_videos = []
@@ -89,19 +84,14 @@ class YouTubeTranscriptApi():
         do so. As I can't provide a complete list of all working language codes with full certainty, you may have to
         play around with the language codes a bit, to find the one which is working for you!
         :type languages: [str]
+        :param proxies: a dictionary mapping of http and https proxies to be used for the network requests
+        :type proxies: {'http': str, 'https': str} - http://docs.python-requests.org/en/master/user/advanced/#proxies
         :return: a list of dictionaries containing the 'text', 'start' and 'duration' keys
         :rtype: [{'text': str, 'start': float, 'end': float}]
-        :param proxies: a dictionary mapping of http and https proxies to be used for the network requests
-        :rtype {'http': str, 'https': str} - http://docs.python-requests.org/en/master/user/advanced/#proxies
         """
         try:
             return _TranscriptParser(_TranscriptFetcher(video_id, languages, proxies).fetch()).parse()
         except Exception:
-            logger.error(
-                YouTubeTranscriptApi.CouldNotRetrieveTranscript.ERROR_MESSAGE.format(
-                    video_url=_TranscriptFetcher.WATCH_URL.format(video_id=video_id)
-                )
-            )
             raise YouTubeTranscriptApi.CouldNotRetrieveTranscript(video_id)
 
 
