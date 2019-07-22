@@ -151,4 +151,5 @@ class _TranscriptParser():
                 'duration': float(xml_element.attrib['dur']),
             }
             for xml_element in ElementTree.fromstring(self.plain_data)
+            if xml_element.text is not None
         ]
