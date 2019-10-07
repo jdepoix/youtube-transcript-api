@@ -99,6 +99,7 @@ class _TranscriptFetcher():
     WATCH_URL = 'https://www.youtube.com/watch?v={video_id}'
     API_BASE_URL = 'https://www.youtube.com/api/{api_url}'
     LANGUAGE_REGEX = re.compile(r'(&lang=.*&)|(&lang=.*)')
+    TIMEDTEXT_STRING = 'timedtext'
 
     def __init__(self, video_id, languages, proxies):
         self.video_id = video_id
@@ -110,7 +111,13 @@ class _TranscriptFetcher():
             fetched_site = requests.get(self.WATCH_URL.format(video_id=self.video_id), proxies=self.proxies).text
         else:
             fetched_site = requests.get(self.WATCH_URL.format(video_id=self.video_id)).text
-        timedtext_url_start = fetched_site.find('timedtext')
+        timedtext_splits = fetched_site.split(self.TIMEDTEXT_STRING)
+        timedtext_url_start = (
+            timedtext_splits[2].find(self.TIMEDTEXT_STRING)
+            + len(timedtext_splits[0])
+            + len(timedtext_splits[1])
+            + len(self.TIMEDTEXT_STRING) + 1
+        )
 
         for language in (self.languages if self.languages else [None,]):
             response = self._execute_api_request(fetched_site, timedtext_url_start, language)
