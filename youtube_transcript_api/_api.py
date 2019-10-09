@@ -28,7 +28,9 @@ class YouTubeTranscriptApi():
             ' - none of the languages you provided are supported by the video\n'
             ' - the video is no longer available.\n\n'
             'If none of these things is the case, please create an issue at '
-            'https://github.com/jdepoix/youtube-transcript-api/issues'
+            'https://github.com/jdepoix/youtube-transcript-api/issues.'
+            'Please add which version of youtube_transcript_api you are using and make sure that there '
+            'are no open issues which already describe your problem!'
         )
 
         def __init__(self, video_id):
@@ -99,7 +101,7 @@ class _TranscriptFetcher():
     WATCH_URL = 'https://www.youtube.com/watch?v={video_id}'
     API_BASE_URL = 'https://www.youtube.com/api/{api_url}'
     LANGUAGE_REGEX = re.compile(r'(&lang=.*&)|(&lang=.*)')
-    TIMEDTEXT_STRING = 'timedtext'
+    TIMEDTEXT_STRING = 'timedtext?v='
 
     def __init__(self, video_id, languages, proxies):
         self.video_id = video_id
