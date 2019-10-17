@@ -53,11 +53,11 @@ class TestYouTubeTranscriptApi(TestCase):
     def test_get_transcript__fallback_language_is_used(self):
         httpretty.register_uri(
             httpretty.GET,
-            'https://www.youtube.com/api/timedtext',
-            body=''
+            'https://www.youtube.com/watch',
+            body=load_asset('youtubeWW1.html.static')
         )
 
-        YouTubeTranscriptApi.get_transcript('GJLlxj_dtq8', ['de', 'en'])
+        YouTubeTranscriptApi.get_transcript('F1xioXWb8CY', ['de', 'en'])
         query_string = httpretty.last_request().querystring
 
         self.assertIn('lang', query_string)

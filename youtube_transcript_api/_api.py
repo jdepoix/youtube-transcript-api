@@ -99,7 +99,7 @@ class YouTubeTranscriptApi():
 
 class _TranscriptFetcher():
     WATCH_URL = 'https://www.youtube.com/watch?v={video_id}'
-    API_BASE_URL = 'https://www.youtube.com/api/{api_url}'
+    API_BASE_URL = 'https://www.youtube.com/api/'
     LANGUAGE_REGEX = re.compile(r'(&lang=.*&)|(&lang=.*)')
     TIMEDTEXT_STRING = 'timedtext?v='
 
@@ -107,39 +107,28 @@ class _TranscriptFetcher():
         self.video_id = video_id
         self.languages = languages
         self.proxies = proxies
+        self.matched_splits = []
 
     def fetch(self):
         if self.proxies:
             fetched_site = requests.get(self.WATCH_URL.format(video_id=self.video_id), proxies=self.proxies).text
         else:
             fetched_site = requests.get(self.WATCH_URL.format(video_id=self.video_id)).text
-        timedtext_splits = fetched_site.split(self.TIMEDTEXT_STRING)
-        timedtext_url_start = (
-            timedtext_splits[2].find(self.TIMEDTEXT_STRING)
-            + len(timedtext_splits[0])
-            + len(timedtext_splits[1])
-            + len(self.TIMEDTEXT_STRING) + 1
-        )
-
-        for language in (self.languages if self.languages else [None,]):
-            response = self._execute_api_request(fetched_site, timedtext_url_start, language)
+        timedtext_splits = [split[:split.find('"')].replace('\\u0026', '&').replace('\\', '') for split in fetched_site.split(self.TIMEDTEXT_STRING)]
+        for language in (self.languages if self.languages else ['en']):
+            self.matched_splits = [split for split in timedtext_splits if f'&lang={language}' in split]
+            if self.matched_splits:
+                break
+        if self.matched_splits:
+            timedtext_url = min(self.matched_splits, key=len)
+            response = self._execute_api_request(timedtext_url, language)
             if response:
                 return response
 
         return None
 
-    def _execute_api_request(self, fetched_site, timedtext_url_start, language):
-        url = self.API_BASE_URL.format(
-            api_url=fetched_site[
-                timedtext_url_start:timedtext_url_start + fetched_site[timedtext_url_start:].find('"')
-            ].replace(
-                '\\u0026', '&'
-            ).replace(
-                '\\', ''
-            )
-        )
-        if language:
-            url = re.sub(self.LANGUAGE_REGEX, '&lang={language}&'.format(language=language), url)
+    def _execute_api_request(self, timedtext_url, language):
+        url = f'{self.API_BASE_URL}{self.TIMEDTEXT_STRING}{timedtext_url}'
         if self.proxies:
             return requests.get(url, proxies=self.proxies).text
         else:
