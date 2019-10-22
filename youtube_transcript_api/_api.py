@@ -114,7 +114,10 @@ class _TranscriptFetcher():
             fetched_site = requests.get(self.WATCH_URL.format(video_id=self.video_id), proxies=self.proxies).text
         else:
             fetched_site = requests.get(self.WATCH_URL.format(video_id=self.video_id)).text
-        timedtext_splits = [split[:split.find('"')].replace('\\u0026', '&').replace('\\', '') for split in fetched_site.split(self.TIMEDTEXT_STRING)]
+        timedtext_splits = [split[:split.find('"')]
+                .replace('\\u0026', '&')
+                .replace('\\', '') 
+                for split in fetched_site.split(self.TIMEDTEXT_STRING)]
         for language in (self.languages if self.languages else ['en']):
             self.matched_splits = [split for split in timedtext_splits if f'&lang={language}' in split]
             if self.matched_splits:
