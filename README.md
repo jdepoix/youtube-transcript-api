@@ -55,7 +55,7 @@ This will return a list of dictionaries looking somewhat like this:
 ]
 ```
 
-You can also add the `languages` param if you want to make sure the transcripts are retrieved in your desired language (it usually defaults to english).
+You can also add the `languages` param if you want to make sure the transcripts are retrieved in your desired language (it defaults to english).
 
 ```python
 YouTubeTranscriptApi.get_transcripts(video_ids, languages=['de', 'en'])
