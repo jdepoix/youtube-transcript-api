@@ -119,7 +119,7 @@ class _TranscriptFetcher():
                 .replace('\\', '') 
                 for split in fetched_site.split(self.TIMEDTEXT_STRING)]
         for language in (self.languages if self.languages else ['en']):
-            self.matched_splits = [split for split in timedtext_splits if f'&lang={language}' in split]
+            self.matched_splits = [split for split in timedtext_splits if '&lang={}'.format(language) in split]
             if self.matched_splits:
                 break
         if self.matched_splits:
