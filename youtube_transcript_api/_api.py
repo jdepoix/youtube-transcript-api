@@ -131,7 +131,7 @@ class _TranscriptFetcher():
         return None
 
     def _execute_api_request(self, timedtext_url, language):
-        url = f'{self.API_BASE_URL}{self.TIMEDTEXT_STRING}{timedtext_url}'
+        url = '{}{}{}'.format(self.API_BASE_URL, self.TIMEDTEXT_STRING, timedtext_url)
         if self.proxies:
             return requests.get(url, proxies=self.proxies).text
         else:
