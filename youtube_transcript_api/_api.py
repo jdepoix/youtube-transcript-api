@@ -40,7 +40,7 @@ class YouTubeTranscriptApi():
             self.video_id = video_id
 
     @classmethod
-    def get_transcripts(cls, video_ids, languages=None, continue_after_error=False, proxies=None):
+    def get_transcripts(cls, video_ids, languages=['en'], continue_after_error=False, proxies=None):
         """
         Retrieves the transcripts for a list of videos.
 
@@ -75,7 +75,7 @@ class YouTubeTranscriptApi():
         return data, unretrievable_videos
 
     @classmethod
-    def get_transcript(cls, video_id, languages=None, proxies=None):
+    def get_transcript(cls, video_id, languages=['en'], proxies=None):
         """
         Retrieves the transcript for a single video.
 
@@ -100,14 +100,14 @@ class YouTubeTranscriptApi():
 class _TranscriptFetcher():
     WATCH_URL = 'https://www.youtube.com/watch?v={video_id}'
     API_BASE_URL = 'https://www.youtube.com/api/'
-    LANGUAGE_REGEX = re.compile(r'(&lang=.*&)|(&lang=.*)')
     TIMEDTEXT_STRING = 'timedtext?v='
+    NAME_REGEX = re.compile(r'(&name=.*&)|(&name=.*)')
 
     def __init__(self, video_id, languages, proxies):
         self.video_id = video_id
         self.languages = languages
+        print(languages)
         self.proxies = proxies
-        self.matched_splits = []
 
     def fetch(self):
         if self.proxies:
@@ -118,19 +118,25 @@ class _TranscriptFetcher():
                 .replace('\\u0026', '&')
                 .replace('\\', '') 
                 for split in fetched_site.split(self.TIMEDTEXT_STRING)]
-        for language in (self.languages if self.languages else ['en']):
-            self.matched_splits = [split for split in timedtext_splits if '&lang={}'.format(language) in split]
-            if self.matched_splits:
+        matched_splits = []
+        for language in self.languages:
+            matched_splits = [split for split in timedtext_splits if '&lang={}'.format(language) in split]
+            if matched_splits:
                 break
-        if self.matched_splits:
-            timedtext_url = min(self.matched_splits, key=len)
-            response = self._execute_api_request(timedtext_url, language)
+        if matched_splits:
+            timedtext_url = min(matched_splits, key=self._sort_splits)
+            response = self._execute_api_request(timedtext_url)
             if response:
                 return response
 
         return None
 
-    def _execute_api_request(self, timedtext_url, language):
+    #Sorting the matched splits by string length because we want non-asr options returned first
+    #However, we don't want to include the length of the 'name' argument as it could possible throw this off
+    def _sort_splits(self, matched_split):
+        return len(re.sub(self.NAME_REGEX, r'\1', matched_split))
+
+    def _execute_api_request(self, timedtext_url):
         url = '{}{}{}'.format(self.API_BASE_URL, self.TIMEDTEXT_STRING, timedtext_url)
         if self.proxies:
             return requests.get(url, proxies=self.proxies).text
