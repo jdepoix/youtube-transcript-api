@@ -54,7 +54,7 @@ class TestYouTubeTranscriptApi(TestCase):
         httpretty.register_uri(
             httpretty.GET,
             'https://www.youtube.com/watch',
-            body=load_asset('youtubeWW1.html.static')
+            body=load_asset('youtube_ww1_nl_en.html.static')
         )
 
         YouTubeTranscriptApi.get_transcript('F1xioXWb8CY', ['de', 'en'])
@@ -99,8 +99,8 @@ class TestYouTubeTranscriptApi(TestCase):
 
         YouTubeTranscriptApi.get_transcripts(['video_id_1', 'video_id_2'], continue_after_error=True)
 
-        YouTubeTranscriptApi.get_transcript.assert_any_call(video_id_1, None, None)
-        YouTubeTranscriptApi.get_transcript.assert_any_call(video_id_2, None, None)
+        YouTubeTranscriptApi.get_transcript.assert_any_call(video_id_1, ['en'], None)
+        YouTubeTranscriptApi.get_transcript.assert_any_call(video_id_2, ['en'], None)
 
     def test_get_transcript__with_proxies(self):
         proxies = {'http': '', 'https:': ''}
@@ -118,4 +118,5 @@ class TestYouTubeTranscriptApi(TestCase):
         )
         YouTubeTranscriptApi.get_transcript = MagicMock()
         YouTubeTranscriptApi.get_transcripts(['GJLlxj_dtq8'], proxies=proxies)
-        YouTubeTranscriptApi.get_transcript.assert_any_call('GJLlxj_dtq8', None, proxies)
+        print(YouTubeTranscriptApi.get_transcript.mock_calls)
+        YouTubeTranscriptApi.get_transcript.assert_any_call('GJLlxj_dtq8', ['en'], proxies)
