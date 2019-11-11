@@ -40,7 +40,7 @@ class YouTubeTranscriptApi():
             self.video_id = video_id
 
     @classmethod
-    def get_transcripts(cls, video_ids, languages=['en'], continue_after_error=False, proxies=None):
+    def get_transcripts(cls, video_ids, languages=('en',), continue_after_error=False, proxies=None):
         """
         Retrieves the transcripts for a list of videos.
 
@@ -75,7 +75,7 @@ class YouTubeTranscriptApi():
         return data, unretrievable_videos
 
     @classmethod
-    def get_transcript(cls, video_id, languages=['en'], proxies=None):
+    def get_transcript(cls, video_id, languages=('en',), proxies=None):
         """
         Retrieves the transcript for a single video.
 
@@ -106,7 +106,6 @@ class _TranscriptFetcher():
     def __init__(self, video_id, languages, proxies):
         self.video_id = video_id
         self.languages = languages
-        print(languages)
         self.proxies = proxies
 
     def fetch(self):
@@ -131,9 +130,16 @@ class _TranscriptFetcher():
 
         return None
 
-    #Sorting the matched splits by string length because we want non-asr options returned first
-    #However, we don't want to include the length of the 'name' argument as it could possible throw this off
     def _sort_splits(self, matched_split):
+        """Returns a value related to a given caption track url.
+
+        This function is used to sort the matched splits by string 
+        length because we want non-asr and non-dialect options returned first.
+        With this in mind, it is remove the 'name' arugument from the url as 
+        it could possibly make the values inaccurate to what we desire.
+
+        matched_split: The caption track url we want to return a value for.        
+        """
         return len(re.sub(self.NAME_REGEX, r'\1', matched_split))
 
     def _execute_api_request(self, timedtext_url):

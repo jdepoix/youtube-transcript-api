@@ -99,8 +99,8 @@ class TestYouTubeTranscriptApi(TestCase):
 
         YouTubeTranscriptApi.get_transcripts(['video_id_1', 'video_id_2'], continue_after_error=True)
 
-        YouTubeTranscriptApi.get_transcript.assert_any_call(video_id_1, ['en'], None)
-        YouTubeTranscriptApi.get_transcript.assert_any_call(video_id_2, ['en'], None)
+        YouTubeTranscriptApi.get_transcript.assert_any_call(video_id_1, ('en',), None)
+        YouTubeTranscriptApi.get_transcript.assert_any_call(video_id_2, ('en',), None)
 
     def test_get_transcript__with_proxies(self):
         proxies = {'http': '', 'https:': ''}
@@ -118,5 +118,4 @@ class TestYouTubeTranscriptApi(TestCase):
         )
         YouTubeTranscriptApi.get_transcript = MagicMock()
         YouTubeTranscriptApi.get_transcripts(['GJLlxj_dtq8'], proxies=proxies)
-        print(YouTubeTranscriptApi.get_transcript.mock_calls)
-        YouTubeTranscriptApi.get_transcript.assert_any_call('GJLlxj_dtq8', ['en'], proxies)
+        YouTubeTranscriptApi.get_transcript.assert_any_call('GJLlxj_dtq8', ('en',), proxies)
