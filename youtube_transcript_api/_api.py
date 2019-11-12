@@ -101,7 +101,7 @@ class _TranscriptFetcher():
     WATCH_URL = 'https://www.youtube.com/watch?v={video_id}'
     API_BASE_URL = 'https://www.youtube.com/api/'
     TIMEDTEXT_STRING = 'timedtext?v='
-    NAME_REGEX = re.compile(r'(&name=.*&)|(&name=.*)')
+    NAME_REGEX = re.compile(r'&name=.*?(&)|&name=.*')
 
     def __init__(self, video_id, languages, proxies):
         self.video_id = video_id
