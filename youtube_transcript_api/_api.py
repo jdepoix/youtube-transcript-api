@@ -1,6 +1,6 @@
 import requests
 
-from ._transcripts import TranscriptDataFetcher
+from ._transcripts import TranscriptListFetcher
 
 
 class YouTubeTranscriptApi():
@@ -13,8 +13,7 @@ class YouTubeTranscriptApi():
         :type video_ids: [str]
         :param languages: A list of language codes in a descending priority. For example, if this is set to ['de', 'en']
         it will first try to fetch the german transcript (de) and then fetch the english transcript (en) if it fails to
-        do so. As I can't provide a complete list of all working language codes with full certainty, you may have to
-        play around with the language codes a bit, to find the one which is working for you!
+        do so.
         :type languages: [str]
         :param continue_after_error: if this is set the execution won't be stopped, if an error occurs while retrieving
         one of the video transcripts
@@ -23,7 +22,7 @@ class YouTubeTranscriptApi():
         :type proxies: {'http': str, 'https': str} - http://docs.python-requests.org/en/master/user/advanced/#proxies
         :return: a tuple containing a dictionary mapping video ids onto their corresponding transcripts, and a list of
         video ids, which could not be retrieved
-        :rtype: ({str: [{'text': str, 'start': float, 'end': float}]}, [str]}
+        :rtype: ({str: [{'text': str, 'start': float, 'end': float}]}, [str]})
         """
         data = {}
         unretrievable_videos = []
@@ -48,8 +47,7 @@ class YouTubeTranscriptApi():
         :type video_id: str
         :param languages: A list of language codes in a descending priority. For example, if this is set to ['de', 'en']
         it will first try to fetch the german transcript (de) and then fetch the english transcript (en) if it fails to
-        do so. As I can't provide a complete list of all working language codes with full certainty, you may have to
-        play around with the language codes a bit, to find the one which is working for you!
+        do so.
         :type languages: [str]
         :param proxies: a dictionary mapping of http and https proxies to be used for the network requests
         :type proxies: {'http': str, 'https': str} - http://docs.python-requests.org/en/master/user/advanced/#proxies
@@ -58,4 +56,4 @@ class YouTubeTranscriptApi():
         """
         with requests.Session() as http_client:
             http_client.proxies = proxies if proxies else {}
-            return TranscriptDataFetcher(http_client).fetch(video_id).find_transcript(languages).fetch()
+            return TranscriptListFetcher(http_client).fetch(video_id).find_transcript(languages).fetch()
