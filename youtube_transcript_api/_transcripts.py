@@ -131,12 +131,7 @@ class TranscriptList():
         :rtype: Transcript
         :raises: NoTranscriptFound
         """
-        try:
-            return self.find_manually_created_transcript(language_codes)
-        except NoTranscriptFound:
-            pass
-
-        return self.find_generated_transcript(language_codes)
+        return self._find_transcript(language_codes, [self._manually_created_transcripts, self._generated_transcripts])
 
     def find_generated_transcript(self, language_codes):
         """
@@ -150,7 +145,7 @@ class TranscriptList():
         :rtype: Transcript
         :raises: NoTranscriptFound
         """
-        return self._find_transcript(language_codes, generated=True)
+        return self._find_transcript(language_codes, [self._generated_transcripts,])
 
     def find_manually_created_transcript(self, language_codes):
         """
@@ -164,14 +159,13 @@ class TranscriptList():
         :rtype: Transcript
         :raises: NoTranscriptFound
         """
-        return self._find_transcript(language_codes, generated=False)
+        return self._find_transcript(language_codes, [self._manually_created_transcripts,])
 
-    def _find_transcript(self, language_codes, generated):
-        transcripts = self._generated_transcripts if generated else self._manually_created_transcripts
-
+    def _find_transcript(self, language_codes, transcript_dicts):
         for language_code in language_codes:
-            if language_code in transcripts:
-                return transcripts[language_code]
+            for transcript_dict in transcript_dicts:
+                if language_code in transcript_dict:
+                    return transcript_dict[language_code]
 
         raise NoTranscriptFound(
             self.video_id,
