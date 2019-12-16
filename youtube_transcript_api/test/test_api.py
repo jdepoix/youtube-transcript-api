@@ -5,7 +5,7 @@ import os
 
 import httpretty
 
-from youtube_transcript_api._api import YouTubeTranscriptApi
+from youtube_transcript_api import YouTubeTranscriptApi, VideoUnavailable, NoTranscriptFound, TranscriptsDisabled
 
 
 def load_asset(filename):
@@ -53,26 +53,40 @@ class TestYouTubeTranscriptApi(TestCase):
     def test_get_transcript__fallback_language_is_used(self):
         httpretty.register_uri(
             httpretty.GET,
-            'https://www.youtube.com/api/timedtext',
-            body=''
+            'https://www.youtube.com/watch',
+            body=load_asset('youtube_ww1_nl_en.html.static')
         )
 
-        YouTubeTranscriptApi.get_transcript('GJLlxj_dtq8', ['de', 'en'])
+        YouTubeTranscriptApi.get_transcript('F1xioXWb8CY', ['de', 'en'])
         query_string = httpretty.last_request().querystring
 
         self.assertIn('lang', query_string)
         self.assertEqual(len(query_string['lang']), 1)
         self.assertEqual(query_string['lang'][0], 'en')
 
-    def test_get_transcript__exception_is_raised_when_not_available(self):
+    def test_get_transcript__exception_if_video_unavailable(self):
         httpretty.register_uri(
             httpretty.GET,
-            'https://www.youtube.com/api/timedtext',
-            body=''
+            'https://www.youtube.com/watch',
+            body=load_asset('youtube_video_unavailable.html.static')
         )
 
-        with self.assertRaises(YouTubeTranscriptApi.CouldNotRetrieveTranscript):
-            YouTubeTranscriptApi.get_transcript('GJLlxj_dtq8')
+        with self.assertRaises(VideoUnavailable):
+            YouTubeTranscriptApi.get_transcript('abc')
+
+    def test_get_transcript__exception_if_transcripts_disabled(self):
+        httpretty.register_uri(
+            httpretty.GET,
+            'https://www.youtube.com/watch',
+            body=load_asset('youtube_transcripts_disabled.html.static')
+        )
+
+        with self.assertRaises(TranscriptsDisabled):
+            YouTubeTranscriptApi.get_transcript('dsMFmonKDD4')
+
+    def test_get_transcript__exception_if_language_unavailable(self):
+        with self.assertRaises(NoTranscriptFound):
+            YouTubeTranscriptApi.get_transcript('GJLlxj_dtq8', languages=['cz'])
 
     def test_get_transcripts(self):
         video_id_1 = 'video_id_1'
@@ -99,8 +113,8 @@ class TestYouTubeTranscriptApi(TestCase):
 
         YouTubeTranscriptApi.get_transcripts(['video_id_1', 'video_id_2'], continue_after_error=True)
 
-        YouTubeTranscriptApi.get_transcript.assert_any_call(video_id_1, None, None)
-        YouTubeTranscriptApi.get_transcript.assert_any_call(video_id_2, None, None)
+        YouTubeTranscriptApi.get_transcript.assert_any_call(video_id_1, ('en',), None)
+        YouTubeTranscriptApi.get_transcript.assert_any_call(video_id_2, ('en',), None)
 
     def test_get_transcript__with_proxies(self):
         proxies = {'http': '', 'https:': ''}
@@ -118,4 +132,4 @@ class TestYouTubeTranscriptApi(TestCase):
         )
         YouTubeTranscriptApi.get_transcript = MagicMock()
         YouTubeTranscriptApi.get_transcripts(['GJLlxj_dtq8'], proxies=proxies)
-        YouTubeTranscriptApi.get_transcript.assert_any_call('GJLlxj_dtq8', None, proxies)
+        YouTubeTranscriptApi.get_transcript.assert_any_call('GJLlxj_dtq8', ('en',), proxies)
