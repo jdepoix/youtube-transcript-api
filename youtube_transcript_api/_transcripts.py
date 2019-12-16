@@ -55,7 +55,7 @@ class TranscriptList():
     This object represents a list of transcripts. It can be iterated over to list all transcripts which are available
     for a given YouTube video. Also it provides functionality to search for a transcript in a given language.
     """
-    def __init__(self, video_id, manually_created_transcripts, generated_transcripts):
+    def __init__(self, video_id, manually_created_transcripts, generated_transcripts, translation_languages):
         """
         The constructor is only for internal use. Use the static build method instead.
 
@@ -65,10 +65,13 @@ class TranscriptList():
         :type manually_created_transcripts: dict[str, Transcript]
         :param generated_transcripts: dict mapping language codes to the generated transcripts
         :type generated_transcripts: dict[str, Transcript]
+        :param translation_languages: list of languages which can be used for translatable languages
+        :type translation_languages: list[dict[str, str]]
         """
         self.video_id = video_id
         self._manually_created_transcripts = manually_created_transcripts
         self._generated_transcripts = generated_transcripts
+        self._translation_languages = translation_languages
 
     @staticmethod
     def build(http_client, video_id, captions_json):
@@ -114,6 +117,7 @@ class TranscriptList():
             video_id,
             manually_created_transcripts,
             generated_transcripts,
+            translation_languages,
         )
 
     def __iter__(self):
@@ -181,22 +185,28 @@ class TranscriptList():
             '(MANUALLY CREATED)\n'
             '{available_manually_created_transcript_languages}\n\n'
             '(GENERATED)\n'
-            '{available_generated_transcripts}'
+            '{available_generated_transcripts}\n\n'
+            '(TRANSLATION LANGUAGES)\n'
+            '{available_translation_languages}'
         ).format(
             video_id=self.video_id,
             available_manually_created_transcript_languages=self._get_language_description(
-                self._manually_created_transcripts.values()
+                str(transcript) for transcript in self._manually_created_transcripts.values()
             ),
             available_generated_transcripts=self._get_language_description(
-                self._generated_transcripts.values()
+                str(transcript) for transcript in self._generated_transcripts.values()
             ),
+            available_translation_languages=self._get_language_description(
+                '{language_code} ("{language}")'.format(
+                    language=translation_language['language'],
+                    language_code=translation_language['language_code'],
+                ) for translation_language in self._translation_languages
+            )
         )
 
-    def _get_language_description(self, transcripts):
-        return '\n'.join(
-            ' - {transcript}'.format(transcript=str(transcript))
-            for transcript in transcripts
-        ) if transcripts else 'None'
+    def _get_language_description(self, transcript_strings):
+        description = '\n'.join(' - {transcript}'.format(transcript=transcript) for transcript in transcript_strings)
+        return description if description else 'None'
 
 
 class Transcript():
@@ -239,9 +249,10 @@ class Transcript():
         )
 
     def __str__(self):
-        return '{language_code} ("{language}")'.format(
+        return '{language_code} ("{language}"){translation_description}'.format(
             language=self.language,
             language_code=self.language_code,
+            translation_description='[TRANSLATABLE]' if self.is_translatable else ''
         )
 
     @property
