@@ -12,7 +12,9 @@ from xml.etree import ElementTree
 import re
 
 from ._html_unescaping import unescape
-from ._errors import VideoUnavailable, NoTranscriptFound, TranscriptsDisabled
+from ._errors import (
+    VideoUnavailable, NoTranscriptFound, TranscriptsDisabled, NotTranslatable, TranslationLanguageNotAvailable
+)
 from ._settings import WATCH_URL
 
 
@@ -53,9 +55,6 @@ class TranscriptList():
     This object represents a list of transcripts. It can be iterated over to list all transcripts which are available
     for a given YouTube video. Also it provides functionality to search for a transcript in a given language.
     """
-
-    # TODO implement iterator
-
     def __init__(self, video_id, manually_created_transcripts, generated_transcripts):
         """
         The constructor is only for internal use. Use the static build method instead.
@@ -116,6 +115,9 @@ class TranscriptList():
             manually_created_transcripts,
             generated_transcripts,
         )
+
+    def __iter__(self):
+        return iter(list(self._manually_created_transcripts.values()) + list(self._generated_transcripts.values()))
 
     def find_transcript(self, language_codes):
         """
@@ -220,6 +222,10 @@ class Transcript():
         self.language_code = language_code
         self.is_generated = is_generated
         self.translation_languages = translation_languages
+        self._translation_languages_dict = {
+            translation_language['language_code']: translation_language['language']
+            for translation_language in translation_languages
+        }
 
     def fetch(self):
         """
@@ -238,27 +244,26 @@ class Transcript():
             language_code=self.language_code,
         )
 
-# TODO integrate translations in future release
-#     @property
-#     def is_translatable(self):
-#         return len(self.translation_languages) > 0
-#
-#
-# class TranslatableTranscript(Transcript):
-#     def __init__(self, http_client, url, translation_languages):
-#         super(TranslatableTranscript, self).__init__(http_client, url)
-#         self._translation_languages = translation_languages
-#         self._translation_language_codes = {language['language_code'] for language in translation_languages}
-#
-#
-#     def translate(self, language_code):
-#         if language_code not in self._translation_language_codes:
-#             raise TranslatableTranscript.TranslationLanguageNotAvailable()
-#
-#         return Transcript(
-#             self._http_client,
-#             '{url}&tlang={language_code}'.format(url=self._url, language_code=language_code)
-#         )
+    @property
+    def is_translatable(self):
+        return len(self.translation_languages) > 0
+
+    def translate(self, language_code):
+        if not self.is_translatable:
+            raise NotTranslatable(self.video_id)
+
+        if language_code not in self._translation_languages_dict:
+            raise TranslationLanguageNotAvailable(self.video_id)
+
+        return Transcript(
+            self._http_client,
+            self.video_id,
+            '{url}&tlang={language_code}'.format(url=self._url, language_code=language_code),
+            self._translation_languages_dict[language_code],
+            language_code,
+            True,
+            [],
+        )
 
 
 class _TranscriptParser():

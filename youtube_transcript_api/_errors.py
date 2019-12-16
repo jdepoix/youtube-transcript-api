@@ -43,6 +43,14 @@ class TranscriptsDisabled(CouldNotRetrieveTranscript):
     CAUSE_MESSAGE = 'Subtitles are disabled for this video'
 
 
+class NotTranslatable(CouldNotRetrieveTranscript):
+    CAUSE_MESSAGE = 'The requested language is not translatable'
+
+
+class TranslationLanguageNotAvailable(CouldNotRetrieveTranscript):
+    CAUSE_MESSAGE = 'The requested translation language is not available'
+
+
 class NoTranscriptFound(CouldNotRetrieveTranscript):
     CAUSE_MESSAGE = (
         'No transcripts were found for any of the requested language codes: {requested_language_codes}\n\n'
