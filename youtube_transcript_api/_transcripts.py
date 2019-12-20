@@ -13,7 +13,12 @@ import re
 
 from ._html_unescaping import unescape
 from ._errors import (
-    VideoUnavailable, NoTranscriptFound, TranscriptsDisabled, NotTranslatable, TranslationLanguageNotAvailable
+    VideoUnavailable,
+    NoTranscriptFound,
+    TranscriptsDisabled,
+    NotTranslatable,
+    TranslationLanguageNotAvailable,
+    NoTranscriptAvailable,
 )
 from ._settings import WATCH_URL
 
@@ -38,9 +43,14 @@ class TranscriptListFetcher():
 
             raise TranscriptsDisabled(video_id)
 
-        return json.loads(splitted_html[1].split(',"videoDetails')[0].replace('\n', ''))[
-            'playerCaptionsTracklistRenderer'
-        ]
+        captions_json = json.loads(
+            splitted_html[1].split(',"videoDetails')[0].replace('\n', '')
+        )['playerCaptionsTracklistRenderer']
+
+        if 'captionTracks' not in captions_json:
+            raise NoTranscriptAvailable(video_id)
+
+        return captions_json
 
     def _fetch_html(self, video_id):
         return self._http_client.get(WATCH_URL.format(video_id=video_id)).text.replace(

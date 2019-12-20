@@ -5,7 +5,13 @@ import os
 
 import httpretty
 
-from youtube_transcript_api import YouTubeTranscriptApi, VideoUnavailable, NoTranscriptFound, TranscriptsDisabled
+from youtube_transcript_api import (
+    YouTubeTranscriptApi,
+    TranscriptsDisabled,
+    NoTranscriptFound,
+    VideoUnavailable,
+    NoTranscriptAvailable,
+)
 
 
 def load_asset(filename):
@@ -87,6 +93,16 @@ class TestYouTubeTranscriptApi(TestCase):
     def test_get_transcript__exception_if_language_unavailable(self):
         with self.assertRaises(NoTranscriptFound):
             YouTubeTranscriptApi.get_transcript('GJLlxj_dtq8', languages=['cz'])
+
+    def test_get_transcript__exception_if_no_transcript_available(self):
+        httpretty.register_uri(
+            httpretty.GET,
+            'https://www.youtube.com/watch',
+            body=load_asset('youtube_no_transcript_available.html.static')
+        )
+
+        with self.assertRaises(NoTranscriptAvailable):
+            YouTubeTranscriptApi.get_transcript('MwBPvcYFY2E')
 
     def test_get_transcripts(self):
         video_id_1 = 'video_id_1'
