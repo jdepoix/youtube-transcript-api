@@ -60,3 +60,10 @@ class NoTranscriptFound(CouldNotRetrieveTranscript):
             requested_language_codes=self._requested_language_codes,
             transcript_data=str(self._transcript_data),
         )
+
+
+class InvalidTranscriptTypeOverride(Exception):
+    """
+    Raised if type_override is invalid.
+    """
+    pass

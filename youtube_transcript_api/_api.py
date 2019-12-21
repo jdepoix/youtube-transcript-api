@@ -1,11 +1,11 @@
 import requests
 
 from ._transcripts import TranscriptListFetcher
-
+from ._errors import InvalidTranscriptTypeOverride
 
 class YouTubeTranscriptApi():
     @classmethod
-    def get_transcripts(cls, video_ids, languages=('en',), continue_after_error=False, proxies=None):
+    def get_transcripts(cls, video_ids, languages=('en',), continue_after_error=False, proxies=None, type_override=None):
         """
         Retrieves the transcripts for a list of videos.
 
@@ -29,7 +29,7 @@ class YouTubeTranscriptApi():
 
         for video_id in video_ids:
             try:
-                data[video_id] = cls.get_transcript(video_id, languages, proxies)
+                data[video_id] = cls.get_transcript(video_id, languages, proxies, type_override)
             except Exception as exception:
                 if not continue_after_error:
                     raise exception
@@ -39,7 +39,7 @@ class YouTubeTranscriptApi():
         return data, unretrievable_videos
 
     @classmethod
-    def get_transcript(cls, video_id, languages=('en',), proxies=None):
+    def get_transcript(cls, video_id, languages=('en',), proxies=None, type_override=None):
         """
         Retrieves the transcript for a single video.
 
@@ -56,4 +56,12 @@ class YouTubeTranscriptApi():
         """
         with requests.Session() as http_client:
             http_client.proxies = proxies if proxies else {}
-            return TranscriptListFetcher(http_client).fetch(video_id).find_transcript(languages).fetch()
+            if type_override == None:
+                return TranscriptListFetcher(http_client).fetch(video_id).find_transcript(languages).fetch()
+            if type_override == 'automatic':
+                return TranscriptListFetcher(http_client).fetch(video_id).find_generated_transcript(languages).fetch()
+            elif type_override == 'manual':
+                return TranscriptListFetcher(http_client).fetch(video_id).find_manually_created_transcript(languages).fetch()
+            else:
+                print('fu')
+                raise InvalidTranscriptTypeOverride(str(type_override))
