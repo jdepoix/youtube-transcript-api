@@ -26,7 +26,8 @@ class YouTubeTranscriptApi():
         """
         data = {}
         unretrievable_videos = []
-
+        if type_override not in ['automatic', 'manual', None]:
+            raise InvalidTranscriptTypeOverride(str(type_override))
         for video_id in video_ids:
             try:
                 data[video_id] = cls.get_transcript(video_id, languages, proxies, type_override)
@@ -63,5 +64,4 @@ class YouTubeTranscriptApi():
             elif type_override == 'manual':
                 return TranscriptListFetcher(http_client).fetch(video_id).find_manually_created_transcript(languages).fetch()
             else:
-                print('fu')
                 raise InvalidTranscriptTypeOverride(str(type_override))
