@@ -38,6 +38,9 @@ class YouTubeTranscriptCli():
     def _fetch_transcript(self, parsed_args, proxies, video_id):
         transcript_list = YouTubeTranscriptApi.list_transcripts(video_id, proxies=proxies)
 
+        if parsed_args.list_transcripts:
+            return str(transcript_list)
+
         if parsed_args.exclude_manually_created:
             transcript = transcript_list.find_generated_transcript(parsed_args.languages)
         elif parsed_args.exclude_generated:
