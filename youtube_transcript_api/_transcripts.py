@@ -120,7 +120,7 @@ class TranscriptList():
                 caption['name']['simpleText'],
                 caption['languageCode'],
                 caption.get('kind', '') == 'asr',
-                translation_languages if caption['isTranslatable'] else []
+                translation_languages if caption.get('isTranslatable', False) else []
             )
 
         return TranscriptList(
@@ -295,7 +295,7 @@ class _TranscriptParser():
             {
                 'text': re.sub(self.HTML_TAG_REGEX, '', unescape(xml_element.text)),
                 'start': float(xml_element.attrib['start']),
-                'duration': float(xml_element.attrib['dur']),
+                'duration': float(xml_element.attrib.get('dur', '0.0')),
             }
             for xml_element in ElementTree.fromstring(plain_data)
             if xml_element.text is not None
