@@ -72,7 +72,7 @@ class YouTubeTranscriptCli():
         parser.add_argument(
             '--languages',
             nargs='*',
-            default=[],
+            default=['en',],
             type=str,
             help=(
                 'A list of language codes in a descending priority. For example, if this is set to "de en" it will '
