@@ -77,7 +77,7 @@ class TestYouTubeTranscriptCli(TestCase):
         parsed_args = YouTubeTranscriptCli('v1 v2'.split())._parse_args()
         self.assertEqual(parsed_args.video_ids, ['v1', 'v2'])
         self.assertEqual(parsed_args.json, False)
-        self.assertEqual(parsed_args.languages, [])
+        self.assertEqual(parsed_args.languages, ['en'])
 
     def test_argument_parsing__fail_without_video_ids(self):
         with self.assertRaises(SystemExit):
@@ -87,12 +87,12 @@ class TestYouTubeTranscriptCli(TestCase):
         parsed_args = YouTubeTranscriptCli('v1 v2 --json'.split())._parse_args()
         self.assertEqual(parsed_args.video_ids, ['v1', 'v2'])
         self.assertEqual(parsed_args.json, True)
-        self.assertEqual(parsed_args.languages, [])
+        self.assertEqual(parsed_args.languages, ['en'])
 
         parsed_args = YouTubeTranscriptCli('--json v1 v2'.split())._parse_args()
         self.assertEqual(parsed_args.video_ids, ['v1', 'v2'])
         self.assertEqual(parsed_args.json, True)
-        self.assertEqual(parsed_args.languages, [])
+        self.assertEqual(parsed_args.languages, ['en'])
 
     def test_argument_parsing__languages(self):
         parsed_args = YouTubeTranscriptCli('v1 v2 --languages de en'.split())._parse_args()
