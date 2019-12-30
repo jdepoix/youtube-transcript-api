@@ -72,11 +72,11 @@ class YouTubeTranscriptApi():
         :param proxies: a dictionary mapping of http and https proxies to be used for the network requests
         :type proxies: {'http': str, 'https': str} - http://docs.python-requests.org/en/master/user/advanced/#proxies
         :return: a tuple containing a dictionary mapping video ids onto their corresponding transcripts, and a list of
-        exceptions which occurred for the videos which could not be retrieved
-        :rtype ({str: [{'text': str, 'start': float, 'end': float}]}, [CouldNotRetrieveTranscript]}):
+        video ids, which could not be retrieved
+        :rtype ({str: [{'text': str, 'start': float, 'end': float}]}, [str]}):
         """
         data = {}
-        exceptions = []
+        unretrievable_videos = []
 
         for video_id in video_ids:
             try:
@@ -85,9 +85,9 @@ class YouTubeTranscriptApi():
                 if not continue_after_error:
                     raise exception
 
-                exceptions.append(exception)
+                unretrievable_videos.append(video_id)
 
-        return data, exceptions
+        return data, unretrievable_videos
 
     @classmethod
     def get_transcript(cls, video_id, languages=('en',), proxies=None):
