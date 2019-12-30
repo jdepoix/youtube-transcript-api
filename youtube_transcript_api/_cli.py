@@ -26,7 +26,7 @@ class YouTubeTranscriptCli():
         )
 
         return '\n\n'.join(
-            [str(YouTubeTranscriptApi.CouldNotRetrieveTranscript(video_id)) for video_id in unretrievable_videos]
+            [str(exception) for exception in unretrievable_videos]
             + ([json.dumps(transcripts) if parsed_args.json else pprint.pformat(transcripts)] if transcripts else [])
         )
 
