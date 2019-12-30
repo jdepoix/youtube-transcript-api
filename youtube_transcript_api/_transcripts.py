@@ -12,7 +12,14 @@ from xml.etree import ElementTree
 import re
 
 from ._html_unescaping import unescape
-from ._errors import VideoUnavailable, NoTranscriptFound, TranscriptsDisabled
+from ._errors import (
+    VideoUnavailable,
+    NoTranscriptFound,
+    TranscriptsDisabled,
+    NotTranslatable,
+    TranslationLanguageNotAvailable,
+    NoTranscriptAvailable,
+)
 from ._settings import WATCH_URL
 
 
@@ -36,9 +43,14 @@ class TranscriptListFetcher():
 
             raise TranscriptsDisabled(video_id)
 
-        return json.loads(splitted_html[1].split(',"videoDetails')[0].replace('\n', ''))[
-            'playerCaptionsTracklistRenderer'
-        ]
+        captions_json = json.loads(
+            splitted_html[1].split(',"videoDetails')[0].replace('\n', '')
+        )['playerCaptionsTracklistRenderer']
+
+        if 'captionTracks' not in captions_json:
+            raise NoTranscriptAvailable(video_id)
+
+        return captions_json
 
     def _fetch_html(self, video_id):
         return self._http_client.get(WATCH_URL.format(video_id=video_id)).text.replace(
@@ -53,10 +65,7 @@ class TranscriptList():
     This object represents a list of transcripts. It can be iterated over to list all transcripts which are available
     for a given YouTube video. Also it provides functionality to search for a transcript in a given language.
     """
-
-    # TODO implement iterator
-
-    def __init__(self, video_id, manually_created_transcripts, generated_transcripts):
+    def __init__(self, video_id, manually_created_transcripts, generated_transcripts, translation_languages):
         """
         The constructor is only for internal use. Use the static build method instead.
 
@@ -66,10 +75,13 @@ class TranscriptList():
         :type manually_created_transcripts: dict[str, Transcript]
         :param generated_transcripts: dict mapping language codes to the generated transcripts
         :type generated_transcripts: dict[str, Transcript]
+        :param translation_languages: list of languages which can be used for translatable languages
+        :type translation_languages: list[dict[str, str]]
         """
         self.video_id = video_id
         self._manually_created_transcripts = manually_created_transcripts
         self._generated_transcripts = generated_transcripts
+        self._translation_languages = translation_languages
 
     @staticmethod
     def build(http_client, video_id, captions_json):
@@ -83,7 +95,7 @@ class TranscriptList():
         :param captions_json: the JSON parsed from the YouTube pages static HTML
         :type captions_json: dict
         :return: the created TranscriptList
-        :rtype TranscriptList
+        :rtype TranscriptList:
         """
         translation_languages = [
             {
@@ -108,14 +120,18 @@ class TranscriptList():
                 caption['name']['simpleText'],
                 caption['languageCode'],
                 caption.get('kind', '') == 'asr',
-                translation_languages if caption['isTranslatable'] else []
+                translation_languages if caption.get('isTranslatable', False) else []
             )
 
         return TranscriptList(
             video_id,
             manually_created_transcripts,
             generated_transcripts,
+            translation_languages,
         )
+
+    def __iter__(self):
+        return iter(list(self._manually_created_transcripts.values()) + list(self._generated_transcripts.values()))
 
     def find_transcript(self, language_codes):
         """
@@ -126,9 +142,9 @@ class TranscriptList():
         :param language_codes: A list of language codes in a descending priority. For example, if this is set to
         ['de', 'en'] it will first try to fetch the german transcript (de) and then fetch the english transcript (en) if
         it fails to do so.
-        :type languages: [str]
+        :type languages: list[str]
         :return: the found Transcript
-        :rtype: Transcript
+        :rtype Transcript:
         :raises: NoTranscriptFound
         """
         return self._find_transcript(language_codes, [self._manually_created_transcripts, self._generated_transcripts])
@@ -140,9 +156,9 @@ class TranscriptList():
         :param language_codes: A list of language codes in a descending priority. For example, if this is set to
         ['de', 'en'] it will first try to fetch the german transcript (de) and then fetch the english transcript (en) if
         it fails to do so.
-        :type languages: [str]
+        :type languages: list[str]
         :return: the found Transcript
-        :rtype: Transcript
+        :rtype Transcript:
         :raises: NoTranscriptFound
         """
         return self._find_transcript(language_codes, [self._generated_transcripts,])
@@ -154,9 +170,9 @@ class TranscriptList():
         :param language_codes: A list of language codes in a descending priority. For example, if this is set to
         ['de', 'en'] it will first try to fetch the german transcript (de) and then fetch the english transcript (en) if
         it fails to do so.
-        :type languages: [str]
+        :type languages: list[str]
         :return: the found Transcript
-        :rtype: Transcript
+        :rtype Transcript:
         :raises: NoTranscriptFound
         """
         return self._find_transcript(language_codes, [self._manually_created_transcripts,])
@@ -179,22 +195,28 @@ class TranscriptList():
             '(MANUALLY CREATED)\n'
             '{available_manually_created_transcript_languages}\n\n'
             '(GENERATED)\n'
-            '{available_generated_transcripts}'
+            '{available_generated_transcripts}\n\n'
+            '(TRANSLATION LANGUAGES)\n'
+            '{available_translation_languages}'
         ).format(
             video_id=self.video_id,
             available_manually_created_transcript_languages=self._get_language_description(
-                self._manually_created_transcripts.values()
+                str(transcript) for transcript in self._manually_created_transcripts.values()
             ),
             available_generated_transcripts=self._get_language_description(
-                self._generated_transcripts.values()
+                str(transcript) for transcript in self._generated_transcripts.values()
             ),
+            available_translation_languages=self._get_language_description(
+                '{language_code} ("{language}")'.format(
+                    language=translation_language['language'],
+                    language_code=translation_language['language_code'],
+                ) for translation_language in self._translation_languages
+            )
         )
 
-    def _get_language_description(self, transcripts):
-        return '\n'.join(
-            ' - {transcript}'.format(transcript=str(transcript))
-            for transcript in transcripts
-        ) if transcripts else 'None'
+    def _get_language_description(self, transcript_strings):
+        description = '\n'.join(' - {transcript}'.format(transcript=transcript) for transcript in transcript_strings)
+        return description if description else 'None'
 
 
 class Transcript():
@@ -220,45 +242,49 @@ class Transcript():
         self.language_code = language_code
         self.is_generated = is_generated
         self.translation_languages = translation_languages
+        self._translation_languages_dict = {
+            translation_language['language_code']: translation_language['language']
+            for translation_language in translation_languages
+        }
 
     def fetch(self):
         """
         Loads the actual transcript data.
 
         :return: a list of dictionaries containing the 'text', 'start' and 'duration' keys
-        :rtype: [{'text': str, 'start': float, 'end': float}]
+        :rtype [{'text': str, 'start': float, 'end': float}]:
         """
         return _TranscriptParser().parse(
             self._http_client.get(self._url).text
         )
 
     def __str__(self):
-        return '{language_code} ("{language}")'.format(
+        return '{language_code} ("{language}"){translation_description}'.format(
             language=self.language,
             language_code=self.language_code,
+            translation_description='[TRANSLATABLE]' if self.is_translatable else ''
         )
 
-# TODO integrate translations in future release
-#     @property
-#     def is_translatable(self):
-#         return len(self.translation_languages) > 0
-#
-#
-# class TranslatableTranscript(Transcript):
-#     def __init__(self, http_client, url, translation_languages):
-#         super(TranslatableTranscript, self).__init__(http_client, url)
-#         self._translation_languages = translation_languages
-#         self._translation_language_codes = {language['language_code'] for language in translation_languages}
-#
-#
-#     def translate(self, language_code):
-#         if language_code not in self._translation_language_codes:
-#             raise TranslatableTranscript.TranslationLanguageNotAvailable()
-#
-#         return Transcript(
-#             self._http_client,
-#             '{url}&tlang={language_code}'.format(url=self._url, language_code=language_code)
-#         )
+    @property
+    def is_translatable(self):
+        return len(self.translation_languages) > 0
+
+    def translate(self, language_code):
+        if not self.is_translatable:
+            raise NotTranslatable(self.video_id)
+
+        if language_code not in self._translation_languages_dict:
+            raise TranslationLanguageNotAvailable(self.video_id)
+
+        return Transcript(
+            self._http_client,
+            self.video_id,
+            '{url}&tlang={language_code}'.format(url=self._url, language_code=language_code),
+            self._translation_languages_dict[language_code],
+            language_code,
+            True,
+            [],
+        )
 
 
 class _TranscriptParser():
@@ -269,7 +295,7 @@ class _TranscriptParser():
             {
                 'text': re.sub(self.HTML_TAG_REGEX, '', unescape(xml_element.text)),
                 'start': float(xml_element.attrib['start']),
-                'duration': float(xml_element.attrib['dur']),
+                'duration': float(xml_element.attrib.get('dur', '0.0')),
             }
             for xml_element in ElementTree.fromstring(plain_data)
             if xml_element.text is not None

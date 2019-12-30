@@ -11,7 +11,7 @@ class CouldNotRetrieveTranscript(Exception):
     GITHUB_REFERRAL = (
         '\n\nIf you are sure that the described cause is not responsible for this error '
         'and that a transcript should be retrievable, please create an issue at '
-        'https://github.com/jdepoix/youtube-transcript-api/issues.'
+        'https://github.com/jdepoix/youtube-transcript-api/issues. '
         'Please add which version of youtube_transcript_api you are using '
         'and provide the information needed to replicate the error. '
         'Also make sure that there are no open issues which already describe your problem!'
@@ -41,6 +41,18 @@ class VideoUnavailable(CouldNotRetrieveTranscript):
 
 class TranscriptsDisabled(CouldNotRetrieveTranscript):
     CAUSE_MESSAGE = 'Subtitles are disabled for this video'
+
+
+class NoTranscriptAvailable(CouldNotRetrieveTranscript):
+    CAUSE_MESSAGE = 'No transcripts are available for this video'
+
+
+class NotTranslatable(CouldNotRetrieveTranscript):
+    CAUSE_MESSAGE = 'The requested language is not translatable'
+
+
+class TranslationLanguageNotAvailable(CouldNotRetrieveTranscript):
+    CAUSE_MESSAGE = 'The requested translation language is not available'
 
 
 class NoTranscriptFound(CouldNotRetrieveTranscript):
