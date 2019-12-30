@@ -95,7 +95,7 @@ class TranscriptList():
         :param captions_json: the JSON parsed from the YouTube pages static HTML
         :type captions_json: dict
         :return: the created TranscriptList
-        :rtype TranscriptList
+        :rtype TranscriptList:
         """
         translation_languages = [
             {
@@ -142,9 +142,9 @@ class TranscriptList():
         :param language_codes: A list of language codes in a descending priority. For example, if this is set to
         ['de', 'en'] it will first try to fetch the german transcript (de) and then fetch the english transcript (en) if
         it fails to do so.
-        :type languages: [str]
+        :type languages: list[str]
         :return: the found Transcript
-        :rtype: Transcript
+        :rtype Transcript:
         :raises: NoTranscriptFound
         """
         return self._find_transcript(language_codes, [self._manually_created_transcripts, self._generated_transcripts])
@@ -156,9 +156,9 @@ class TranscriptList():
         :param language_codes: A list of language codes in a descending priority. For example, if this is set to
         ['de', 'en'] it will first try to fetch the german transcript (de) and then fetch the english transcript (en) if
         it fails to do so.
-        :type languages: [str]
+        :type languages: list[str]
         :return: the found Transcript
-        :rtype: Transcript
+        :rtype Transcript:
         :raises: NoTranscriptFound
         """
         return self._find_transcript(language_codes, [self._generated_transcripts,])
@@ -170,9 +170,9 @@ class TranscriptList():
         :param language_codes: A list of language codes in a descending priority. For example, if this is set to
         ['de', 'en'] it will first try to fetch the german transcript (de) and then fetch the english transcript (en) if
         it fails to do so.
-        :type languages: [str]
+        :type languages: list[str]
         :return: the found Transcript
-        :rtype: Transcript
+        :rtype Transcript:
         :raises: NoTranscriptFound
         """
         return self._find_transcript(language_codes, [self._manually_created_transcripts,])
@@ -252,7 +252,7 @@ class Transcript():
         Loads the actual transcript data.
 
         :return: a list of dictionaries containing the 'text', 'start' and 'duration' keys
-        :rtype: [{'text': str, 'start': float, 'end': float}]
+        :rtype [{'text': str, 'start': float, 'end': float}]:
         """
         return _TranscriptParser().parse(
             self._http_client.get(self._url).text
