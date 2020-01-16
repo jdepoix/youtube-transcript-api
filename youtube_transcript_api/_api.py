@@ -1,11 +1,15 @@
 import requests
+try:
+    import http.cookiejar as cookiejar
+except ImportError:
+    import cookielib as cookiejar
 
 from ._transcripts import TranscriptListFetcher
 
 
 class YouTubeTranscriptApi():
     @classmethod
-    def list_transcripts(cls, video_id, proxies=None):
+    def list_transcripts(cls, video_id, proxies=None, cookies=None):
         """
         Retrieves the list of transcripts which are available for a given video. It returns a `TranscriptList` object
         which is iterable and provides methods to filter the list of transcripts for specific languages. While iterating
@@ -51,12 +55,17 @@ class YouTubeTranscriptApi():
         :return: the list of available transcripts
         :rtype TranscriptList:
         """
+        print(cookies)
         with requests.Session() as http_client:
+            if cookies:
+                cj = cookiejar.MozillaCookieJar()
+                cj.load(cookies)
+                http_client.cookies = cj
             http_client.proxies = proxies if proxies else {}
             return TranscriptListFetcher(http_client).fetch(video_id)
 
     @classmethod
-    def get_transcripts(cls, video_ids, languages=('en',), continue_after_error=False, proxies=None):
+    def get_transcripts(cls, video_ids, languages=('en',), continue_after_error=False, proxies=None, cookies=None):
         """
         Retrieves the transcripts for a list of videos.
 
@@ -80,7 +89,7 @@ class YouTubeTranscriptApi():
 
         for video_id in video_ids:
             try:
-                data[video_id] = cls.get_transcript(video_id, languages, proxies)
+                data[video_id] = cls.get_transcript(video_id, languages, proxies, cookies)
             except Exception as exception:
                 if not continue_after_error:
                     raise exception
@@ -90,7 +99,7 @@ class YouTubeTranscriptApi():
         return data, unretrievable_videos
 
     @classmethod
-    def get_transcript(cls, video_id, languages=('en',), proxies=None):
+    def get_transcript(cls, video_id, languages=('en',), proxies=None, cookies=None):
         """
         Retrieves the transcript for a single video. This is just a shortcut for calling::
 
@@ -107,4 +116,4 @@ class YouTubeTranscriptApi():
         :return: a list of dictionaries containing the 'text', 'start' and 'duration' keys
         :rtype [{'text': str, 'start': float, 'end': float}]:
         """
-        return cls.list_transcripts(video_id, proxies).find_transcript(languages).fetch()
+        return cls.list_transcripts(video_id, proxies, cookies).find_transcript(languages).fetch()
