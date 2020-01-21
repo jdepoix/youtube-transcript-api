@@ -159,8 +159,8 @@ class TestYouTubeTranscriptApi(TestCase):
 
         YouTubeTranscriptApi.get_transcripts([video_id_1, video_id_2], languages=languages)
 
-        YouTubeTranscriptApi.get_transcript.assert_any_call(video_id_1, languages, None)
-        YouTubeTranscriptApi.get_transcript.assert_any_call(video_id_2, languages, None)
+        YouTubeTranscriptApi.get_transcript.assert_any_call(video_id_1, languages, None, None)
+        YouTubeTranscriptApi.get_transcript.assert_any_call(video_id_2, languages, None, None)
         self.assertEqual(YouTubeTranscriptApi.get_transcript.call_count, 2)
 
     def test_get_transcripts__stop_on_error(self):
@@ -176,15 +176,21 @@ class TestYouTubeTranscriptApi(TestCase):
 
         YouTubeTranscriptApi.get_transcripts(['video_id_1', 'video_id_2'], continue_after_error=True)
 
-        YouTubeTranscriptApi.get_transcript.assert_any_call(video_id_1, ('en',), None)
-        YouTubeTranscriptApi.get_transcript.assert_any_call(video_id_2, ('en',), None)
+        YouTubeTranscriptApi.get_transcript.assert_any_call(video_id_1, ('en',), None, None)
+        YouTubeTranscriptApi.get_transcript.assert_any_call(video_id_2, ('en',), None, None)
+   
+    def test_get_transcripts__check_cookies(self):
+        cookies='example_cookies.txt'
+        YouTubeTranscriptApi.get_transcript = MagicMock()
+        YouTubeTranscriptApi.get_transcripts(['GJLlxj_dtq8'], cookies=cookies)
+        YouTubeTranscriptApi.get_transcript.assert_any_call('GJLlxj_dtq8', ('en',), None, cookies)
+        
 
     def test_get_transcript__with_proxies(self):
         proxies = {'http': '', 'https:': ''}
         transcript = YouTubeTranscriptApi.get_transcript(
             'GJLlxj_dtq8', proxies=proxies
         )
-
         self.assertEqual(
             transcript,
             [
@@ -195,4 +201,4 @@ class TestYouTubeTranscriptApi(TestCase):
         )
         YouTubeTranscriptApi.get_transcript = MagicMock()
         YouTubeTranscriptApi.get_transcripts(['GJLlxj_dtq8'], proxies=proxies)
-        YouTubeTranscriptApi.get_transcript.assert_any_call('GJLlxj_dtq8', ('en',), proxies)
+        YouTubeTranscriptApi.get_transcript.assert_any_call('GJLlxj_dtq8', ('en',), proxies, None)

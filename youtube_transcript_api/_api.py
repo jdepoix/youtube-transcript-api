@@ -52,15 +52,22 @@ class YouTubeTranscriptApi():
         :type video_id: str
         :param proxies: a dictionary mapping of http and https proxies to be used for the network requests
         :type proxies: {'http': str, 'https': str} - http://docs.python-requests.org/en/master/user/advanced/#proxies
+        :param cookies: a string of the path to a text file containing youtube authorization cookies
+        :type cookies: str - cookies.txt
         :return: the list of available transcripts
         :rtype TranscriptList:
         """
-        print(cookies)
         with requests.Session() as http_client:
             if cookies:
-                cj = cookiejar.MozillaCookieJar()
-                cj.load(cookies)
-                http_client.cookies = cj
+                try:
+                    cj = cookiejar.MozillaCookieJar()
+                    cj.load(cookies)
+                    http_client.cookies = cj
+                except IOError as e:
+                    print("Warning: Path for cookies file was not valid. Did not load any cookies")
+                except FileNotFoundError as e:
+                    print("Warning: Path for cookies file was not valid. Did not load any cookies")
+            
             http_client.proxies = proxies if proxies else {}
             return TranscriptListFetcher(http_client).fetch(video_id)
 
@@ -80,6 +87,8 @@ class YouTubeTranscriptApi():
         :type continue_after_error: bool
         :param proxies: a dictionary mapping of http and https proxies to be used for the network requests
         :type proxies: {'http': str, 'https': str} - http://docs.python-requests.org/en/master/user/advanced/#proxies
+        :param cookies: a string of the path to a text file containing youtube authorization cookies
+        :type cookies: str - cookies.txt
         :return: a tuple containing a dictionary mapping video ids onto their corresponding transcripts, and a list of
         video ids, which could not be retrieved
         :rtype ({str: [{'text': str, 'start': float, 'end': float}]}, [str]}):
@@ -113,6 +122,8 @@ class YouTubeTranscriptApi():
         :type languages: list[str]
         :param proxies: a dictionary mapping of http and https proxies to be used for the network requests
         :type proxies: {'http': str, 'https': str} - http://docs.python-requests.org/en/master/user/advanced/#proxies
+        :param cookies: a string of the path to a text file containing youtube authorization cookies
+        :type cookies: str - cookies.txt
         :return: a list of dictionaries containing the 'text', 'start' and 'duration' keys
         :rtype [{'text': str, 'start': float, 'end': float}]:
         """

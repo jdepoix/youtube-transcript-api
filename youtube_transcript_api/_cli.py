@@ -21,12 +21,14 @@ class YouTubeTranscriptCli():
         if parsed_args.http_proxy != '' or parsed_args.https_proxy != '':
             proxies = {"http": parsed_args.http_proxy, "https": parsed_args.https_proxy}
 
+        cookies = parsed_args.cookies
+
         transcripts = []
         exceptions = []
 
         for video_id in parsed_args.video_ids:
             try:
-                transcripts.append(self._fetch_transcript(parsed_args, proxies, video_id))
+                transcripts.append(self._fetch_transcript(parsed_args, proxies, cookies, video_id))
             except Exception as exception:
                 exceptions.append(exception)
 
@@ -35,8 +37,8 @@ class YouTubeTranscriptCli():
             + ([json.dumps(transcripts) if parsed_args.json else pprint.pformat(transcripts)] if transcripts else [])
         )
 
-    def _fetch_transcript(self, parsed_args, proxies, video_id):
-        transcript_list = YouTubeTranscriptApi.list_transcripts(video_id, proxies=proxies)
+    def _fetch_transcript(self, parsed_args, proxies, cookies, video_id):
+        transcript_list = YouTubeTranscriptApi.list_transcripts(video_id, proxies=proxies, cookies=cookies)
 
         if parsed_args.list_transcripts:
             return str(transcript_list)
@@ -123,5 +125,10 @@ class YouTubeTranscriptCli():
             metavar='URL',
             help='Use the specified HTTPS proxy.'
         )
-
+        parser.add_argument(
+            '--cookies',
+            default=None,
+            help='The cookie file that will be used for authorization with youtube.'
+        )
+            
         return parser.parse_args(self._args)

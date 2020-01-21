@@ -164,8 +164,8 @@ class TestYouTubeTranscriptCli(TestCase):
     def test_run(self):
         YouTubeTranscriptCli('v1 v2 --languages de en'.split()).run()
 
-        YouTubeTranscriptApi.list_transcripts.assert_any_call('v1', proxies=None)
-        YouTubeTranscriptApi.list_transcripts.assert_any_call('v2', proxies=None)
+        YouTubeTranscriptApi.list_transcripts.assert_any_call('v1', proxies=None, cookies=None)
+        YouTubeTranscriptApi.list_transcripts.assert_any_call('v2', proxies=None, cookies=None)
 
         self.transcript_list_mock.find_transcript.assert_any_call(['de', 'en'])
 
@@ -200,8 +200,8 @@ class TestYouTubeTranscriptCli(TestCase):
     def test_run__list_transcripts(self):
         YouTubeTranscriptCli('--list-transcripts v1 v2'.split()).run()
 
-        YouTubeTranscriptApi.list_transcripts.assert_any_call('v1', proxies=None)
-        YouTubeTranscriptApi.list_transcripts.assert_any_call('v2', proxies=None)
+        YouTubeTranscriptApi.list_transcripts.assert_any_call('v1', proxies=None, cookies=None)
+        YouTubeTranscriptApi.list_transcripts.assert_any_call('v2', proxies=None, cookies=None)
 
     def test_run__json_output(self):
         output = YouTubeTranscriptCli('v1 v2 --languages de en --json'.split()).run()
@@ -220,10 +220,23 @@ class TestYouTubeTranscriptCli(TestCase):
 
         YouTubeTranscriptApi.list_transcripts.assert_any_call(
             'v1',
-            proxies={'http': 'http://user:pass@domain:port', 'https': 'https://user:pass@domain:port'}
+            proxies={'http': 'http://user:pass@domain:port', 'https': 'https://user:pass@domain:port'},
+            cookies= None
         )
 
         YouTubeTranscriptApi.list_transcripts.assert_any_call(
             'v2',
-            proxies={'http': 'http://user:pass@domain:port', 'https': 'https://user:pass@domain:port'}
+            proxies={'http': 'http://user:pass@domain:port', 'https': 'https://user:pass@domain:port'},
+            cookies=None
         )
+
+    def test_run__cookies(self):
+        YouTubeTranscriptCli(
+            (
+                'v1 v2 --languages de en '
+                '--cookies blahblah.txt'
+            ).split()
+        ).run()
+        YouTubeTranscriptApi.list_transcripts.assert_any_call('v1', proxies=None, cookies='blahblah.txt')
+        YouTubeTranscriptApi.list_transcripts.assert_any_call('v2', proxies=None, cookies='blahblah.txt')
+
