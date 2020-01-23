@@ -53,20 +53,13 @@ class YouTubeTranscriptApi():
         :param proxies: a dictionary mapping of http and https proxies to be used for the network requests
         :type proxies: {'http': str, 'https': str} - http://docs.python-requests.org/en/master/user/advanced/#proxies
         :param cookies: a string of the path to a text file containing youtube authorization cookies
-        :type cookies: str - cookies.txt
+        :type cookies: str
         :return: the list of available transcripts
         :rtype TranscriptList:
         """
         with requests.Session() as http_client:
             if cookies:
-                try:
-                    cj = cookiejar.MozillaCookieJar()
-                    cj.load(cookies)
-                    http_client.cookies = cj
-                except IOError as e:
-                    print("Warning: Path for cookies file was not valid. Did not load any cookies")
-                except FileNotFoundError as e:
-                    print("Warning: Path for cookies file was not valid. Did not load any cookies")
+                http_client.cookies = cls.load_cookies(cookies)
             
             http_client.proxies = proxies if proxies else {}
             return TranscriptListFetcher(http_client).fetch(video_id)
@@ -88,7 +81,7 @@ class YouTubeTranscriptApi():
         :param proxies: a dictionary mapping of http and https proxies to be used for the network requests
         :type proxies: {'http': str, 'https': str} - http://docs.python-requests.org/en/master/user/advanced/#proxies
         :param cookies: a string of the path to a text file containing youtube authorization cookies
-        :type cookies: str - cookies.txt
+        :type cookies: str
         :return: a tuple containing a dictionary mapping video ids onto their corresponding transcripts, and a list of
         video ids, which could not be retrieved
         :rtype ({str: [{'text': str, 'start': float, 'end': float}]}, [str]}):
@@ -123,8 +116,23 @@ class YouTubeTranscriptApi():
         :param proxies: a dictionary mapping of http and https proxies to be used for the network requests
         :type proxies: {'http': str, 'https': str} - http://docs.python-requests.org/en/master/user/advanced/#proxies
         :param cookies: a string of the path to a text file containing youtube authorization cookies
-        :type cookies: str - cookies.txt
+        :type cookies: str
         :return: a list of dictionaries containing the 'text', 'start' and 'duration' keys
         :rtype [{'text': str, 'start': float, 'end': float}]:
         """
         return cls.list_transcripts(video_id, proxies, cookies).find_transcript(languages).fetch()
+           
+    
+    @classmethod
+    def load_cookies(cls, cookies):
+        cj = {}
+        try:
+            cj = cookiejar.MozillaCookieJar()
+            cj.load(cookies)
+        except IOError as e:
+            print("Warning: Path for cookies file was not valid. Did not load any cookies")
+        except FileNotFoundError as e:
+            print("Warning: Path for cookies file was not valid. Did not load any cookies")
+        if not cj:
+            raise IOError
+        return cj 

@@ -185,6 +185,8 @@ class TestYouTubeTranscriptApi(TestCase):
         YouTubeTranscriptApi.get_transcripts(['GJLlxj_dtq8'], cookies=cookies)
         YouTubeTranscriptApi.get_transcript.assert_any_call('GJLlxj_dtq8', ('en',), None, cookies)
         
+        session_cookies = YouTubeTranscriptApi.load_cookies(cookies)
+        print("here: ", session_cookies.items())
 
     def test_get_transcript__with_proxies(self):
         proxies = {'http': '', 'https:': ''}
