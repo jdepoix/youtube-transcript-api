@@ -6,6 +6,10 @@ except ImportError:
 
 from ._transcripts import TranscriptListFetcher
 
+from ._errors import (
+    CookiePathInvalid,
+    CookiesInvalid
+)
 
 class YouTubeTranscriptApi():
     @classmethod
@@ -60,7 +64,6 @@ class YouTubeTranscriptApi():
         with requests.Session() as http_client:
             if cookies:
                 http_client.cookies = cls.load_cookies(cookies)
-            
             http_client.proxies = proxies if proxies else {}
             return TranscriptListFetcher(http_client).fetch(video_id)
 
@@ -121,7 +124,6 @@ class YouTubeTranscriptApi():
         :rtype [{'text': str, 'start': float, 'end': float}]:
         """
         return cls.list_transcripts(video_id, proxies, cookies).find_transcript(languages).fetch()
-           
     
     @classmethod
     def load_cookies(cls, cookies):
@@ -130,9 +132,9 @@ class YouTubeTranscriptApi():
             cj = cookiejar.MozillaCookieJar()
             cj.load(cookies)
         except IOError as e:
-            print("Warning: Path for cookies file was not valid. Did not load any cookies")
+            raise CookiePathInvalid
         except FileNotFoundError as e:
-            print("Warning: Path for cookies file was not valid. Did not load any cookies")
+            raise CookiePathInvalid
         if not cj:
-            raise IOError
+            raise CookiesInvalid
         return cj 

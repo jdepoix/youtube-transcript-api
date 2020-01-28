@@ -55,6 +55,14 @@ class TranslationLanguageNotAvailable(CouldNotRetrieveTranscript):
     CAUSE_MESSAGE = 'The requested translation language is not available'
 
 
+class CookiePathInvalid(CouldNotRetrieveTranscript):
+    CAUSE_MESSAGE = 'Path to cookie file was not valid'
+
+
+class CookiesInvalid(CouldNotRetrieveTranscript):
+    CAUSE_MESSAGE = 'The cookies provided are not valid (may have expired)'
+
+
 class NoTranscriptFound(CouldNotRetrieveTranscript):
     CAUSE_MESSAGE = (
         'No transcripts were found for any of the requested language codes: {requested_language_codes}\n\n'
