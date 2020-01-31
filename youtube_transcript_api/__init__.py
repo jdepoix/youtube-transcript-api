@@ -8,4 +8,6 @@ from ._errors import (
     NotTranslatable,
     TranslationLanguageNotAvailable,
     NoTranscriptAvailable,
+    CookiePathInvalid,
+    CookiesInvalid
 )

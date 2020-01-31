@@ -1,8 +1,10 @@
 import requests
 try:
     import http.cookiejar as cookiejar
+    CookieLoadError = (FileNotFoundError, cookiejar.LoadError)
 except ImportError:
     import cookielib as cookiejar
+    CookieLoadError = IOError
 
 from ._transcripts import TranscriptListFetcher
 
@@ -63,7 +65,7 @@ class YouTubeTranscriptApi():
         """
         with requests.Session() as http_client:
             if cookies:
-                http_client.cookies = cls.load_cookies(cookies)
+                http_client.cookies = cls._load_cookies(cookies, video_id)
             http_client.proxies = proxies if proxies else {}
             return TranscriptListFetcher(http_client).fetch(video_id)
 
@@ -126,15 +128,13 @@ class YouTubeTranscriptApi():
         return cls.list_transcripts(video_id, proxies, cookies).find_transcript(languages).fetch()
     
     @classmethod
-    def load_cookies(cls, cookies):
-        cj = {}
+    def _load_cookies(cls, cookies, video_id):
+        cookie_jar = {}
         try:
-            cj = cookiejar.MozillaCookieJar()
-            cj.load(cookies)
-        except IOError as e:
-            raise CookiePathInvalid
-        except FileNotFoundError as e:
-            raise CookiePathInvalid
-        if not cj:
-            raise CookiesInvalid
-        return cj 
+            cookie_jar = cookiejar.MozillaCookieJar()
+            cookie_jar.load(cookies)
+        except CookieLoadError:
+            raise CookiePathInvalid(video_id)
+        if not cookie_jar:
+            raise CookiesInvalid(video_id)
+        return cookie_jar 

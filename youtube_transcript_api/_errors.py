@@ -56,7 +56,7 @@ class TranslationLanguageNotAvailable(CouldNotRetrieveTranscript):
 
 
 class CookiePathInvalid(CouldNotRetrieveTranscript):
-    CAUSE_MESSAGE = 'Path to cookie file was not valid'
+    CAUSE_MESSAGE = 'The provided cookie file was unable to be loaded'
 
 
 class CookiesInvalid(CouldNotRetrieveTranscript):
