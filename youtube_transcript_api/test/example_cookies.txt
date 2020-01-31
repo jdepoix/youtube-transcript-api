@@ -1,0 +1,9 @@
+# HTTP Cookie File downloaded with cookies.txt by Genuinous @genuinous
+# This file can be used by wget, curl, aria2c and other standard compliant tools.
+# Usage Examples:
+#   1) wget -x --load-cookies cookies.txt "https://www.youtube.com/"
+#   2) curl --cookie cookies.txt "https://www.youtube.com/"
+#   3) aria2c --load-cookies cookies.txt "https://www.youtube.com/"
+#
+.example.com	TRUE	/	TRUE	3594431874	TEST_FIELD	TEST_VALUE
+.example.com	TRUE	/	TRUE	31874	BAD_TEST_FIELD	BAD_TEST_VALUE

@@ -1,11 +1,21 @@
 import requests
+try:
+    import http.cookiejar as cookiejar
+    CookieLoadError = (FileNotFoundError, cookiejar.LoadError)
+except ImportError:
+    import cookielib as cookiejar
+    CookieLoadError = IOError
 
 from ._transcripts import TranscriptListFetcher
 
+from ._errors import (
+    CookiePathInvalid,
+    CookiesInvalid
+)
 
 class YouTubeTranscriptApi():
     @classmethod
-    def list_transcripts(cls, video_id, proxies=None):
+    def list_transcripts(cls, video_id, proxies=None, cookies=None):
         """
         Retrieves the list of transcripts which are available for a given video. It returns a `TranscriptList` object
         which is iterable and provides methods to filter the list of transcripts for specific languages. While iterating
@@ -48,15 +58,19 @@ class YouTubeTranscriptApi():
         :type video_id: str
         :param proxies: a dictionary mapping of http and https proxies to be used for the network requests
         :type proxies: {'http': str, 'https': str} - http://docs.python-requests.org/en/master/user/advanced/#proxies
+        :param cookies: a string of the path to a text file containing youtube authorization cookies
+        :type cookies: str
         :return: the list of available transcripts
         :rtype TranscriptList:
         """
         with requests.Session() as http_client:
+            if cookies:
+                http_client.cookies = cls._load_cookies(cookies, video_id)
             http_client.proxies = proxies if proxies else {}
             return TranscriptListFetcher(http_client).fetch(video_id)
 
     @classmethod
-    def get_transcripts(cls, video_ids, languages=('en',), continue_after_error=False, proxies=None):
+    def get_transcripts(cls, video_ids, languages=('en',), continue_after_error=False, proxies=None, cookies=None):
         """
         Retrieves the transcripts for a list of videos.
 
@@ -71,6 +85,8 @@ class YouTubeTranscriptApi():
         :type continue_after_error: bool
         :param proxies: a dictionary mapping of http and https proxies to be used for the network requests
         :type proxies: {'http': str, 'https': str} - http://docs.python-requests.org/en/master/user/advanced/#proxies
+        :param cookies: a string of the path to a text file containing youtube authorization cookies
+        :type cookies: str
         :return: a tuple containing a dictionary mapping video ids onto their corresponding transcripts, and a list of
         video ids, which could not be retrieved
         :rtype ({str: [{'text': str, 'start': float, 'end': float}]}, [str]}):
@@ -80,7 +96,7 @@ class YouTubeTranscriptApi():
 
         for video_id in video_ids:
             try:
-                data[video_id] = cls.get_transcript(video_id, languages, proxies)
+                data[video_id] = cls.get_transcript(video_id, languages, proxies, cookies)
             except Exception as exception:
                 if not continue_after_error:
                     raise exception
@@ -90,7 +106,7 @@ class YouTubeTranscriptApi():
         return data, unretrievable_videos
 
     @classmethod
-    def get_transcript(cls, video_id, languages=('en',), proxies=None):
+    def get_transcript(cls, video_id, languages=('en',), proxies=None, cookies=None):
         """
         Retrieves the transcript for a single video. This is just a shortcut for calling::
 
@@ -104,7 +120,21 @@ class YouTubeTranscriptApi():
         :type languages: list[str]
         :param proxies: a dictionary mapping of http and https proxies to be used for the network requests
         :type proxies: {'http': str, 'https': str} - http://docs.python-requests.org/en/master/user/advanced/#proxies
+        :param cookies: a string of the path to a text file containing youtube authorization cookies
+        :type cookies: str
         :return: a list of dictionaries containing the 'text', 'start' and 'duration' keys
         :rtype [{'text': str, 'start': float, 'end': float}]:
         """
-        return cls.list_transcripts(video_id, proxies).find_transcript(languages).fetch()
+        return cls.list_transcripts(video_id, proxies, cookies).find_transcript(languages).fetch()
+    
+    @classmethod
+    def _load_cookies(cls, cookies, video_id):
+        cookie_jar = {}
+        try:
+            cookie_jar = cookiejar.MozillaCookieJar()
+            cookie_jar.load(cookies)
+        except CookieLoadError:
+            raise CookiePathInvalid(video_id)
+        if not cookie_jar:
+            raise CookiesInvalid(video_id)
+        return cookie_jar 
