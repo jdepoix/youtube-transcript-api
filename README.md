@@ -124,7 +124,7 @@ print(translated_transcript.fetch())
 ### By example
 ```python
 # retrieve the available transcripts
-transcript_list = YouTubeTranscriptApi.get('video_id')
+transcript_list = YouTubeTranscriptApi.list_transcripts('video_id')
 
 # iterate over all available transcripts
 for transcript in transcript_list:
