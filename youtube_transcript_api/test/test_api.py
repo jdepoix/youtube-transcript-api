@@ -1,6 +1,6 @@
 from unittest import TestCase
 from mock import patch
-
+import json
 import os
 
 import requests
@@ -21,7 +21,10 @@ from youtube_transcript_api import (
 
 
 def load_asset(filename):
-    with open('{dirname}/assets/{filename}'.format(dirname=os.path.dirname(__file__), filename=filename)) as file:
+    filepath = '{dirname}/assets/{filename}'.format(
+                dirname=os.path.dirname(__file__), filename=filename)
+    
+    with open(filepath, 'r', encoding='utf-8') as file:
         return file.read()
 
 
@@ -47,11 +50,11 @@ class TestYouTubeTranscriptApi(TestCase):
 
         self.assertEqual(
             transcript,
-            [
+            json.dumps([
                 {'text': 'Hey, this is just a test', 'start': 0.0, 'duration': 1.54},
                 {'text': 'this is not the original transcript', 'start': 1.54, 'duration': 4.16},
                 {'text': 'just something shorter, I made up for testing', 'start': 5.7, 'duration': 3.239}
-            ]
+            ])
         )
 
     def test_list_transcripts(self):
@@ -158,15 +161,15 @@ class TestYouTubeTranscriptApi(TestCase):
     def test_get_transcript__with_proxy(self):
         proxies = {'http': '', 'https:': ''}
         transcript = YouTubeTranscriptApi.get_transcript(
-            'GJLlxj_dtq8', proxies=proxies
+            'GJLlxj_dtq8', proxies=proxies, format=None
         )
         self.assertEqual(
             transcript,
-            [
+            json.dumps([
                 {'text': 'Hey, this is just a test', 'start': 0.0, 'duration': 1.54},
                 {'text': 'this is not the original transcript', 'start': 1.54, 'duration': 4.16},
                 {'text': 'just something shorter, I made up for testing', 'start': 5.7, 'duration': 3.239}
-            ]
+            ])
         )
     
     def test_get_transcript__with_cookies(self):
@@ -176,11 +179,11 @@ class TestYouTubeTranscriptApi(TestCase):
 
         self.assertEqual(
             transcript,
-            [
+            json.dumps([
                 {'text': 'Hey, this is just a test', 'start': 0.0, 'duration': 1.54},
                 {'text': 'this is not the original transcript', 'start': 1.54, 'duration': 4.16},
                 {'text': 'just something shorter, I made up for testing', 'start': 5.7, 'duration': 3.239}
-            ]
+            ])
         )
 
     @patch('youtube_transcript_api.YouTubeTranscriptApi.get_transcript')
@@ -191,8 +194,8 @@ class TestYouTubeTranscriptApi(TestCase):
 
         YouTubeTranscriptApi.get_transcripts([video_id_1, video_id_2], languages=languages)
 
-        mock_get_transcript.assert_any_call(video_id_1, languages, None, None)
-        mock_get_transcript.assert_any_call(video_id_2, languages, None, None)
+        mock_get_transcript.assert_any_call(video_id_1, languages, None, None, format=None)
+        mock_get_transcript.assert_any_call(video_id_2, languages, None, None, format=None)
         self.assertEqual(mock_get_transcript.call_count, 2)
 
     @patch('youtube_transcript_api.YouTubeTranscriptApi.get_transcript', side_effect=Exception('Error'))
@@ -207,20 +210,20 @@ class TestYouTubeTranscriptApi(TestCase):
 
         YouTubeTranscriptApi.get_transcripts(['video_id_1', 'video_id_2'], continue_after_error=True)
 
-        mock_get_transcript.assert_any_call(video_id_1, ('en',), None, None)
-        mock_get_transcript.assert_any_call(video_id_2, ('en',), None, None)
+        mock_get_transcript.assert_any_call(video_id_1, ('en',), None, None, format=None)
+        mock_get_transcript.assert_any_call(video_id_2, ('en',), None, None, format=None)
     
     @patch('youtube_transcript_api.YouTubeTranscriptApi.get_transcript')
     def test_get_transcripts__with_cookies(self, mock_get_transcript):
         cookies = '/example_cookies.txt'
         YouTubeTranscriptApi.get_transcripts(['GJLlxj_dtq8'], cookies=cookies)
-        mock_get_transcript.assert_any_call('GJLlxj_dtq8', ('en',), None, cookies)
+        mock_get_transcript.assert_any_call('GJLlxj_dtq8', ('en',), None, cookies, format=None)
 
     @patch('youtube_transcript_api.YouTubeTranscriptApi.get_transcript')
     def test_get_transcripts__with_proxies(self, mock_get_transcript):
         proxies = {'http': '', 'https:': ''}
         YouTubeTranscriptApi.get_transcripts(['GJLlxj_dtq8'], proxies=proxies)
-        mock_get_transcript.assert_any_call('GJLlxj_dtq8', ('en',), proxies, None)
+        mock_get_transcript.assert_any_call('GJLlxj_dtq8', ('en',), proxies, None, format=None)
 
     def test_load_cookies(self):
         dirname, filename = os.path.split(os.path.abspath(__file__))
