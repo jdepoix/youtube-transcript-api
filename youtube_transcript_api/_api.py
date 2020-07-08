@@ -131,8 +131,8 @@ class YouTubeTranscriptApi():
         :rtype [{'text': str, 'start': float, 'end': float}]:
         """
         Formatter = formats.get_formatter(format)
-        transcript = cls.list_transcripts(video_id, proxies, cookies,
-                        format=format).find_transcript(languages).fetch()
+        transcript = cls.list_transcripts(
+            video_id,proxies, cookies).find_transcript(languages).fetch()
         return ''.join(Formatter.format(transcript))
     
     @classmethod
