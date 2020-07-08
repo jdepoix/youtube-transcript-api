@@ -12,6 +12,8 @@ from ._errors import (
     CookiePathInvalid,
     CookiesInvalid
 )
+from .formatters import formats
+
 
 class YouTubeTranscriptApi():
     @classmethod
@@ -70,7 +72,8 @@ class YouTubeTranscriptApi():
             return TranscriptListFetcher(http_client).fetch(video_id)
 
     @classmethod
-    def get_transcripts(cls, video_ids, languages=('en',), continue_after_error=False, proxies=None, cookies=None):
+    def get_transcripts(cls, video_ids, languages=('en',),
+            continue_after_error=False, proxies=None, cookies=None, format=None):
         """
         Retrieves the transcripts for a list of videos.
 
@@ -96,7 +99,8 @@ class YouTubeTranscriptApi():
 
         for video_id in video_ids:
             try:
-                data[video_id] = cls.get_transcript(video_id, languages, proxies, cookies)
+                data[video_id] = cls.get_transcript(video_id, languages,
+                                    proxies, cookies, format=format)
             except Exception as exception:
                 if not continue_after_error:
                     raise exception
@@ -106,7 +110,8 @@ class YouTubeTranscriptApi():
         return data, unretrievable_videos
 
     @classmethod
-    def get_transcript(cls, video_id, languages=('en',), proxies=None, cookies=None):
+    def get_transcript(cls, video_id, languages=('en',), proxies=None,
+            cookies=None, format=None):
         """
         Retrieves the transcript for a single video. This is just a shortcut for calling::
 
@@ -125,7 +130,10 @@ class YouTubeTranscriptApi():
         :return: a list of dictionaries containing the 'text', 'start' and 'duration' keys
         :rtype [{'text': str, 'start': float, 'end': float}]:
         """
-        return cls.list_transcripts(video_id, proxies, cookies).find_transcript(languages).fetch()
+        Formatter = formats.get_formatter(format)
+        transcript = cls.list_transcripts(video_id, proxies, cookies,
+                        format=format).find_transcript(languages).fetch()
+        return ''.join(Formatter.format(transcript))
     
     @classmethod
     def _load_cookies(cls, cookies, video_id):
