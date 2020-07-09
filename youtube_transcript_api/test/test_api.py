@@ -50,11 +50,11 @@ class TestYouTubeTranscriptApi(TestCase):
 
         self.assertEqual(
             transcript,
-            json.dumps([
+            [
                 {'text': 'Hey, this is just a test', 'start': 0.0, 'duration': 1.54},
                 {'text': 'this is not the original transcript', 'start': 1.54, 'duration': 4.16},
                 {'text': 'just something shorter, I made up for testing', 'start': 5.7, 'duration': 3.239}
-            ])
+            ]
         )
 
     def test_list_transcripts(self):
@@ -165,11 +165,11 @@ class TestYouTubeTranscriptApi(TestCase):
         )
         self.assertEqual(
             transcript,
-            json.dumps([
+            [
                 {'text': 'Hey, this is just a test', 'start': 0.0, 'duration': 1.54},
                 {'text': 'this is not the original transcript', 'start': 1.54, 'duration': 4.16},
                 {'text': 'just something shorter, I made up for testing', 'start': 5.7, 'duration': 3.239}
-            ])
+            ]
         )
     
     def test_get_transcript__with_cookies(self):
@@ -179,11 +179,11 @@ class TestYouTubeTranscriptApi(TestCase):
 
         self.assertEqual(
             transcript,
-            json.dumps([
+            [
                 {'text': 'Hey, this is just a test', 'start': 0.0, 'duration': 1.54},
                 {'text': 'this is not the original transcript', 'start': 1.54, 'duration': 4.16},
                 {'text': 'just something shorter, I made up for testing', 'start': 5.7, 'duration': 3.239}
-            ])
+            ]
         )
 
     @patch('youtube_transcript_api.YouTubeTranscriptApi.get_transcript')

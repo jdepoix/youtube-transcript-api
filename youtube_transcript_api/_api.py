@@ -133,8 +133,8 @@ class YouTubeTranscriptApi():
         Formatter = formats.get_formatter(format)
         transcript = cls.list_transcripts(
             video_id,proxies, cookies).find_transcript(languages).fetch()
-        return ''.join(Formatter.format(transcript))
-    
+        return Formatter.format(transcript)
+
     @classmethod
     def _load_cookies(cls, cookies, video_id):
         cookie_jar = {}
