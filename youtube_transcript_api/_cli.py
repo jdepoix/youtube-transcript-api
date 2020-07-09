@@ -25,21 +25,24 @@ class YouTubeTranscriptCli():
         transcripts = []
         exceptions = []
 
+        Formatter = formats.get_formatter(parsed_args.format)
+
         for video_id in parsed_args.video_ids:
             try:
-                transcripts.append(self._fetch_transcript(parsed_args, proxies, cookies, video_id))
+                transcript = self._fetch_transcript(
+                    parsed_args, proxies, cookies, video_id)
+                transcripts.append(Formatter.format(transcript))
             except Exception as exception:
                 exceptions.append(exception)
 
-        Formatter = formats.get_formatter(parsed_args.format)
-        results = Formatter.format(transcripts)
-
         return ''.join(
-            [str(exception) for exception in exceptions] + results
+            [str(exception) for exception in exceptions]
+            + ([Formatter.combine(transcripts)] if transcripts else [])
         )
 
     def _fetch_transcript(self, parsed_args, proxies, cookies, video_id):
-        transcript_list = YouTubeTranscriptApi.list_transcripts(video_id, proxies=proxies, cookies=cookies)
+        transcript_list = YouTubeTranscriptApi.list_transcripts(
+                            video_id, proxies=proxies, cookies=cookies)
 
         if parsed_args.list_transcripts:
             return str(transcript_list)
