@@ -1,5 +1,3 @@
-from abc import ABC
-from abc import abstractclassmethod
 from collections import defaultdict
 import json
 import re
@@ -17,17 +15,18 @@ def parse_timecode(time):
     >>> parse_timecode(6.93)
     '00:00:06,930'
     """
+    
     time = float(time)
-    hours, mins, secs = (
-        str(int(time)//3600).rjust(2, '0'),
-        str(int(time)//60).rjust(2, '0'),
-        str(int(time)%60).rjust(2, '0'),
-    )
-    ms = str(int(round((time - int(time))*1000, 2))).rjust(3, '0')
-    return f"{hours}:{mins}:{secs},{ms}"
+    times = {
+        'hours': str(int(time) // 3600).rjust(2, '0'),
+        'mins': str(int(time) // 60).rjust(2, '0'),
+        'secs': str(int(time) % 60).rjust(2, '0'),
+        'ms': str(int(round((time - int(time))*1000, 2))).rjust(3, '0')
+    }
+    return "{hours}:{mins}:{secs},{ms}".format(**times)
 
 
-class TranscriptFormatter(ABC):
+class TranscriptFormatter(object):
     """Abstract Base TranscriptFormatter class
 
     This class should be inherited from to create additional
@@ -51,7 +50,7 @@ class TranscriptFormatter(ABC):
         return cls.DELIMITER.join(
                 str(transcript) for transcript in transcripts)
 
-    @abstractclassmethod
+    @classmethod
     def format(cls, transcript_data):
         """Any subclass must implement this format class method.
 
@@ -61,7 +60,9 @@ class TranscriptFormatter(ABC):
          as a string.
         :rtype: list[str]
         """
-        pass
+        raise NotImplementedError(
+            cls.__name__ + '.format'
+        )
 
 
 class JSONTranscriptFormatter(TranscriptFormatter):
@@ -103,22 +104,20 @@ class SRTTranscriptFormatter(TranscriptFormatter):
         output = []
         for frame, item in enumerate(transcript_data, start=1):
             start_time = float(item.get('start'))
-            duration = float(item.get('dur', '0.0'))
-
-            end_time = parse_timecode(start_time + duration)
-            start_time = parse_timecode(start_time)
+            duration = float(item.get('duration', '0.0'))
 
             output.append("{frame}\n".format(frame=frame))
             output.append("{start_time} --> {end_time}\n".format(
-                start_time=start_time, end_time=end_time))
+                start_time=parse_timecode(start_time),
+                end_time=parse_timecode(start_time + duration)
+            ))
             output.append("{text}".format(text=item.get('text')))
             if frame < len(transcript_data):
                 output.append('\n\n')
-
         return '{}\n'.format(''.join(output))
 
 
-class TranscriptFormatterFactory:
+class TranscriptFormatterFactory(object):
     """A Transcript Class Factory
 
     Allows for adding additional custom Transcript classes for the API
@@ -139,8 +138,10 @@ class TranscriptFormatterFactory:
         :rtype None
         """
         if not issubclass(formatter_class, TranscriptFormatter):
-            raise TypeError(
-                f'{formatter_class} must be a subclass of TranscriptFormatter')
+            raise TypeError((
+                '{0} must be a subclass of TranscriptFormatter'
+                ).format(formatter_class)
+            )
         self._formatters.update({name: formatter_class})
 
     def add_formatters(self, formatters_dict):
