@@ -1,9 +1,10 @@
 import json
 
+import pprint
+
 import argparse
 
 from ._api import YouTubeTranscriptApi
-from .formatters import formats
 
 
 class YouTubeTranscriptCli():
@@ -25,24 +26,19 @@ class YouTubeTranscriptCli():
         transcripts = []
         exceptions = []
 
-        Formatter = formats.get_formatter(parsed_args.format)
-
         for video_id in parsed_args.video_ids:
             try:
-                transcript = self._fetch_transcript(
-                    parsed_args, proxies, cookies, video_id)
-                transcripts.append(Formatter.format(transcript))
+                transcripts.append(self._fetch_transcript(parsed_args, proxies, cookies, video_id))
             except Exception as exception:
                 exceptions.append(exception)
 
-        return ''.join(
+        return '\n\n'.join(
             [str(exception) for exception in exceptions]
-            + ([Formatter.combine(transcripts)] if transcripts else [])
+            + ([json.dumps(transcripts) if parsed_args.json else pprint.pformat(transcripts)] if transcripts else [])
         )
 
     def _fetch_transcript(self, parsed_args, proxies, cookies, video_id):
-        transcript_list = YouTubeTranscriptApi.list_transcripts(
-                            video_id, proxies=proxies, cookies=cookies)
+        transcript_list = YouTubeTranscriptApi.list_transcripts(video_id, proxies=proxies, cookies=cookies)
 
         if parsed_args.list_transcripts:
             return str(transcript_list)
@@ -102,9 +98,11 @@ class YouTubeTranscriptCli():
             help='If this flag is set transcripts which have been manually created will not be retrieved.',
         )
         parser.add_argument(
-            '--format',
-            default=None,
-            help="Use this flag to set which parser format to use, default is 'json'",
+            '--json',
+            action='store_const',
+            const=True,
+            default=False,
+            help='If this flag is set the output will be JSON formatted.',
         )
         parser.add_argument(
             '--translate',
