@@ -1,7 +1,7 @@
 requests==2.24.0
 
 # testing
-mock==4.0.2
+mock==3.0.5
 httpretty==0.9.7
 coverage==5.2.1
-coveralls==2.1.2
+coveralls==1.11.1
