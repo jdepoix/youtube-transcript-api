@@ -70,7 +70,7 @@ YouTubeTranscriptApi.get_transcripts(video_ids, languages=['de', 'en'])
 If you want to list all transcripts which are available for a given video you can call:
 
 ```python
-transcript_list = YouTubeTranscriptApi.list_transcripts(video_id, languages=['de', 'en'])
+transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
 ```
 
 This will return a `TranscriptList` object  which is iterable and provides methods to filter the list of transcripts for specific languages and types, like:
