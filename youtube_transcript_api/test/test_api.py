@@ -21,7 +21,10 @@ from youtube_transcript_api import (
 
 
 def load_asset(filename):
-    with open('{dirname}/assets/{filename}'.format(dirname=os.path.dirname(__file__), filename=filename)) as file:
+    filepath = '{dirname}/assets/{filename}'.format(
+        dirname=os.path.dirname(__file__), filename=filename)
+    
+    with open(filepath, encoding='utf-8') as file:
         return file.read()
 
 
