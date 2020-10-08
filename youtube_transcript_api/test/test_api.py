@@ -24,8 +24,8 @@ def load_asset(filename):
     filepath = '{dirname}/assets/{filename}'.format(
         dirname=os.path.dirname(__file__), filename=filename)
     
-    with open(filepath, encoding='utf-8') as file:
-        return file.read()
+    with open(filepath, mode="rb") as file:
+        return file.read().decode('utf-8')
 
 
 class TestYouTubeTranscriptApi(TestCase):
