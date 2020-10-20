@@ -1,7 +1,7 @@
 
 # YouTube Transcript/Subtitle API (including automatically generated subtitles and subtitle translations)  
-  
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BAENLEW8VUJ6G&source=url) [![Build Status](https://travis-ci.org/jdepoix/youtube-transcript-api.svg)](https://travis-ci.org/jdepoix/youtube-transcript-api) [![Coverage Status](https://coveralls.io/repos/github/jdepoix/youtube-transcript-api/badge.svg?branch=master)](https://coveralls.io/github/jdepoix/youtube-transcript-api?branch=master) [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](http://opensource.org/licenses/MIT) [![image](https://img.shields.io/pypi/v/youtube-transcript-api.svg)](https://pypi.org/project/youtube-transcript-api/) [![image](https://img.shields.io/pypi/pyversions/youtube-transcript-api.svg)](https://pypi.org/project/youtube-transcript-api/)
+
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BAENLEW8VUJ6G&source=url) [![Build Status](https://travis-ci.com/jdepoix/youtube-transcript-api.svg)](https://travis-ci.com/jdepoix/youtube-transcript-api) [![Coverage Status](https://coveralls.io/repos/github/jdepoix/youtube-transcript-api/badge.svg?branch=master)](https://coveralls.io/github/jdepoix/youtube-transcript-api?branch=master) [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](http://opensource.org/licenses/MIT) [![image](https://img.shields.io/pypi/v/youtube-transcript-api.svg)](https://pypi.org/project/youtube-transcript-api/) [![image](https://img.shields.io/pypi/pyversions/youtube-transcript-api.svg)](https://pypi.org/project/youtube-transcript-api/)
 
 This is an python API which allows you to get the transcripts/subtitles for a given YouTube video. It also works for automatically generated subtitles, supports translating subtitles and it does not require a headless browser, like other selenium based solutions do!
 
@@ -147,27 +147,27 @@ for transcript in transcript_list:
 
     # translating the transcript will return another transcript object
     print(transcript.translate('en').fetch())
-	
+
 # you can also directly filter for the language you are looking for, using the transcript list
 transcript = transcript_list.find_transcript(['de', 'en'])  
-  
+
 # or just filter for manually created transcripts  
 transcript = transcript_list.find_manually_created_transcript(['de', 'en'])  
-  
+
 # or automatically generated ones  
 transcript = transcript_list.find_generated_transcript(['de', 'en'])
 ```
-  
+
 ## CLI  
-  
+
 Execute the CLI script using the video ids as parameters and the results will be printed out to the command line:  
-  
+
 ```  
 youtube_transcript_api <first_video_id> <second_video_id> ...  
 ```  
-  
+
 The CLI also gives you the option to provide a list of preferred languages:  
-  
+
 ```  
 youtube_transcript_api <first_video_id> <second_video_id> ... --languages de en  
 ```
@@ -178,9 +178,9 @@ You can also specify if you want to exclude automatically generated or manually 
 youtube_transcript_api <first_video_id> <second_video_id> ... --languages de en --exclude-generated
 youtube_transcript_api <first_video_id> <second_video_id> ... --languages de en --exclude-manually-created
 ```
-  
+
 If you would prefer to write it into a file or pipe it into another application, you can also output the results as json using the following line:  
-  
+
 ```  
 youtube_transcript_api <first_video_id> <second_video_id> ... --languages de en --json > transcripts.json  
 ```  
@@ -196,21 +196,21 @@ If you are not sure which languages are available for a given video you can call
 ```  
 youtube_transcript_api --list-transcripts <first_video_id>
 ```  
-  
+
 ## Proxy  
-  
+
 You can specify a https/http proxy, which will be used during the requests to YouTube:  
-  
+
 ```python  
 from youtube_transcript_api import YouTubeTranscriptApi  
-  
+
 YouTubeTranscriptApi.get_transcript(video_id, proxies={"http": "http://user:pass@domain:port", "https": "https://user:pass@domain:port"})  
 ```  
-  
+
 As the `proxies` dict is passed on to the `requests.get(...)` call, it follows the [format used by the requests library](http://docs.python-requests.org/en/master/user/advanced/#proxies).  
-  
+
 Using the CLI:  
-  
+
 ```  
 youtube_transcript_api <first_video_id> <second_video_id> --http-proxy http://user:pass@domain:port --https-proxy https://user:pass@domain:port  
 ```
@@ -219,13 +219,13 @@ youtube_transcript_api <first_video_id> <second_video_id> --http-proxy http://us
 
 Some videos are age restricted, so this module won't be able to access those videos without some sort of authentication. To do this, you will need to have access to the desired video in a browser. Then, you will need to download that pages cookies into a text file. You can use the Chrome extension [cookies.txt](https://chrome.google.com/webstore/detail/cookiestxt/njabckikapfpffapmjgojcnbfjonfjfg?hl=en) or the Firefox extension [cookies.txt](https://addons.mozilla.org/en-US/firefox/addon/cookies-txt/).
 
-Once you have that, you can use it with the module to access age-restricted videos' captions like so. 
+Once you have that, you can use it with the module to access age-restricted videos' captions like so.
 
 ```python  
 from youtube_transcript_api import YouTubeTranscriptApi  
-  
+
 YouTubeTranscriptApi.get_transcript(video_id, cookies='/path/to/your/cookies.txt')
-  
+
 YouTubeTranscriptApi.get_transcripts([video_id], cookies='/path/to/your/cookies.txt')
 ```
 
@@ -235,13 +235,13 @@ Using the CLI:
 youtube_transcript_api <first_video_id> <second_video_id> --cookies /path/to/your/cookies.txt
 ```
 
-  
+
 ## Warning  
-  
+
  This code uses an undocumented part of the YouTube API, which is called by the YouTube web-client. So there is no guarantee that it won't stop working tomorrow, if they change how things work. I will however do my best to make things working again as soon as possible if that happens. So if it stops working, let me know!  
-  
+
 ## Donation  
-  
+
 If this project makes you happy by reducing your development time, you can make me happy by treating me to a cup of coffee :)  
-  
+
 [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BAENLEW8VUJ6G&source=url)
