@@ -1,8 +1,8 @@
 import requests
-try:
+try: # pragma: no cover
     import http.cookiejar as cookiejar
     CookieLoadError = (FileNotFoundError, cookiejar.LoadError)
-except ImportError:
+except ImportError: # pragma: no cover
     import cookielib as cookiejar
     CookieLoadError = IOError
 
