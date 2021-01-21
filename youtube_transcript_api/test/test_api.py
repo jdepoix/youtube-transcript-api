@@ -12,6 +12,7 @@ from youtube_transcript_api import (
     TranscriptsDisabled,
     NoTranscriptFound,
     VideoUnavailable,
+    TooManyRequests,
     NoTranscriptAvailable,
     NotTranslatable,
     TranslationLanguageNotAvailable,
@@ -132,6 +133,16 @@ class TestYouTubeTranscriptApi(TestCase):
         )
 
         with self.assertRaises(VideoUnavailable):
+            YouTubeTranscriptApi.get_transcript('abc')
+
+    def test_get_transcript__exception_if_video_unavailable(self):
+        httpretty.register_uri(
+            httpretty.GET,
+            'https://www.youtube.com/watch',
+            body=load_asset('youtube_too_many_requests.html.static')
+        )
+
+        with self.assertRaises(TooManyRequests):
             YouTubeTranscriptApi.get_transcript('abc')
 
     def test_get_transcript__exception_if_transcripts_disabled(self):

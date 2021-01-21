@@ -5,6 +5,7 @@ from ._errors import (
     NoTranscriptFound,
     CouldNotRetrieveTranscript,
     VideoUnavailable,
+    TooManyRequests,
     NotTranslatable,
     TranslationLanguageNotAvailable,
     NoTranscriptAvailable,
