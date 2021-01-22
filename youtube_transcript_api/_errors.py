@@ -39,8 +39,11 @@ class VideoUnavailable(CouldNotRetrieveTranscript):
     CAUSE_MESSAGE = 'The video is no longer available'
     
 class TooManyRequests(CouldNotRetrieveTranscript):
-    CAUSE_MESSAGE = ('YouTube is receiving too many requests from this IP,'
-        ' and now requires that a captcha must be solved in order to continue.')
+    CAUSE_MESSAGE = ('YouTube is receiving too many requests from this IP, '
+        'and now requires that a captcha must be solved in order to continue. '
+        'You can solve the captcha in a browser and pass the generated cookie file to youtube-transcript-api, '
+        'or you can use a different IP, or maybe wait for the ban to be lifted.'
+        )
 
 class TranscriptsDisabled(CouldNotRetrieveTranscript):
     CAUSE_MESSAGE = 'Subtitles are disabled for this video'
