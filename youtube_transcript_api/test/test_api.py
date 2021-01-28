@@ -197,7 +197,7 @@ class TestYouTubeTranscriptApi(TestCase):
             ]
         )
 
-    @patch('youtube_transcript_api.YouTubeTranscriptApi.get_transcript')
+    @patch('youtube_transcript_api.YouTubeTranscriptApi.get')
     def test_get_transcripts(self, mock_get_transcript):
         video_id_1 = 'video_id_1'
         video_id_2 = 'video_id_2'
@@ -205,36 +205,24 @@ class TestYouTubeTranscriptApi(TestCase):
 
         YouTubeTranscriptApi.get_transcripts([video_id_1, video_id_2], languages=languages)
 
-        mock_get_transcript.assert_any_call(video_id_1, languages, None, None)
-        mock_get_transcript.assert_any_call(video_id_2, languages, None, None)
+        mock_get_transcript.assert_any_call(video_id_1, languages)
+        mock_get_transcript.assert_any_call(video_id_2, languages)
         self.assertEqual(mock_get_transcript.call_count, 2)
 
-    @patch('youtube_transcript_api.YouTubeTranscriptApi.get_transcript', side_effect=Exception('Error'))
-    def test_get_transcripts__stop_on_error(self, mock_get_transcript):
+    @patch('youtube_transcript_api._transcripts.TranscriptListFetcher.fetch', side_effect=Exception('Error'))
+    def test_get_transcripts__stop_on_error(self, mock_fetch):
         with self.assertRaises(Exception):
             YouTubeTranscriptApi.get_transcripts(['video_id_1', 'video_id_2'])
 
-    @patch('youtube_transcript_api.YouTubeTranscriptApi.get_transcript', side_effect=Exception('Error'))
+    @patch('youtube_transcript_api._transcripts.TranscriptListFetcher.fetch', side_effect=Exception('Error'))
     def test_get_transcripts__continue_on_error(self, mock_get_transcript):
         video_id_1 = 'video_id_1'
         video_id_2 = 'video_id_2'
 
-        YouTubeTranscriptApi.get_transcripts(['video_id_1', 'video_id_2'], continue_after_error=True)
+        data, unretrievable_videos = YouTubeTranscriptApi.get_transcripts(['video_id_1', 'video_id_2'], continue_after_error=True)
 
-        mock_get_transcript.assert_any_call(video_id_1, ('en',), None, None)
-        mock_get_transcript.assert_any_call(video_id_2, ('en',), None, None)
-    
-    @patch('youtube_transcript_api.YouTubeTranscriptApi.get_transcript')
-    def test_get_transcripts__with_cookies(self, mock_get_transcript):
-        cookies = '/example_cookies.txt'
-        YouTubeTranscriptApi.get_transcripts(['GJLlxj_dtq8'], cookies=cookies)
-        mock_get_transcript.assert_any_call('GJLlxj_dtq8', ('en',), None, cookies)
-
-    @patch('youtube_transcript_api.YouTubeTranscriptApi.get_transcript')
-    def test_get_transcripts__with_proxies(self, mock_get_transcript):
-        proxies = {'http': '', 'https:': ''}
-        YouTubeTranscriptApi.get_transcripts(['GJLlxj_dtq8'], proxies=proxies)
-        mock_get_transcript.assert_any_call('GJLlxj_dtq8', ('en',), proxies, None)
+        self.assertEqual(data, {})
+        self.assertEqual(unretrievable_videos, [video_id_1, video_id_2])
 
     def test_load_cookies(self):
         dirname, filename = os.path.split(os.path.abspath(__file__))

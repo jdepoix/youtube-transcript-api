@@ -14,6 +14,69 @@ from ._errors import (
 )
 
 class YouTubeTranscriptApi():
+    def __init__(self, proxies=None, cookies=None):
+        """
+        Instantiable version of the API, so that the connection can be kept open between API calls,
+        for better speed and maybe less risk of YouTube banning the IP because of too many connections.
+
+        The methods are equivalent to their static versions:
+            - `get` -> `get_transcript`
+            - `get_many` -> `get_transcripts`
+            - `list` -> `list_transcripts`
+
+        It is also usable with in context manager syntax, such as:
+            with YoutubeTranscriptApi() as api:
+                api.list(video_id)
+        
+        """
+        self._http_client = requests.Session()
+        self._http_client.proxies = proxies if proxies else {}
+        if cookies:
+            self._http_client.cookies = YouTubeTranscriptApi._load_cookies(cookies, None)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        self.close()
+
+    def list(self, video_id):
+        """
+        Equivalent to list_transcripts() for the instantiable version of the API
+        """        
+        return TranscriptListFetcher(self._http_client).fetch(video_id)
+
+    def get(self, video_id, languages):
+        """
+        Equivalent to get_transcript() for the instantiable version of the API
+        """        
+        return self.list(video_id).find_transcript(languages).fetch()
+
+    def get_many(self, video_ids, languages, continue_after_error):
+        """
+        Equivalent to get_transcripts() for the instantiable version of the API
+        """
+        data = {}
+        unretrievable_videos = []
+
+        for video_id in video_ids:
+            try:
+                data[video_id] = self.get(video_id, languages)
+            except Exception as exception:
+                if not continue_after_error:
+                    raise exception
+
+                unretrievable_videos.append(video_id)
+
+        return data, unretrievable_videos
+
+    def close(self):
+        """
+        Closes pending connections
+        """
+        self._http_client.close()
+
+
     @classmethod
     def list_transcripts(cls, video_id, proxies=None, cookies=None):
         """
@@ -63,11 +126,8 @@ class YouTubeTranscriptApi():
         :return: the list of available transcripts
         :rtype TranscriptList:
         """
-        with requests.Session() as http_client:
-            if cookies:
-                http_client.cookies = cls._load_cookies(cookies, video_id)
-            http_client.proxies = proxies if proxies else {}
-            return TranscriptListFetcher(http_client).fetch(video_id)
+        with cls(proxies, cookies) as api:
+            return api.list(video_id)
 
     @classmethod
     def get_transcripts(cls, video_ids, languages=('en',), continue_after_error=False, proxies=None, cookies=None):
@@ -91,19 +151,10 @@ class YouTubeTranscriptApi():
         video ids, which could not be retrieved
         :rtype ({str: [{'text': str, 'start': float, 'end': float}]}, [str]}):
         """
-        data = {}
-        unretrievable_videos = []
 
-        for video_id in video_ids:
-            try:
-                data[video_id] = cls.get_transcript(video_id, languages, proxies, cookies)
-            except Exception as exception:
-                if not continue_after_error:
-                    raise exception
+        with cls(proxies, cookies) as api:
+            return api.get_many(video_ids, languages, continue_after_error)
 
-                unretrievable_videos.append(video_id)
-
-        return data, unretrievable_videos
 
     @classmethod
     def get_transcript(cls, video_id, languages=('en',), proxies=None, cookies=None):
@@ -125,7 +176,9 @@ class YouTubeTranscriptApi():
         :return: a list of dictionaries containing the 'text', 'start' and 'duration' keys
         :rtype [{'text': str, 'start': float, 'end': float}]:
         """
-        return cls.list_transcripts(video_id, proxies, cookies).find_transcript(languages).fetch()
+        with cls(proxies, cookies) as api:
+            return api.get(video_id, languages)
+
     
     @classmethod
     def _load_cookies(cls, cookies, video_id):
