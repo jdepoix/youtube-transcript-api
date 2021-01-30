@@ -3,7 +3,7 @@
 
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BAENLEW8VUJ6G&source=url) [![Build Status](https://travis-ci.com/jdepoix/youtube-transcript-api.svg)](https://travis-ci.com/jdepoix/youtube-transcript-api) [![Coverage Status](https://coveralls.io/repos/github/jdepoix/youtube-transcript-api/badge.svg?branch=master)](https://coveralls.io/github/jdepoix/youtube-transcript-api?branch=master) [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](http://opensource.org/licenses/MIT) [![image](https://img.shields.io/pypi/v/youtube-transcript-api.svg)](https://pypi.org/project/youtube-transcript-api/) [![image](https://img.shields.io/pypi/pyversions/youtube-transcript-api.svg)](https://pypi.org/project/youtube-transcript-api/)
 
-This is an python API which allows you to get the transcripts/subtitles for a given YouTube video. It also works for automatically generated subtitles, supports translating subtitles and it does not require a headless browser, like other selenium based solutions do!
+This is a python API which allows you to get the transcript/subtitles for a given YouTube video. It also works for automatically generated subtitles, supports translating subtitles and it does not require a headless browser, like other selenium based solutions do!
 
 ## Install
 
