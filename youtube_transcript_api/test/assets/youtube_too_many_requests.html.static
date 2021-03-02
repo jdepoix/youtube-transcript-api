@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>YouTube</title>
+    <script
+      src="https://www.google.com/recaptcha/api.js?hl=es"
+      async
+      defer
+      nonce="upPiqA/fwe4T7vXFBXo5Gw"
+    ></script>
+    <style nonce="upPiqA/fwe4T7vXFBXo5Gw">
+      html {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        font-size: 100%;
+        background: transparent;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        font: 12px "YouTube Noto", Roboto, arial, sans-serif;
+        background: #f1f1f1;
+        height: 100%;
+      }
+      #captcha-page {
+        text-align: center;
+        height: 100%;
+        white-space: nowrap;
+        word-break: normal;
+      }
+      .g-recaptcha {
+        display: inline-block;
+      }
+      #captcha-page-content {
+        vertical-align: middle;
+        display: inline-block;
+      }
+      #captcha-page-vertical-align {
+        height: 100%;
+        display: inline-block;
+        vertical-align: middle;
+      }
+      p {
+        margin: auto;
+        color: #333;
+        font-size: 16px;
+        white-space: normal;
+        text-shadow: 0 0 0 transparent, 0 1px 1px #fff;
+      }
+    </style>
+    <link
+      rel="shortcut icon"
+      href="https://www.youtube.com/img/favicon.ico"
+      type="image/x-icon"
+    />
+    <link
+      rel="icon"
+      href="https://www.youtube.com/img/favicon_32.png"
+      sizes="32x32"
+    />
+    <link
+      rel="icon"
+      href="https://www.youtube.com/img/favicon_48.png"
+      sizes="48x48"
+    />
+    <link
+      rel="icon"
+      href="https://www.youtube.com/img/favicon_96.png"
+      sizes="96x96"
+    />
+    <link
+      rel="icon"
+      href="https://www.youtube.com/img/favicon_144.png"
+      sizes="144x144"
+    />
+  </head>
+  <body>
+    <div id="captcha-page">
+      <div id="captcha-page-content">
+        <p>
+          Perdón por la interrupción. Hemos recibido un gran número de
+          solicitudes de tu red.
+        </p>
+        <p>
+          Para seguir disfrutando de YouTube, rellena el siguiente formulario.
+        </p>
+        <form action="/das_captcha?fw=1" method="POST">
+          <div
+            class="g-recaptcha"
+            data-sitekey="6Lf39AMTAAAAALPbLZdcrWDa8Ygmgk_fmGmrlRog"
+          ></div>
+          <br /><input
+            type="hidden"
+            name="action_recaptcha_verify2"
+            value="1"
+          /><input
+            type="hidden"
+            name="next"
+            value="/watch?v=GJLlxj_dtq8"
+          /><input type="submit" value="Submit" />
+        </form>
+        <style nonce="upPiqA/fwe4T7vXFBXo5Gw">
+          #yt-masthead {
+            margin: 15px auto;
+            width: 440px;
+            margin-top: 25px;
+          }
+          #logo-container {
+            margin-right: 5px;
+            float: left;
+            cursor: pointer;
+            text-decoration: none;
+          }
+          .logo {
+            background: no-repeat
+              url("//www.gstatic.com/youtube/img/branding/youtubelogo/1x/youtubelogo_30.png");
+            width: 125px;
+            height: 30px;
+            cursor: pointer;
+            display: inline-block;
+          }
+          #masthead-search {
+            display: flex;
+            margin-top: 3px;
+            max-width: 650px;
+            overflow: hidden;
+            padding: 0;
+            position: relative;
+          }
+          .search-button {
+            border-left: 0;
+            -moz-border-radius-topleft: 0;
+            border-top-left-radius: 0;
+            -moz-border-radius-bottomleft: 0;
+            border-bottom-left-radius: 0;
+            float: right;
+            height: 29px;
+            padding: 0;
+            border: solid 1px transparent;
+            border-color: #d3d3d3;
+            background: #f8f8f8;
+            color: #333;
+            cursor: pointer;
+          }
+          .search-button:hover {
+            border-color: #c6c6c6;
+            background: #f0f0f0;
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+          }
+          .search-button-content {
+            border: none;
+            display: block;
+            opacity: 0.6;
+            padding: 0;
+            text-indent: -10000px;
+            background: no-repeat
+              url(//www.gstatic.com/youtube/src/web/htdocs/img/search.png);
+            background-size: auto;
+            width: 15px;
+            height: 15px;
+            box-shadow: none;
+            margin: 0 25px;
+          }
+          #masthead-search-terms-border {
+            flex: 1 1 auto;
+            border: 1px solid #ccc;
+            box-shadow: inset 0 1px 2px #eee;
+            background-color: #fff;
+            font-size: 14px;
+            height: 29px;
+            line-height: 30px;
+            margin: 0 0 2px;
+            overflow: hidden;
+            position: relative;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            -webkit-transition: border-color 0.2s ease;
+            transition: border-color 0.2s ease;
+          }
+          #masthead-search-terms {
+            background: transparent;
+            border: 0;
+            font-size: 16px;
+            height: 100%;
+            left: 0;
+            margin: 0;
+            outline: none;
+            padding: 2px 6px;
+            position: absolute;
+            width: 100%;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+          }
+        </style>
+        <div id="yt-masthead">
+          <a
+            id="logo-container"
+            href="https://www.youtube.com/"
+            title="Página de inicio de YouTube"
+            ><span class="logo" title="Página de inicio de YouTube"></span
+            ><span class="content-region">ES</span></a
+          >
+          <form
+            id="masthead-search"
+            class="search-form"
+            action="https://www.youtube.com/results"
+            onsubmit="if (document.getElementById('masthead-search-terms').value == '') return false;"
+          >
+            <div id="masthead-search-terms-border" dir="ltr">
+              <input
+                id="masthead-search-terms"
+                autocomplete="off"
+                onkeydown="if (!this.value &amp;&amp; (event.keyCode == 40 || event.keyCode == 32 || event.keyCode == 34)) {this.onkeydown = null; this.blur();}"
+                name="search_query"
+                value=""
+                type="text"
+                placeholder="Buscar"
+                title="Buscar"
+                aria-label="Buscar"
+              />
+            </div>
+            <button
+              class="search-button"
+              type="submit"
+              onclick="if (document.getElementById('masthead-search-terms').value == '') return false; document.getElementById('masthead-search').submit(); return false;"
+              dir="ltr"
+            >
+              <span class="search-button-content">Buscar</span>
+            </button>
+          </form>
+        </div>
+      </div>
+      <span id="captcha-page-vertical-align"></span>
+    </div>
+  </body>
+</html>

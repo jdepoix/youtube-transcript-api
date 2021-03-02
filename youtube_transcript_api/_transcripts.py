@@ -14,6 +14,7 @@ import re
 from ._html_unescaping import unescape
 from ._errors import (
     VideoUnavailable,
+    TooManyRequests,
     NoTranscriptFound,
     TranscriptsDisabled,
     NotTranslatable,
@@ -38,6 +39,8 @@ class TranscriptListFetcher():
         splitted_html = html.split('"captions":')
 
         if len(splitted_html) <= 1:
+            if 'class="g-recaptcha"' in html:
+                raise TooManyRequests(video_id)
             if '"playabilityStatus":' not in html:
                 raise VideoUnavailable(video_id)
 
