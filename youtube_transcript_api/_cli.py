@@ -9,10 +9,44 @@ from ._api import YouTubeTranscriptApi
 
 class YouTubeTranscriptCli():
     def __init__(self, args):
-        self._args = args
+        self._args = self._process_args(args)
+    
+    def _process_args(self, args, revert=False):
+        """
+        Preprocesses a list of string args.
+
+        The intent is to temporarily alter the leading dash character 
+        on video_ids since argparse recognizes dash characters as
+        "options" rather than arguments.
+
+        :param args: a list of strings of CLI args.
+        :type args: list[str]
+        :param revert: a boolean impacting the translating between 
+        - to # or # to - for the leading character of the video_id. 
+        Default is False.
+        :type revert: boolean
+
+        :return: a new list of processed args where the leading - 
+        character was altered to a #, or leading # character was 
+        altered to a - character. Based on revert being True or False.
+        """
+        from_prefix, to_prefix = ('-','#') if not revert else ('#', '-')
+        new_args = []
+        for arg in args:
+            # ignore leading --, these are in-fact argparse options.
+            if not arg.startswith('--') and arg.startswith(from_prefix):
+                arg = to_prefix + arg[1:] 
+            new_args.append(arg)
+        return new_args
+
 
     def run(self):
         parsed_args = self._parse_args()
+        # Revert the video_ids back to their original - prefixes if any.
+        parsed_args.video_ids = self._process_args(parsed_args.video_ids, revert=True)
+        # We can also revert self._args back.
+        self._args = self._process_args(self._args, revert=True)
+        # Although this may not be necessary since it is only used once.
 
         if parsed_args.exclude_manually_created and parsed_args.exclude_generated:
             return ''
