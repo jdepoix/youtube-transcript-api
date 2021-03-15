@@ -149,8 +149,11 @@ class FormatterLoader(object):
     class UnknownFormatterType(Exception):
         def __init__(self, formatter_type):
             super(FormatterLoader.UnknownFormatterType, self).__init__(
-                f'The format \'{formatter_type}\' is not supported. '
-                f'Choose one of the following formats: {", ".join(FormatterLoader.TYPES.keys())}'
+                'The format \'{formatter_type}\' is not supported. '
+                'Choose one of the following formats: {supported_formatter_types}'.format(
+                    formatter_type=formatter_type,
+                    supported_formatter_types=', '.join(FormatterLoader.TYPES.keys()),
+                )
             )
 
     def load(self, formatter_type='pretty'):
