@@ -7,7 +7,7 @@ import argparse
 from ._api import YouTubeTranscriptApi
 
 
-class YouTubeTranscriptCli():
+class YouTubeTranscriptCli(object):
     def __init__(self, args):
         self._args = args
 

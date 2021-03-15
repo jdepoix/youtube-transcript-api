@@ -24,7 +24,7 @@ from ._errors import (
 from ._settings import WATCH_URL
 
 
-class TranscriptListFetcher():
+class TranscriptListFetcher(object):
     def __init__(self, http_client):
         self._http_client = http_client
 
@@ -63,7 +63,7 @@ class TranscriptListFetcher():
         )
 
 
-class TranscriptList():
+class TranscriptList(object):
     """
     This object represents a list of transcripts. It can be iterated over to list all transcripts which are available
     for a given YouTube video. Also it provides functionality to search for a transcript in a given language.
@@ -222,7 +222,7 @@ class TranscriptList():
         return description if description else 'None'
 
 
-class Transcript():
+class Transcript(object):
     def __init__(self, http_client, video_id, url, language, language_code, is_generated, translation_languages):
         """
         You probably don't want to initialize this directly. Usually you'll access Transcript objects using a
@@ -290,7 +290,7 @@ class Transcript():
         )
 
 
-class _TranscriptParser():
+class _TranscriptParser(object):
     HTML_TAG_REGEX = re.compile(r'<[^>]*>', re.IGNORECASE)
 
     def parse(self, plain_data):
