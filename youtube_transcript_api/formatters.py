@@ -1,5 +1,7 @@
 import json
 
+import pprint
+
 
 class Formatter(object):
     """Formatter should be used as an abstract base class.
@@ -20,6 +22,16 @@ class Formatter(object):
     def format(self, **kwargs):
         raise NotImplementedError('A subclass of Formatter must implement ' \
             'their own .format() method.')
+
+
+class PrettyPrintFormatter(Formatter):
+    def format(self, **kwargs):
+        """Pretty prints a transcript.
+
+        :return: A pretty printed string representation of the transcript dict.'
+        :rtype str
+        """
+        return pprint.pformat(self._transcript, **kwargs)
 
 
 class JSONFormatter(Formatter):
@@ -72,12 +84,12 @@ class WebVTTFormatter(Formatter):
         """
         lines = []
         for i, line in enumerate(self._transcript):
-            if i < len(self._transcript)-1:
+            if i < len(self._transcript) - 1:
                 # Looks ahead, use next start time since duration value
                 # would create an overlap between start times.
                 time_text = "{} --> {}".format(
                     self._seconds_to_timestamp(line['start']),
-                    self._seconds_to_timestamp(self._transcript[i+1]['start'])
+                    self._seconds_to_timestamp(self._transcript[i + 1]['start'])
                 )
             else:
                 # Reached the end, cannot look ahead, use duration now.
@@ -89,3 +101,27 @@ class WebVTTFormatter(Formatter):
             lines.append("{}\n{}".format(time_text, line['text']))
         
         return "WEBVTT\n\n" + "\n\n".join(lines) + "\n"
+
+
+class FormatterLoader(object):
+    TYPES = {
+        'json': JSONFormatter,
+        'pretty': PrettyPrintFormatter,
+        'text': TextFormatter,
+        'webvvt': WebVTTFormatter,
+    }
+
+    class UnknownFormatterType(Exception):
+        def __init__(self, formatter_type):
+            super(FormatterLoader.UnknownFormatterType, self).__init__(
+                f'The format \'{formatter_type}\' is not supported. '
+                f'Choose one of the following formats: {", ".join(FormatterLoader.TYPES.keys())}'
+            )
+
+    def __init__(self, formatter_type='pretty'):
+        if formatter_type not in FormatterLoader.TYPES.keys():
+            raise FormatterLoader.UnknownFormatterType(formatter_type)
+        self._formatter = FormatterLoader.TYPES[formatter_type]
+
+    def load(self, transcript):
+        return self._formatter(transcript)
