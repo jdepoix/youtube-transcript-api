@@ -166,6 +166,7 @@ The `formatters` submodule provides a few basic formatters to wrap around you tr
 We provided a few subclasses of formatters to use:
 
 - JSONFormatter
+- PrettyPrintFormatter
 - TextFormatter
 - WebVTTFormatter (a basic implementation)
 

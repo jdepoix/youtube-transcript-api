@@ -9,49 +9,75 @@ class Formatter(object):
     Formatter classes should inherit from this class and implement
     their own .format() method which should return a string. A 
     transcript is represented by a List of Dictionary items.
-
-    :param transcript: list representing 1 or more transcripts
-    :type transcript: list
     """
-    def __init__(self, transcript):
-        if not isinstance(transcript, list):
-            raise TypeError("'transcript' must be of type: List")
 
-        self._transcript = transcript
-    
-    def format(self, **kwargs):
+    def format_transcript(self, transcript, **kwargs):
         raise NotImplementedError('A subclass of Formatter must implement ' \
-            'their own .format() method.')
+            'their own .format_transcript() method.')
+
+    def format_transcripts(self, transcripts, **kwargs):
+        raise NotImplementedError('A subclass of Formatter must implement ' \
+                                  'their own .format_transcripts() method.')
 
 
 class PrettyPrintFormatter(Formatter):
-    def format(self, **kwargs):
+    def format_transcript(self, transcript, **kwargs):
         """Pretty prints a transcript.
 
-        :return: A pretty printed string representation of the transcript dict.'
+        :param transcript:
+        :return: A pretty printed string representation of the transcript.'
         :rtype str
         """
-        return pprint.pformat(self._transcript, **kwargs)
+        return pprint.pformat(transcript, **kwargs)
+
+    def format_transcripts(self, transcripts, **kwargs):
+        """Pretty prints a list of transcripts.
+
+        :param transcripts:
+        :return: A pretty printed string representation of the transcripts.'
+        :rtype str
+        """
+        return self.format_transcript(transcripts, **kwargs)
 
 
 class JSONFormatter(Formatter):
-    def format(self, **kwargs):
+    def format_transcript(self, transcript, **kwargs):
         """Converts a transcript into a JSON string.
 
+        :param transcript:
         :return: A JSON string representation of the transcript.'
         :rtype str
         """
-        return json.dumps(self._transcript, **kwargs)
+        return json.dumps(transcript, **kwargs)
+
+    def format_transcripts(self, transcripts, **kwargs):
+        """Converts a list of transcripts into a JSON string.
+
+        :param transcripts:
+        :return: A JSON string representation of the transcript.'
+        :rtype str
+        """
+        return self.format_transcript(transcripts, **kwargs)
 
 
 class TextFormatter(Formatter):
-    def format(self, **kwargs):
+    def format_transcript(self, transcript, **kwargs):
         """Converts a transcript into plain text with no timestamps.
 
+        :param transcript:
         :return: all transcript text lines separated by newline breaks.'
         :rtype str
         """
-        return "\n".join(line['text'] for line in self._transcript)
+        return '\n'.join(line['text'] for line in transcript)
+
+    def format_transcripts(self, transcripts, **kwargs):
+        """Converts a list of transcripts into plain text with no timestamps.
+
+        :param transcripts:
+        :return: all transcript text lines separated by newline breaks.'
+        :rtype str
+        """
+        return '\n\n\n'.join([self.format_transcript(transcript, **kwargs) for transcript in transcripts])
 
 
 class WebVTTFormatter(Formatter):
@@ -77,19 +103,20 @@ class WebVTTFormatter(Formatter):
         ms = int(round((time - int(time))*1000, 2))
         return "{:02d}:{:02d}:{:02d}.{:03d}".format(hours, mins, secs, ms)
     
-    def format(self, **kwargs):
+    def format_transcript(self, transcript, **kwargs):
         """A basic implementation of WEBVTT formatting.
 
+        :param transcript:
         :reference: https://www.w3.org/TR/webvtt1/#introduction-caption
         """
         lines = []
-        for i, line in enumerate(self._transcript):
-            if i < len(self._transcript) - 1:
+        for i, line in enumerate(transcript):
+            if i < len(transcript) - 1:
                 # Looks ahead, use next start time since duration value
                 # would create an overlap between start times.
                 time_text = "{} --> {}".format(
                     self._seconds_to_timestamp(line['start']),
-                    self._seconds_to_timestamp(self._transcript[i + 1]['start'])
+                    self._seconds_to_timestamp(transcript[i + 1]['start'])
                 )
             else:
                 # Reached the end, cannot look ahead, use duration now.
@@ -101,6 +128,14 @@ class WebVTTFormatter(Formatter):
             lines.append("{}\n{}".format(time_text, line['text']))
         
         return "WEBVTT\n\n" + "\n\n".join(lines) + "\n"
+
+    def format_transcripts(self, transcripts, **kwargs):
+        """A basic implementation of WEBVTT formatting for a list of transcripts.
+
+        :param transcripts:
+        :reference: https://www.w3.org/TR/webvtt1/#introduction-caption
+        """
+        return '\n\n\n'.join([self.format_transcript(transcript, **kwargs) for transcript in transcripts])
 
 
 class FormatterLoader(object):
@@ -118,10 +153,13 @@ class FormatterLoader(object):
                 f'Choose one of the following formats: {", ".join(FormatterLoader.TYPES.keys())}'
             )
 
-    def __init__(self, formatter_type='pretty'):
+    def load(self, formatter_type='pretty'):
+        """
+        Loads the Formatter for the given formatter type.
+
+        :param formatter_type:
+        :return: Formatter object
+        """
         if formatter_type not in FormatterLoader.TYPES.keys():
             raise FormatterLoader.UnknownFormatterType(formatter_type)
-        self._formatter = FormatterLoader.TYPES[formatter_type]
-
-    def load(self, transcript):
-        return self._formatter(transcript)
+        return FormatterLoader.TYPES[formatter_type]()
