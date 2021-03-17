@@ -195,7 +195,13 @@ If you are not sure which languages are available for a given video you can call
 
 ```  
 youtube_transcript_api --list-transcripts <first_video_id>
-```  
+```
+
+If a video's ID starts with a hyphen you'll have to mask the hyphen using `\` to prevent the CLI from mistaking it for a argument name. For example to get the transcript for the video with the ID `-abc123` run:
+
+```
+youtube_transcript_api "\-abc123"
+```
 
 ## Proxy  
 
