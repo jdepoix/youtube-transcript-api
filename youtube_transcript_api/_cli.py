@@ -1,10 +1,8 @@
-import json
-
-import pprint
-
 import argparse
 
 from ._api import YouTubeTranscriptApi
+
+from .formatters import FormatterLoader
 
 
 class YouTubeTranscriptCli(object):
@@ -34,7 +32,7 @@ class YouTubeTranscriptCli(object):
 
         return '\n\n'.join(
             [str(exception) for exception in exceptions]
-            + ([json.dumps(transcripts) if parsed_args.json else pprint.pformat(transcripts)] if transcripts else [])
+            + ([FormatterLoader().load(parsed_args.format).format_transcripts(transcripts)] if transcripts else [])
         )
 
     def _fetch_transcript(self, parsed_args, proxies, cookies, video_id):
@@ -98,11 +96,10 @@ class YouTubeTranscriptCli(object):
             help='If this flag is set transcripts which have been manually created will not be retrieved.',
         )
         parser.add_argument(
-            '--json',
-            action='store_const',
-            const=True,
-            default=False,
-            help='If this flag is set the output will be JSON formatted.',
+            '--format',
+            type=str,
+            default='pretty',
+            choices=tuple(FormatterLoader.TYPES.keys()),
         )
         parser.add_argument(
             '--translate',
