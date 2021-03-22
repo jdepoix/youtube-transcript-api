@@ -128,4 +128,8 @@ class YouTubeTranscriptCli(object):
             help='The cookie file that will be used for authorization with youtube.'
         )
             
-        return parser.parse_args(self._args)
+        return self._sanitize_video_ids(parser.parse_args(self._args))
+
+    def _sanitize_video_ids(self, args):
+        args.video_ids = [video_id.replace('\\', '') for video_id in args.video_ids]
+        return args
