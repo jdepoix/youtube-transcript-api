@@ -129,12 +129,11 @@ class YouTubeTranscriptApi(object):
     
     @classmethod
     def _load_cookies(cls, cookies, video_id):
-        cookie_jar = {}
         try:
             cookie_jar = cookiejar.MozillaCookieJar()
             cookie_jar.load(cookies)
+            if not cookie_jar:
+                raise CookiesInvalid(video_id)
+            return cookie_jar
         except CookieLoadError:
             raise CookiePathInvalid(video_id)
-        if not cookie_jar:
-            raise CookiesInvalid(video_id)
-        return cookie_jar 

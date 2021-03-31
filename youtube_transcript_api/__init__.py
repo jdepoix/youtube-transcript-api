@@ -10,5 +10,6 @@ from ._errors import (
     TranslationLanguageNotAvailable,
     NoTranscriptAvailable,
     CookiePathInvalid,
-    CookiesInvalid
+    CookiesInvalid,
+    FailedToCreateConsentCookie,
 )

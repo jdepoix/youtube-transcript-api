@@ -1,0 +1,160 @@
+<!DOCTYPE html><html lang="de" dir="ltr"><head><style nonce="8VuN4FiQoUKCWSNl9VnOhg">
+a, a:link, a:visited, a:active, a:hover {
+  color: #1a73e8;
+  text-decoration: none;
+}
+body {
+  font-family: Roboto,RobotoDraft,Helvetica,Arial,sans-serif;
+  text-align: center;
+  -ms-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+.box {
+  border: 1px solid #dadce0;
+  box-sizing: border-box;
+  border-radius: 8px;
+  margin: 24px auto 5px auto;
+  max-width: 520px;
+  padding: 24px;
+}
+h1 {
+  color: #2c2c2c;
+  font-size: 24px;
+  hyphens: auto;
+  margin: 24px 0;
+}
+p, .sub, .contentText {
+  color: #5f6368;;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0.2px;
+  text-align: left;
+}
+.signin {
+  text-align: right;
+}
+.image {
+  display: block;
+  margin: 14px auto;
+}
+a.button {
+  color: #fff;
+}
+button, .button {
+  border-radius: 4px;
+  background-color: #1a73e8;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-family: Roboto,RobotoDraft,Helvetica,Arial,sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  height: 36px;
+  margin: 10px 4px 0 4px;
+  padding: 10px 24px;
+}
+input.button {
+  -webkit-appearance: none;
+}
+.error {
+  border: 2px solid #d93025;
+  border-radius: 5px;
+  color: #d93025;
+  margin: auto;
+  padding: 5px;
+}
+.footer {
+  margin-top: 16px;
+}
+.footer a {
+  color: #757575;
+  font-size: 12px;
+  margin-left: 24px;
+}
+.languagepicker {
+  display: inline-flex;
+  margin: 2px 0;
+}
+#languageform,
+#languageselect {
+  margin: 0 2px;
+}
+.detailspage {
+  margin: 24px auto 0 auto;
+  max-width: 700px;
+}
+.detailspage h1, .detailspage h2 {
+  font-size: 22px
+}
+.setting {
+  border: 1px solid #dadce0;
+  box-sizing: border-box;
+  border-radius: 8px;
+  margin-bottom: 11px;
+  padding: 24px 24px 20px 24px;
+  text-align: right;
+}
+.sub {
+  padding: 24px 24px 20px 24px;
+}
+hr {
+  margin: 10px -24px 15px;
+  border: 0;
+  border-top: 1px solid #dadce0;
+}
+fieldset {
+  border: none;
+  padding: 0;
+}
+label {
+  margin: 24px;
+}
+td {
+  vertical-align: top;
+}
+.setting h2, .setting h3, h4 {
+  color: #3c4043;
+  margin: 0;
+  text-align: left;
+}
+.yt-text {
+  color: #5f6368;
+  font-size: 14px;
+  font-weight: 300;
+}
+.productLogoContainer {
+  margin: auto;
+  max-width: 360px;
+}
+
+@media only screen and (max-width: 480px) {
+  body {
+    margin: 18px 14px;
+  }
+  .imgContainer {
+    min-width: 72px;
+  }
+  .hideOnSmallWidth {
+    display: none;
+  }
+  .footer form {
+    margin-bottom: 16px;
+  }
+}
+
+@media only screen and (min-width: 481px) {
+  body {
+    margin: 18px 25px;
+  }
+  .imgContainer {
+    width: 51%;
+  }
+  .hideOnNormalWidth {
+    display: none;
+  }
+  .footer form {
+    display: inline;
+  }
+}
+</style><title>Bevor Sie zu YouTube weitergehen</title><meta name="viewport" content="initial-scale=1, maximum-scale=5, width=device-width"><link rel="shortcut icon" href="//www.google.com/favicon.ico"></head><body><div class="signin"><a href="https://accounts.google.com/ServiceLogin?hl=de&amp;continue=https://www.youtube.com/watch?v%3DFx_N4GlwdEM&amp;gae=cb-24020387" class="button">Anmelden</a></div><div class="box"><img src="//www.gstatic.com/ac/cb/cb_yt_logo_d_header_118x26_4dfe7c3d17767ffd2294ae90fb54337e.png" srcset="//www.gstatic.com/ac/cb/cb_yt_logo_d_header_236x52_32f50a7f5baad56e4faf48252fbc19d6.png 2x" width="93" height="20" alt="YouTube"> <span class="yt-text">ein Google-Unternehmen</span><div class="productLogoContainer"><img src="https://www.gstatic.com/ac/cb/scene_cookie_wall_youtube.svg" alt="" width="100%" height="100%" class="image" aria-hidden="true"></div><h1>Bevor Sie zu YouTube weitergehen</h1><p>Google verwendet <a href="https://policies.google.com/technologies/cookies?hl=de&utm_source=ucb" target="_blank">Cookies</a> und Daten, um Dienste und Werbung zur Verfügung zu stellen, zu verwalten und zu verbessern. Wenn Sie zustimmen, nutzen wir Cookies für diese Zwecke und dazu, Inhalte und Werbung für Sie zu personalisieren, damit Sie z. B. relevantere Google-Suchergebnisse und relevantere Werbung bei YouTube erhalten. Die Personalisierung erfolgt auf Grundlage Ihrer Aktivitäten, beispielsweise Ihrer Google-Suchanfragen und der Videos, die Sie sich bei YouTube ansehen. Wir verwenden diese Daten auch für Analysen und Messungen. Klicken Sie auf „Anpassen“, um sich weitere Optionen anzusehen, oder besuchen Sie g.co/privacytools. Darüber hinaus haben Sie die Möglichkeit, Ihre Browsereinstellungen so zu konfigurieren, dass einige oder alle Cookies blockiert werden.</p><div><a href="https://consent.youtube.com/dl?continue=https://www.youtube.com/watch?v%3DFx_N4GlwdEM&amp;gl=DE&amp;hl=de&amp;pc=yt&amp;uxe=24020387&amp;src=1" class="button">Anpassen</a><form action="https://consent.youtube.com/s" method="POST" style="display:inline;"><input type="hidden" name="gl" value="DE"><input type="hidden" name="m" value="0"><input type="hidden" name="pc" value="yt"><input type="hidden" name="continue" value="https://www.youtube.com/watch?v=Fx_N4GlwdEM"><input type="hidden" name="ca" value="r"><input type="hidden" name="x" value="8"><input type="hidden" name="v" value="cb.20210328-17-p0.de+FX+119"><input type="hidden" name="t" value="ADw3F8g8aGOdnUecosRgDrAJqqz40u4HBw:1617193322464"><input type="hidden" name="hl" value="de"><input type="hidden" name="src" value="1"><input type="hidden" name="uxe" value="24020387"><input type="submit" value="Ich stimme zu" class="button" aria-label="In die Verwendung von Cookies und anderen Daten zu den beschriebenen Zwecken einwilligen"/></form></div></div><div class="footer"><form action="https://consent.youtube.com/ml" method="get"><select id="languageselect" name="hl"><option value="" selected disabled hidden>Sprache auswählen</option><option value="af">Afrikaans</option><option value="az">azərbaycan</option><option value="bs">bosanski</option><option value="ca">català</option><option value="cs">Čeština</option><option value="cy">Cymraeg</option><option value="da">Dansk</option><option value="de">Deutsch</option><option value="et">eesti</option><option value="en-GB">English&nbsp;(United Kingdom)</option><option value="en">English&nbsp;(United States)</option><option value="es">Español&nbsp;(España)</option><option value="es-419">Español&nbsp;(Latinoamérica)</option><option value="eu">euskara</option><option value="fil">Filipino</option><option value="fr-CA">Français&nbsp;(Canada)</option><option value="fr">Français&nbsp;(France)</option><option value="ga">Gaeilge</option><option value="gl">galego</option><option value="hr">Hrvatski</option><option value="id">Indonesia</option><option value="zu">isiZulu</option><option value="is">íslenska</option><option value="it">Italiano</option><option value="sw">Kiswahili</option><option value="lv">latviešu</option><option value="lt">lietuvių</option><option value="hu">magyar</option><option value="ms">Melayu</option><option value="nl">Nederlands</option><option value="no">norsk</option><option value="uz">o‘zbek</option><option value="pl">polski</option><option value="pt-BR">Português&nbsp;(Brasil)</option><option value="pt-PT">Português&nbsp;(Portugal)</option><option value="ro">română</option><option value="sq">shqip</option><option value="sk">Slovenčina</option><option value="sl">slovenščina</option><option value="sr-Latn">srpski (latinica)</option><option value="fi">Suomi</option><option value="sv">Svenska</option><option value="vi">Tiếng Việt</option><option value="tr">Türkçe</option><option value="el">Ελληνικά</option><option value="be">беларуская</option><option value="bg">български</option><option value="ky">кыргызча</option><option value="kk">қазақ тілі</option><option value="mk">македонски</option><option value="mn">монгол</option><option value="ru">Русский</option><option value="sr">српски</option><option value="uk">Українська</option><option value="ka">ქართული</option><option value="hy">հայերեն</option><option value="iw">עברית</option><option value="ur">اردو</option><option value="ar">العربية</option><option value="fa">فارسی</option><option value="am">አማርኛ</option><option value="ne">नेपाली</option><option value="mr">मराठी</option><option value="hi">हिन्दी</option><option value="as">অসমীয়া</option><option value="bn">বাংলা</option><option value="pa">ਪੰਜਾਬੀ</option><option value="gu">ગુજરાતી</option><option value="or">ଓଡ଼ିଆ</option><option value="ta">தமிழ்</option><option value="te">తెలుగు</option><option value="kn">ಕನ್ನಡ</option><option value="ml">മലയാളം</option><option value="si">සිංහල</option><option value="th">ไทย</option><option value="lo">ລາວ</option><option value="my">မြန်မာ</option><option value="km">ខ្មែរ</option><option value="ko">한국어</option><option value="ja">日本語</option><option value="zh-CN">简体中文</option><option value="zh-TW">繁體中文</option><option value="zh-HK">繁體中文&nbsp;(香港)</option></select><input type="hidden" name="gl" value="DE"><input type="hidden" name="m" value="0"><input type="hidden" name="pc" value="yt"><input type="hidden" name="continue" value="https://www.youtube.com/watch?v=Fx_N4GlwdEM"><input type="hidden" name="src" value="1"><input type="submit" value="Speichern"></form><a href="https://policies.google.com/privacy?hl=de">Datenschutzerklärung</a> <a href="https://policies.google.com/terms?hl=de">Nutzungsbedingungen</a></div></body></html>

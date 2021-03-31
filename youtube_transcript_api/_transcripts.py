@@ -20,6 +20,7 @@ from ._errors import (
     NotTranslatable,
     TranslationLanguageNotAvailable,
     NoTranscriptAvailable,
+    FailedToCreateConsentCookie,
 )
 from ._settings import WATCH_URL
 
@@ -32,7 +33,7 @@ class TranscriptListFetcher(object):
         return TranscriptList.build(
             self._http_client,
             video_id,
-            self._extract_captions_json(self._fetch_html(video_id), video_id)
+            self._extract_captions_json(self._fetch_video_html(video_id), video_id)
         )
 
     def _extract_captions_json(self, html, video_id):
@@ -54,6 +55,21 @@ class TranscriptListFetcher(object):
             raise NoTranscriptAvailable(video_id)
 
         return captions_json
+
+    def _create_consent_cookie(self, html, video_id):
+        match = re.search('name="v" value="(.*?)"', html)
+        if match is None:
+            raise FailedToCreateConsentCookie(video_id)
+        self._http_client.cookies.set('CONSENT', 'YES+' + match.group(1), domain='.youtube.com')
+
+    def _fetch_video_html(self, video_id):
+        html = self._fetch_html(video_id)
+        if 'action="https://consent.youtube.com/s"' in html:
+            self._create_consent_cookie(html, video_id)
+            html = self._fetch_html(video_id)
+            if 'action="https://consent.youtube.com/s"' in html:
+                raise FailedToCreateConsentCookie(video_id)
+        return html
 
     def _fetch_html(self, video_id):
         return self._http_client.get(WATCH_URL.format(video_id=video_id)).text.replace(
