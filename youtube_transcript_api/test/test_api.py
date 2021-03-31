@@ -17,7 +17,8 @@ from youtube_transcript_api import (
     NotTranslatable,
     TranslationLanguageNotAvailable,
     CookiePathInvalid,
-    CookiesInvalid
+    CookiesInvalid,
+    FailedToCreateConsentCookie,
 )
 
 
@@ -44,6 +45,7 @@ class TestYouTubeTranscriptApi(TestCase):
         )
 
     def tearDown(self):
+        httpretty.reset()
         httpretty.disable()
 
     def test_get_transcript(self):
@@ -124,6 +126,43 @@ class TestYouTubeTranscriptApi(TestCase):
         self.assertIn('lang', query_string)
         self.assertEqual(len(query_string['lang']), 1)
         self.assertEqual(query_string['lang'][0], 'en')
+
+    def test_get_transcript__create_consent_cookie_if_needed(self):
+        httpretty.register_uri(
+            httpretty.GET,
+            'https://www.youtube.com/watch',
+            body=load_asset('youtube_consent_page.html.static')
+        )
+
+        YouTubeTranscriptApi.get_transcript('F1xioXWb8CY')
+        self.assertEqual(len(httpretty.latest_requests()), 3)
+        for request in httpretty.latest_requests()[1:]:
+            self.assertEqual(request.headers['cookie'], 'CONSENT=YES+cb.20210328-17-p0.de+FX+119')
+
+    def test_get_transcript__exception_if_create_consent_cookie_failed(self):
+        httpretty.register_uri(
+            httpretty.GET,
+            'https://www.youtube.com/watch',
+            body=load_asset('youtube_consent_page.html.static')
+        )
+        httpretty.register_uri(
+            httpretty.GET,
+            'https://www.youtube.com/watch',
+            body=load_asset('youtube_consent_page.html.static')
+        )
+
+        with self.assertRaises(FailedToCreateConsentCookie):
+            YouTubeTranscriptApi.get_transcript('F1xioXWb8CY')
+
+    def test_get_transcript__exception_if_consent_cookie_age_invalid(self):
+        httpretty.register_uri(
+            httpretty.GET,
+            'https://www.youtube.com/watch',
+            body=load_asset('youtube_consent_page_invalid.html.static')
+        )
+
+        with self.assertRaises(FailedToCreateConsentCookie):
+            YouTubeTranscriptApi.get_transcript('F1xioXWb8CY')
 
     def test_get_transcript__exception_if_video_unavailable(self):
         httpretty.register_uri(
