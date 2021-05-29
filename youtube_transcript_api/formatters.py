@@ -95,8 +95,9 @@ class WebVTTFormatter(Formatter):
         '00:00:06.930'
         """
         time = float(time)
-        hours, mins, secs = (
-            int(time) // 3600,
+        hours= int(time) // 3600
+        time= time - hours*3600
+        mins, secs = (
             int(time) // 60,
             int(time) % 60,
         )
