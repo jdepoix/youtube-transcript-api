@@ -19,6 +19,7 @@ from youtube_transcript_api import (
     CookiePathInvalid,
     CookiesInvalid,
     FailedToCreateConsentCookie,
+    YouTubeRequestFailed,
 )
 
 
@@ -172,6 +173,16 @@ class TestYouTubeTranscriptApi(TestCase):
         )
 
         with self.assertRaises(VideoUnavailable):
+            YouTubeTranscriptApi.get_transcript('abc')
+
+    def test_get_transcript__exception_if_youtube_request_fails(self):
+        httpretty.register_uri(
+            httpretty.GET,
+            'https://www.youtube.com/watch',
+            status=500
+        )
+
+        with self.assertRaises(YouTubeRequestFailed):
             YouTubeTranscriptApi.get_transcript('abc')
 
     def test_get_transcript__exception_if_youtube_request_limit_reached(self):

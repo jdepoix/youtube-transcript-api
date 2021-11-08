@@ -12,4 +12,5 @@ from ._errors import (
     CookiePathInvalid,
     CookiesInvalid,
     FailedToCreateConsentCookie,
+    YouTubeRequestFailed,
 )

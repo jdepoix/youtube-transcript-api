@@ -35,6 +35,20 @@ class CouldNotRetrieveTranscript(Exception):
         return self.CAUSE_MESSAGE
 
 
+class YouTubeRequestFailed(CouldNotRetrieveTranscript):
+    CAUSE_MESSAGE = 'Request to YouTube failed: {reason}'
+
+    def __init__(self, video_id, http_error):
+        self.reason = str(http_error)
+        super(YouTubeRequestFailed, self).__init__(video_id)
+
+    @property
+    def cause(self):
+        return self.CAUSE_MESSAGE.format(
+            reason=self.reason,
+        )
+
+
 class VideoUnavailable(CouldNotRetrieveTranscript):
     CAUSE_MESSAGE = 'The video is no longer available'
 
