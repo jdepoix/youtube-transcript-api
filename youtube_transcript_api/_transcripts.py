@@ -11,10 +11,13 @@ from xml.etree import ElementTree
 
 import re
 
+from requests import HTTPError
+
 from ._html_unescaping import unescape
 from ._errors import (
     VideoUnavailable,
     TooManyRequests,
+    YouTubeRequestFailed,
     NoTranscriptFound,
     TranscriptsDisabled,
     NotTranslatable,
@@ -23,6 +26,14 @@ from ._errors import (
     FailedToCreateConsentCookie,
 )
 from ._settings import WATCH_URL
+
+
+def _raise_http_errors(response, video_id):
+    try:
+        response.raise_for_status()
+        return response
+    except HTTPError as error:
+        raise YouTubeRequestFailed(error, video_id)
 
 
 class TranscriptListFetcher(object):
@@ -72,7 +83,8 @@ class TranscriptListFetcher(object):
         return html
 
     def _fetch_html(self, video_id):
-        return self._http_client.get(WATCH_URL.format(video_id=video_id)).text.replace(
+        response = self._http_client.get(WATCH_URL.format(video_id=video_id))
+        return _raise_http_errors(response, video_id).text.replace(
             '\\u0026', '&'
         ).replace(
             '\\', ''
@@ -273,8 +285,9 @@ class Transcript(object):
         :return: a list of dictionaries containing the 'text', 'start' and 'duration' keys
         :rtype [{'text': str, 'start': float, 'end': float}]:
         """
+        response = self._http_client.get(self._url)
         return _TranscriptParser().parse(
-            self._http_client.get(self._url).text
+            _raise_http_errors(response, self.video_id).text,
         )
 
     def __str__(self):
