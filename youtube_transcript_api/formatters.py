@@ -98,7 +98,7 @@ class WebVTTFormatter(Formatter):
         hours, remainder = divmod(time, 3600)
         mins, secs = divmod(remainder, 60)
         ms = int(round((time - int(time))*1000, 2))
-        return "{:02d}:{:02d}:{:02d}.{:03d}".format(hours, mins, secs, ms)
+        return "{:02.0f}:{:02.0f}:{:02.0f}.{:03d}".format(hours, mins, secs, ms)
 
     def format_transcript(self, transcript, **kwargs):
         """A basic implementation of WEBVTT formatting.
