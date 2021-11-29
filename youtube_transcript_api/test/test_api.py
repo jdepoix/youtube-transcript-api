@@ -205,6 +205,14 @@ class TestYouTubeTranscriptApi(TestCase):
         with self.assertRaises(TranscriptsDisabled):
             YouTubeTranscriptApi.get_transcript('dsMFmonKDD4')
 
+        httpretty.register_uri(
+            httpretty.GET,
+            'https://www.youtube.com/watch',
+            body=load_asset('youtube_transcripts_disabled2.html.static')
+        )
+        with self.assertRaises(TranscriptsDisabled):
+            YouTubeTranscriptApi.get_transcript('Fjg5lYqvzUs')
+
     def test_get_transcript__exception_if_language_unavailable(self):
         with self.assertRaises(NoTranscriptFound):
             YouTubeTranscriptApi.get_transcript('GJLlxj_dtq8', languages=['cz'])
