@@ -140,7 +140,7 @@ class FormatterLoader(object):
         'json': JSONFormatter,
         'pretty': PrettyPrintFormatter,
         'text': TextFormatter,
-        'webvvt': WebVTTFormatter,
+        'webvtt': WebVTTFormatter,
     }
 
     class UnknownFormatterType(Exception):
