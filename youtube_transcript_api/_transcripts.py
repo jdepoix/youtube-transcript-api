@@ -60,7 +60,9 @@ class TranscriptListFetcher(object):
 
         captions_json = json.loads(
             splitted_html[1].split(',"videoDetails')[0].replace('\n', '')
-        )['playerCaptionsTracklistRenderer']
+        ).get('playerCaptionsTracklistRenderer')
+        if captions_json is None:
+            raise TranscriptsDisabled(video_id)
 
         if 'captionTracks' not in captions_json:
             raise NoTranscriptAvailable(video_id)
