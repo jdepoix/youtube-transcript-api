@@ -279,12 +279,12 @@ youtube_transcript_api "\-abc123"
 
 ## Proxy  
 
-You can specify a https/http proxy, which will be used during the requests to YouTube:  
+You can specify a https proxy, which will be used during the requests to YouTube:
 
 ```python  
 from youtube_transcript_api import YouTubeTranscriptApi  
 
-YouTubeTranscriptApi.get_transcript(video_id, proxies={"http": "http://user:pass@domain:port", "https": "https://user:pass@domain:port"})  
+YouTubeTranscriptApi.get_transcript(video_id, proxies={"https": "https://user:pass@domain:port"})
 ```  
 
 As the `proxies` dict is passed on to the `requests.get(...)` call, it follows the [format used by the requests library](http://docs.python-requests.org/en/master/user/advanced/#proxies).  
@@ -292,7 +292,7 @@ As the `proxies` dict is passed on to the `requests.get(...)` call, it follows t
 Using the CLI:  
 
 ```  
-youtube_transcript_api <first_video_id> <second_video_id> --http-proxy http://user:pass@domain:port --https-proxy https://user:pass@domain:port  
+youtube_transcript_api <first_video_id> <second_video_id> --https-proxy https://user:pass@domain:port
 ```
 
 ## Cookies
