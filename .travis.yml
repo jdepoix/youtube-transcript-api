@@ -5,6 +5,8 @@ python:
   - "3.7"
   - "3.8"
 install:
+  - pip install --upgrade pip
+  - pip install --upgrade setuptools
   - pip install -r requirements.txt
 script:
   - coverage run -m unittest discover
