@@ -2,9 +2,11 @@ language: python
 python:
   - "3.5"
   - "3.6"
-  - "3.7"
+  - "3.7.11"
   - "3.8"
 install:
+  - pip install --upgrade pip
+  - pip install --upgrade setuptools
   - pip install -r requirements.txt
 script:
   - coverage run -m unittest discover
