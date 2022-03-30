@@ -26,9 +26,9 @@ from youtube_transcript_api import (
 def load_asset(filename):
     filepath = '{dirname}/assets/{filename}'.format(
         dirname=os.path.dirname(__file__), filename=filename)
-    
+
     with open(filepath, mode="rb") as file:
-        return file.read().decode('utf-8')
+        return file.read()
 
 
 class TestYouTubeTranscriptApi(TestCase):
