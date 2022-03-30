@@ -86,11 +86,7 @@ class TranscriptListFetcher(object):
 
     def _fetch_html(self, video_id):
         response = self._http_client.get(WATCH_URL.format(video_id=video_id))
-        return _raise_http_errors(response, video_id).text.replace(
-            '\\u0026', '&'
-        ).replace(
-            '\\', ''
-        )
+        return unescape(_raise_http_errors(response, video_id).text)
 
 
 class TranscriptList(object):
