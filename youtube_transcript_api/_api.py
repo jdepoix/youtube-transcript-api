@@ -13,6 +13,7 @@ from ._errors import (
     CookiesInvalid
 )
 
+
 class YouTubeTranscriptApi(object):
     @classmethod
     def list_transcripts(cls, video_id, proxies=None, cookies=None):
