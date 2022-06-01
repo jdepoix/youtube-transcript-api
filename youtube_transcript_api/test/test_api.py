@@ -1,4 +1,3 @@
-from ast import Assert
 from unittest import TestCase
 from mock import patch
 
