@@ -13,10 +13,10 @@ It is recommended to [install this module by using pip](https://pypi.org/project
 pip install youtube_transcript_api
 ```
 
-If you want to use it from source, you'll have to install the dependencies manually:
+If you want to use it from the source code:
 
 ```
-pip install -r requirements.txt
+pip install git+https://github.com/jdepoix/youtube-transcript-api
 ```
 
 You can either integrate this module [into an existing application](#api), or just use it via an [CLI](#cli).
