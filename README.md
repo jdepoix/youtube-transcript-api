@@ -28,7 +28,7 @@ The easiest way to get a transcript for a given video is to execute:
 ```python
 from youtube_transcript_api import YouTubeTranscriptApi
 
-YouTubeTranscriptApi.get_transcript(video_id)
+YouTubeTranscriptApi.get_transcript("video_id")
 ```
 
 This will return a list of dictionaries looking somewhat like this:
@@ -52,7 +52,7 @@ This will return a list of dictionaries looking somewhat like this:
 You can also add the `languages` param if you want to make sure the transcripts are retrieved in your desired language (it defaults to english).
 
 ```python
-YouTubeTranscriptApi.get_transcripts(video_ids, languages=['de', 'en'])
+YouTubeTranscriptApi.get_transcripts("video_ids", languages=['de', 'en'])
 ```
 
 It's a list of language codes in a descending priority. In this example it will first try to fetch the german transcript (`'de'`) and then fetch the english transcript (`'en'`) if it fails to do so. If you want to find out which languages are available first, [have a look at `list_transcripts()`](#list-available-transcripts)
@@ -60,7 +60,7 @@ It's a list of language codes in a descending priority. In this example it will 
 To get transcripts for a list of video ids you can call:
 
 ```python
-YouTubeTranscriptApi.get_transcripts(video_ids, languages=['de', 'en'])
+YouTubeTranscriptApi.get_transcripts("video_ids", languages=['de', 'en'])
 ```
 
 `languages` also is optional here.
@@ -70,7 +70,7 @@ YouTubeTranscriptApi.get_transcripts(video_ids, languages=['de', 'en'])
 If you want to list all transcripts which are available for a given video you can call:
 
 ```python
-transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
+transcript_list = YouTubeTranscriptApi.list_transcripts("video_id")
 ```
 
 This will return a `TranscriptList` object  which is iterable and provides methods to filter the list of transcripts for specific languages and types, like:
@@ -161,9 +161,9 @@ transcript = transcript_list.find_generated_transcript(['de', 'en'])
 ```
 
 ### Using Formatters
-Formatters are meant to be an additional layer of processing of the transcript you pass it. The goal is to convert the transcript from its Python data type into a consistent string of a given "format". Such as a basic text (`.txt`) or even formats that have a defined specification such as JSON (`.json`), WebVTT format (`.vtt`), Comma-separated format (`.csv`), etc...
+Formatters are meant to be an additional layer of processing of the transcript before you pass it. The goal is to convert the transcript from its Python data type into a consistent string of a given "format". Such as a basic text (`.txt`) or even formats that have a defined specification such as JSON (`.json`), WebVTT format (`.vtt`), Comma-separated format (`.csv`), etc...
 
-The `formatters` submodule provides a few basic formatters to wrap around you transcript data in cases where you might want to do something such as output a specific format then write that format to a file. Maybe to backup/store and run another script against at a later time.
+The `formatters` submodule provides a few basic formatters to wrap around your transcript data in cases where you might want to do something such as output a specific format then write that format to a file. Maybe to backup/store and run another script against at a later time.
 
 We provided a few subclasses of formatters to use:
 
