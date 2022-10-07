@@ -254,6 +254,14 @@ class TestYouTubeTranscriptApi(TestCase):
                 {'text': 'just something shorter, I made up for testing', 'start': 5.7, 'duration': 3.239}
             ]
         )
+    
+    def test_get_transcript__assertionerror_if_input_not_string(self):
+        with self.assertRaises(AssertionError):
+            YouTubeTranscriptApi.get_transcript(['video_id_1', 'video_id_2'])
+    
+    def test_get_transcripts__assertionerror_if_input_not_list(self):
+        with self.assertRaises(AssertionError):
+            YouTubeTranscriptApi.get_transcripts('video_id_1')
 
     @patch('youtube_transcript_api.YouTubeTranscriptApi.get_transcript')
     def test_get_transcripts(self, mock_get_transcript):

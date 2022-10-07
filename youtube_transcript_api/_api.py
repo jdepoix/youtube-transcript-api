@@ -92,6 +92,8 @@ class YouTubeTranscriptApi(object):
         video ids, which could not be retrieved
         :rtype ({str: [{'text': str, 'start': float, 'end': float}]}, [str]}):
         """
+        assert isinstance(video_ids, list), "`video_ids` must be a list of strings"
+
         data = {}
         unretrievable_videos = []
 
@@ -126,6 +128,7 @@ class YouTubeTranscriptApi(object):
         :return: a list of dictionaries containing the 'text', 'start' and 'duration' keys
         :rtype [{'text': str, 'start': float, 'end': float}]:
         """
+        assert isinstance(video_id, str), "`video_id` must be a string"
         return cls.list_transcripts(video_id, proxies, cookies).find_transcript(languages).fetch()
     
     @classmethod
