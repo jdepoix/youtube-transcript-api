@@ -29,13 +29,26 @@ class TestFormatters(TestCase):
         with self.assertRaises(NotImplementedError):
             Formatter().format_transcripts([self.transcript])
 
-    def test_srt_formatter(self):
+    def test_srt_formatter_starting(self):
         content = SRTFormatter().format_transcript(self.transcript)
         lines = content.split('\n')
 
         # test starting lines
         self.assertEqual(lines[0], "1")
         self.assertEqual(lines[1], "00:00:00,000 --> 00:00:01,500")
+        
+    def test_srt_formatter_middle(self):
+        content = SRTFormatter().format_transcript(self.transcript)
+        lines = content.split('\n')
+
+        #test middle lines
+        self.assertEqual(lines[4], "2")
+        self.assertEqual(lines[5], "00:00:01,500 --> 00:00:02,500")
+        self.assertEqual(lines[6], self.transcript[1]['text'])
+
+    def test_srt_formatter_ending(self):
+        content = SRTFormatter().format_transcript(self.transcript)
+        lines = content.split('\n')
 
         # test end lines
         self.assertEqual(lines[-2], self.transcript[-1]['text'])
