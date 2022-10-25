@@ -41,7 +41,7 @@ class TestFormatters(TestCase):
         content = SRTFormatter().format_transcript(self.transcript)
         lines = content.split('\n')
 
-        #test middle lines
+        # test middle lines
         self.assertEqual(lines[4], "2")
         self.assertEqual(lines[5], "00:00:01,500 --> 00:00:02,500")
         self.assertEqual(lines[6], self.transcript[1]['text'])
@@ -50,7 +50,7 @@ class TestFormatters(TestCase):
         content = SRTFormatter().format_transcript(self.transcript)
         lines = content.split('\n')
 
-        # test end lines
+        # test ending lines
         self.assertEqual(lines[-2], self.transcript[-1]['text'])
         self.assertEqual(lines[-1], "")
 
