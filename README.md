@@ -161,7 +161,7 @@ transcript = transcript_list.find_generated_transcript(['de', 'en'])
 ```
 
 ### Using Formatters
-Formatters are meant to be an additional layer of processing of the transcript you pass it. The goal is to convert the transcript from its Python data type into a consistent string of a given "format". Such as a basic text (`.txt`) or even formats that have a defined specification such as JSON (`.json`), WebVTT format (`.vtt`), Comma-separated format (`.csv`), etc...
+Formatters are meant to be an additional layer of processing of the transcript you pass it. The goal is to convert the transcript from its Python data type into a consistent string of a given "format". Such as a basic text (`.txt`) or even formats that have a defined specification such as JSON (`.json`), WebVTT (`.vtt`), SRT (`.srt`), Comma-separated format (`.csv`), etc...
 
 The `formatters` submodule provides a few basic formatters to wrap around you transcript data in cases where you might want to do something such as output a specific format then write that format to a file. Maybe to backup/store and run another script against at a later time.
 
@@ -170,7 +170,8 @@ We provided a few subclasses of formatters to use:
 - JSONFormatter
 - PrettyPrintFormatter
 - TextFormatter
-- WebVTTFormatter (a basic implementation)
+- WebVTTFormatter
+- SRTFormatter
 
 Here is how to import from the `formatters` module.
 
@@ -182,6 +183,7 @@ from youtube_transcript_api.formatters import Formatter
 from youtube_transcript_api.formatters import JSONFormatter
 from youtube_transcript_api.formatters import TextFormatter
 from youtube_transcript_api.formatters import WebVTTFormatter
+from youtube_transcript_api.formatters import SRTFormatter
 ```
 
 ### Provided Formatter Example
