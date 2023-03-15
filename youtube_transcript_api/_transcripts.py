@@ -27,6 +27,19 @@ from ._errors import (
 )
 from ._settings import WATCH_URL
 
+TEXT_FORMATS = [
+    'strong',  # important
+    'em',  # emphasized
+    'b',  # bold
+    'i',  # italic
+    'mark',  # marked
+    'small',  # smaller
+    'del',  # deleted
+    'ins',  # inserted
+    'sub',  # subscript
+    'sup',  # superscript
+]
+
 
 def _raise_http_errors(response, video_id):
     try:
@@ -315,15 +328,24 @@ class Transcript(object):
             True,
             [],
         )
-
-
 class _TranscriptParser(object):
-    HTML_TAG_REGEX = re.compile(r'<[^>]*>', re.IGNORECASE)
+    def __init__(self, preserve_formatting=False):
+        self.preserve_formatting = preserve_formatting
+    
+    @property
+    def html_regex(self):
+        if self.preserve_formatting:
+            formats_regex = '|'.join(TEXT_FORMATS)
+            formats_regex = r'<\/?(?!\/?(' + formats_regex + r')\b).*?\b>'
+            html_regex = re.compile(formats_regex, re.IGNORECASE)
+        else:
+            html_regex = re.compile(r'<[^>]*>', re.IGNORECASE)
+        return html_regex
 
     def parse(self, plain_data):
         return [
             {
-                'text': re.sub(self.HTML_TAG_REGEX, '', unescape(xml_element.text)),
+                'text': re.sub(self.html_regex, '', unescape(xml_element.text)),
                 'start': float(xml_element.attrib['start']),
                 'duration': float(xml_element.attrib.get('dur', '0.0')),
             }
