@@ -108,8 +108,7 @@ class TranscriptList(object):
     This object represents a list of transcripts. It can be iterated over to list all transcripts which are available
     for a given YouTube video. Also it provides functionality to search for a transcript in a given language.
     """
-    def __init__(self, video_id, manually_created_transcripts, generated_transcripts, translation_languages,
-):
+    def __init__(self, video_id, manually_created_transcripts, generated_transcripts, translation_languages):
         """
         The constructor is only for internal use. Use the static build method instead.
 
@@ -304,8 +303,7 @@ class Transcript(object):
         """
         response = self._http_client.get(self._url)
         return _TranscriptParser(preserve_formatting=self.preserve_formatting).parse(
-            _raise_http_errors(response, self.video_id).text,
-        )
+            _raise_http_errors(response, self.video_id).text,)
 
     def __str__(self):
         return '{language_code} ("{language}"){translation_description}'.format(
@@ -335,6 +333,8 @@ class Transcript(object):
             [],
             preserve_formatting=self.preserve_formatting,
         )
+
+
 class _TranscriptParser(object):
     def __init__(self, preserve_formatting=False):
         self.preserve_formatting = preserve_formatting
