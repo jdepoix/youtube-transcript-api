@@ -53,11 +53,12 @@ class TranscriptListFetcher(object):
     def __init__(self, http_client):
         self._http_client = http_client
 
-    def fetch(self, video_id):
+    def fetch(self, video_id, preserve_formatting=False):
         return TranscriptList.build(
             self._http_client,
             video_id,
-            self._extract_captions_json(self._fetch_video_html(video_id), video_id)
+            self._extract_captions_json(self._fetch_video_html(video_id), video_id),
+            preserve_formatting=preserve_formatting,
         )
 
     def _extract_captions_json(self, html, video_id):
@@ -107,7 +108,8 @@ class TranscriptList(object):
     This object represents a list of transcripts. It can be iterated over to list all transcripts which are available
     for a given YouTube video. Also it provides functionality to search for a transcript in a given language.
     """
-    def __init__(self, video_id, manually_created_transcripts, generated_transcripts, translation_languages):
+    def __init__(self, video_id, manually_created_transcripts, generated_transcripts, translation_languages,
+):
         """
         The constructor is only for internal use. Use the static build method instead.
 
@@ -126,7 +128,7 @@ class TranscriptList(object):
         self._translation_languages = translation_languages
 
     @staticmethod
-    def build(http_client, video_id, captions_json):
+    def build(http_client, video_id, captions_json, preserve_formatting=False):
         """
         Factory method for TranscriptList.
 
@@ -162,7 +164,8 @@ class TranscriptList(object):
                 caption['name']['simpleText'],
                 caption['languageCode'],
                 caption.get('kind', '') == 'asr',
-                translation_languages if caption.get('isTranslatable', False) else []
+                translation_languages if caption.get('isTranslatable', False) else [],
+                preserve_formatting=preserve_formatting,
             )
 
         return TranscriptList(
@@ -262,7 +265,8 @@ class TranscriptList(object):
 
 
 class Transcript(object):
-    def __init__(self, http_client, video_id, url, language, language_code, is_generated, translation_languages):
+    def __init__(self, http_client, video_id, url, language, language_code, is_generated, translation_languages,
+                 preserve_formatting=False):
         """
         You probably don't want to initialize this directly. Usually you'll access Transcript objects using a
         TranscriptList.
@@ -276,6 +280,7 @@ class Transcript(object):
         :param language_code:
         :param is_generated:
         :param translation_languages:
+        :param preserve_formatting: whether to keep select HTMl text formatting
         """
         self._http_client = http_client
         self.video_id = video_id
@@ -288,6 +293,7 @@ class Transcript(object):
             translation_language['language_code']: translation_language['language']
             for translation_language in translation_languages
         }
+        self.preserve_formatting = preserve_formatting
 
     def fetch(self):
         """
@@ -297,7 +303,7 @@ class Transcript(object):
         :rtype [{'text': str, 'start': float, 'end': float}]:
         """
         response = self._http_client.get(self._url)
-        return _TranscriptParser().parse(
+        return _TranscriptParser(preserve_formatting=self.preserve_formatting).parse(
             _raise_http_errors(response, self.video_id).text,
         )
 
@@ -327,11 +333,12 @@ class Transcript(object):
             language_code,
             True,
             [],
+            preserve_formatting=self.preserve_formatting,
         )
 class _TranscriptParser(object):
     def __init__(self, preserve_formatting=False):
         self.preserve_formatting = preserve_formatting
-    
+
     @property
     def html_regex(self):
         if self.preserve_formatting:
