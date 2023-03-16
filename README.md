@@ -49,10 +49,10 @@ This will return a list of dictionaries looking somewhat like this:
 ]
 ```
 
-You can also add the `languages` param if you want to make sure the transcripts are retrieved in your desired language (it defaults to english).
+You can add the `languages` param if you want to make sure the transcripts are retrieved in your desired language (it defaults to english). You can also add `preserve_formatting=True` if you'd like to keep HTML formatting elements such as `<i>` (italics) and `<b>` (bold).
 
 ```python
-YouTubeTranscriptApi.get_transcripts(video_ids, languages=['de', 'en'])
+YouTubeTranscriptApi.get_transcripts(video_ids, languages=['de', 'en'], preserve_formatting=True)
 ```
 
 It's a list of language codes in a descending priority. In this example it will first try to fetch the german transcript (`'de'`) and then fetch the english transcript (`'en'`) if it fails to do so. If you want to find out which languages are available first, [have a look at `list_transcripts()`](#list-available-transcripts)
