@@ -61,6 +61,18 @@ class TestYouTubeTranscriptApi(TestCase):
             ]
         )
 
+    def test_get_transcript_formatted(self):
+        transcript = YouTubeTranscriptApi.get_transcript('GJLlxj_dtq8', preserve_formatting=True)
+
+        self.assertEqual(
+            transcript,
+            [
+                {'text': 'Hey, this is just a test', 'start': 0.0, 'duration': 1.54},
+                {'text': 'this is <i>not</i> the original transcript', 'start': 1.54, 'duration': 4.16},
+                {'text': 'just something shorter, I made up for testing', 'start': 5.7, 'duration': 3.239}
+            ]
+        )
+
     def test_list_transcripts(self):
         transcript_list = YouTubeTranscriptApi.list_transcripts('GJLlxj_dtq8')
 
@@ -254,11 +266,11 @@ class TestYouTubeTranscriptApi(TestCase):
                 {'text': 'just something shorter, I made up for testing', 'start': 5.7, 'duration': 3.239}
             ]
         )
-    
+
     def test_get_transcript__assertionerror_if_input_not_string(self):
         with self.assertRaises(AssertionError):
             YouTubeTranscriptApi.get_transcript(['video_id_1', 'video_id_2'])
-    
+
     def test_get_transcripts__assertionerror_if_input_not_list(self):
         with self.assertRaises(AssertionError):
             YouTubeTranscriptApi.get_transcripts('video_id_1')
