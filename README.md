@@ -10,7 +10,7 @@ This is a python API which allows you to get the transcript/subtitles for a give
 It is recommended to [install this module by using pip](https://pypi.org/project/youtube-transcript-api/):
 
 ```
-pip install youtube_transcript_api
+pip install youtube-transcript-api
 ```
 
 If you want to use it from source, you'll have to install the dependencies manually:
