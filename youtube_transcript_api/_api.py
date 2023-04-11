@@ -61,6 +61,8 @@ class YouTubeTranscriptApi(object):
         :type proxies: {'http': str, 'https': str} - http://docs.python-requests.org/en/master/user/advanced/#proxies
         :param cookies: a string of the path to a text file containing youtube authorization cookies
         :type cookies: str
+        :param preserve_formatting: whether to keep select HTML text formatting
+        :type preserve_formatting: bool
         :return: the list of available transcripts
         :rtype TranscriptList:
         """
@@ -126,6 +128,8 @@ class YouTubeTranscriptApi(object):
         :type proxies: {'http': str, 'https': str} - http://docs.python-requests.org/en/master/user/advanced/#proxies
         :param cookies: a string of the path to a text file containing youtube authorization cookies
         :type cookies: str
+        :param preserve_formatting: whether to keep select HTML text formatting
+        :type preserve_formatting: bool
         :return: a list of dictionaries containing the 'text', 'start' and 'duration' keys
         :rtype [{'text': str, 'start': float, 'end': float}]:
         """

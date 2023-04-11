@@ -137,6 +137,8 @@ class TranscriptList(object):
         :type video_id: str
         :param captions_json: the JSON parsed from the YouTube pages static HTML
         :type captions_json: dict
+        :param preserve_formatting: whether to keep select HTML text formatting
+        :type preserve_formatting: bool
         :return: the created TranscriptList
         :rtype TranscriptList:
         """
@@ -279,7 +281,8 @@ class Transcript(object):
         :param language_code:
         :param is_generated:
         :param translation_languages:
-        :param preserve_formatting: whether to keep select HTMl text formatting
+        :param preserve_formatting: whether to keep select HTML text formatting
+        :type preserve_formatting: bool
         """
         self._http_client = http_client
         self.video_id = video_id
