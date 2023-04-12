@@ -74,7 +74,8 @@ class YouTubeTranscriptApi(object):
                                                             preserve_formatting=preserve_formatting)
 
     @classmethod
-    def get_transcripts(cls, video_ids, languages=('en',), continue_after_error=False, proxies=None, cookies=None):
+    def get_transcripts(cls, video_ids, languages=('en',), continue_after_error=False, proxies=None,
+                        cookies=None, preserve_formatting=False):
         """
         Retrieves the transcripts for a list of videos.
 
@@ -91,6 +92,8 @@ class YouTubeTranscriptApi(object):
         :type proxies: {'http': str, 'https': str} - http://docs.python-requests.org/en/master/user/advanced/#proxies
         :param cookies: a string of the path to a text file containing youtube authorization cookies
         :type cookies: str
+        :param preserve_formatting: whether to keep select HTML text formatting
+        :type preserve_formatting: bool
         :return: a tuple containing a dictionary mapping video ids onto their corresponding transcripts, and a list of
         video ids, which could not be retrieved
         :rtype ({str: [{'text': str, 'start': float, 'end': float}]}, [str]}):
@@ -102,7 +105,7 @@ class YouTubeTranscriptApi(object):
 
         for video_id in video_ids:
             try:
-                data[video_id] = cls.get_transcript(video_id, languages, proxies, cookies)
+                data[video_id] = cls.get_transcript(video_id, languages, proxies, cookies, preserve_formatting)
             except Exception as exception:
                 if not continue_after_error:
                     raise exception
