@@ -27,7 +27,7 @@ from ._errors import (
 )
 from ._settings import WATCH_URL
 
-TEXT_FORMATS = [
+_FORMATTING_TAGS = [
     'strong',  # important
     'em',  # emphasized
     'b',  # bold
@@ -341,11 +341,11 @@ class Transcript(object):
 class _TranscriptParser(object):
     def __init__(self, preserve_formatting=False):
         self.preserve_formatting = preserve_formatting
+        self._html_regex = self.get_html_regex()
 
-    @property
-    def html_regex(self):
+    def get_html_regex(self):
         if self.preserve_formatting:
-            formats_regex = '|'.join(TEXT_FORMATS)
+            formats_regex = '|'.join(_FORMATTING_TAGS)
             formats_regex = r'<\/?(?!\/?(' + formats_regex + r')\b).*?\b>'
             html_regex = re.compile(formats_regex, re.IGNORECASE)
         else:
@@ -355,7 +355,7 @@ class _TranscriptParser(object):
     def parse(self, plain_data):
         return [
             {
-                'text': re.sub(self.html_regex, '', unescape(xml_element.text)),
+                'text': re.sub(self._html_regex, '', unescape(xml_element.text)),
                 'start': float(xml_element.attrib['start']),
                 'duration': float(xml_element.attrib.get('dur', '0.0')),
             }
