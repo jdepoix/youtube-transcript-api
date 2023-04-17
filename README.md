@@ -48,8 +48,9 @@ This will return a list of dictionaries looking somewhat like this:
     # ...
 ]
 ```
+### Translate transcript
 
-You can also add the `languages` param if you want to make sure the transcripts are retrieved in your desired language (it defaults to english).
+You can add the `languages` param if you want to make sure the transcripts are retrieved in your desired language (it defaults to english).
 
 ```python
 YouTubeTranscriptApi.get_transcripts(video_ids, languages=['de', 'en'])
@@ -64,6 +65,14 @@ YouTubeTranscriptApi.get_transcripts(video_ids, languages=['de', 'en'])
 ```
 
 `languages` also is optional here.
+
+### Preserve formatting
+
+You can also add `preserve_formatting=True` if you'd like to keep HTML formatting elements such as `<i>` (italics) and `<b>` (bold).
+
+```python
+YouTubeTranscriptApi.get_transcripts(video_ids, languages=['de', 'en'], preserve_formatting=True)
+```
 
 ### List available transcripts
 

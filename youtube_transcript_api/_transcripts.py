@@ -1,7 +1,7 @@
 import sys
 
 # This can only be tested by using different python versions, therefore it is not covered by coverage.py
-if sys.version_info.major == 2: # pragma: no cover
+if sys.version_info.major == 2:  # pragma: no cover
     reload(sys)
     sys.setdefaultencoding('utf-8')
 
@@ -41,10 +41,11 @@ class TranscriptListFetcher(object):
         self._http_client = http_client
 
     def fetch(self, video_id):
+
         return TranscriptList.build(
             self._http_client,
             video_id,
-            self._extract_captions_json(self._fetch_video_html(video_id), video_id)
+            self._extract_captions_json(self._fetch_video_html(video_id), video_id),
         )
 
     def _extract_captions_json(self, html, video_id):
@@ -94,6 +95,7 @@ class TranscriptList(object):
     This object represents a list of transcripts. It can be iterated over to list all transcripts which are available
     for a given YouTube video. Also it provides functionality to search for a transcript in a given language.
     """
+
     def __init__(self, video_id, manually_created_transcripts, generated_transcripts, translation_languages):
         """
         The constructor is only for internal use. Use the static build method instead.
@@ -149,7 +151,7 @@ class TranscriptList(object):
                 caption['name']['simpleText'],
                 caption['languageCode'],
                 caption.get('kind', '') == 'asr',
-                translation_languages if caption.get('isTranslatable', False) else []
+                translation_languages if caption.get('isTranslatable', False) else [],
             )
 
         return TranscriptList(
@@ -190,7 +192,7 @@ class TranscriptList(object):
         :rtype Transcript:
         :raises: NoTranscriptFound
         """
-        return self._find_transcript(language_codes, [self._generated_transcripts,])
+        return self._find_transcript(language_codes, [self._generated_transcripts])
 
     def find_manually_created_transcript(self, language_codes):
         """
@@ -204,7 +206,7 @@ class TranscriptList(object):
         :rtype Transcript:
         :raises: NoTranscriptFound
         """
-        return self._find_transcript(language_codes, [self._manually_created_transcripts,])
+        return self._find_transcript(language_codes, [self._manually_created_transcripts])
 
     def _find_transcript(self, language_codes, transcript_dicts):
         for language_code in language_codes:
@@ -276,15 +278,16 @@ class Transcript(object):
             for translation_language in translation_languages
         }
 
-    def fetch(self):
+    def fetch(self, preserve_formatting=False):
         """
         Loads the actual transcript data.
-
+        :param preserve_formatting: whether to keep select HTML text formatting
+        :type preserve_formatting: bool
         :return: a list of dictionaries containing the 'text', 'start' and 'duration' keys
         :rtype [{'text': str, 'start': float, 'end': float}]:
         """
         response = self._http_client.get(self._url)
-        return _TranscriptParser().parse(
+        return _TranscriptParser(preserve_formatting=preserve_formatting).parse(
             _raise_http_errors(response, self.video_id).text,
         )
 
@@ -318,12 +321,35 @@ class Transcript(object):
 
 
 class _TranscriptParser(object):
-    HTML_TAG_REGEX = re.compile(r'<[^>]*>', re.IGNORECASE)
+    _FORMATTING_TAGS = [
+        'strong',  # important
+        'em',  # emphasized
+        'b',  # bold
+        'i',  # italic
+        'mark',  # marked
+        'small',  # smaller
+        'del',  # deleted
+        'ins',  # inserted
+        'sub',  # subscript
+        'sup',  # superscript
+    ]
+
+    def __init__(self, preserve_formatting=False):
+        self._html_regex = self._get_html_regex(preserve_formatting)
+
+    def _get_html_regex(self, preserve_formatting):
+        if preserve_formatting:
+            formats_regex = '|'.join(self._FORMATTING_TAGS)
+            formats_regex = r'<\/?(?!\/?(' + formats_regex + r')\b).*?\b>'
+            html_regex = re.compile(formats_regex, re.IGNORECASE)
+        else:
+            html_regex = re.compile(r'<[^>]*>', re.IGNORECASE)
+        return html_regex
 
     def parse(self, plain_data):
         return [
             {
-                'text': re.sub(self.HTML_TAG_REGEX, '', unescape(xml_element.text)),
+                'text': re.sub(self._html_regex, '', unescape(xml_element.text)),
                 'start': float(xml_element.attrib['start']),
                 'duration': float(xml_element.attrib.get('dur', '0.0')),
             }

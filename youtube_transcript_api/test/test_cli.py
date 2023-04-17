@@ -12,7 +12,7 @@ class TestYouTubeTranscriptCli(TestCase):
         self.transcript_mock = MagicMock()
         self.transcript_mock.fetch = MagicMock(return_value=[
             {'text': 'Hey, this is just a test', 'start': 0.0, 'duration': 1.54},
-            {'text': 'this is not the original transcript', 'start': 1.54, 'duration': 4.16},
+            {'text': 'this is <i>not</i> the original transcript', 'start': 1.54, 'duration': 4.16},
             {'text': 'just something shorter, I made up for testing', 'start': 5.7, 'duration': 3.239}
         ])
         self.transcript_mock.translate = MagicMock(return_value=self.transcript_mock)

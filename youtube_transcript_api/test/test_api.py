@@ -61,6 +61,18 @@ class TestYouTubeTranscriptApi(TestCase):
             ]
         )
 
+    def test_get_transcript_formatted(self):
+        transcript = YouTubeTranscriptApi.get_transcript('GJLlxj_dtq8', preserve_formatting=True)
+
+        self.assertEqual(
+            transcript,
+            [
+                {'text': 'Hey, this is just a test', 'start': 0.0, 'duration': 1.54},
+                {'text': 'this is <i>not</i> the original transcript', 'start': 1.54, 'duration': 4.16},
+                {'text': 'just something shorter, I made up for testing', 'start': 5.7, 'duration': 3.239}
+            ]
+        )
+
     def test_list_transcripts(self):
         transcript_list = YouTubeTranscriptApi.list_transcripts('GJLlxj_dtq8')
 
@@ -254,11 +266,11 @@ class TestYouTubeTranscriptApi(TestCase):
                 {'text': 'just something shorter, I made up for testing', 'start': 5.7, 'duration': 3.239}
             ]
         )
-    
+
     def test_get_transcript__assertionerror_if_input_not_string(self):
         with self.assertRaises(AssertionError):
             YouTubeTranscriptApi.get_transcript(['video_id_1', 'video_id_2'])
-    
+
     def test_get_transcripts__assertionerror_if_input_not_list(self):
         with self.assertRaises(AssertionError):
             YouTubeTranscriptApi.get_transcripts('video_id_1')
@@ -271,8 +283,8 @@ class TestYouTubeTranscriptApi(TestCase):
 
         YouTubeTranscriptApi.get_transcripts([video_id_1, video_id_2], languages=languages)
 
-        mock_get_transcript.assert_any_call(video_id_1, languages, None, None)
-        mock_get_transcript.assert_any_call(video_id_2, languages, None, None)
+        mock_get_transcript.assert_any_call(video_id_1, languages, None, None, False)
+        mock_get_transcript.assert_any_call(video_id_2, languages, None, None, False)
         self.assertEqual(mock_get_transcript.call_count, 2)
 
     @patch('youtube_transcript_api.YouTubeTranscriptApi.get_transcript', side_effect=Exception('Error'))
@@ -287,20 +299,20 @@ class TestYouTubeTranscriptApi(TestCase):
 
         YouTubeTranscriptApi.get_transcripts(['video_id_1', 'video_id_2'], continue_after_error=True)
 
-        mock_get_transcript.assert_any_call(video_id_1, ('en',), None, None)
-        mock_get_transcript.assert_any_call(video_id_2, ('en',), None, None)
+        mock_get_transcript.assert_any_call(video_id_1, ('en',), None, None, False)
+        mock_get_transcript.assert_any_call(video_id_2, ('en',), None, None, False)
     
     @patch('youtube_transcript_api.YouTubeTranscriptApi.get_transcript')
     def test_get_transcripts__with_cookies(self, mock_get_transcript):
         cookies = '/example_cookies.txt'
         YouTubeTranscriptApi.get_transcripts(['GJLlxj_dtq8'], cookies=cookies)
-        mock_get_transcript.assert_any_call('GJLlxj_dtq8', ('en',), None, cookies)
+        mock_get_transcript.assert_any_call('GJLlxj_dtq8', ('en',), None, cookies, False)
 
     @patch('youtube_transcript_api.YouTubeTranscriptApi.get_transcript')
     def test_get_transcripts__with_proxies(self, mock_get_transcript):
         proxies = {'http': '', 'https:': ''}
         YouTubeTranscriptApi.get_transcripts(['GJLlxj_dtq8'], proxies=proxies)
-        mock_get_transcript.assert_any_call('GJLlxj_dtq8', ('en',), proxies, None)
+        mock_get_transcript.assert_any_call('GJLlxj_dtq8', ('en',), proxies, None, False)
 
     def test_load_cookies(self):
         dirname, filename = os.path.split(os.path.abspath(__file__))
