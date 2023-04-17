@@ -1,7 +1,7 @@
 import sys
 
 # This can only be tested by using different python versions, therefore it is not covered by coverage.py
-if sys.version_info.major == 2: # pragma: no cover
+if sys.version_info.major == 2:  # pragma: no cover
     reload(sys)
     sys.setdefaultencoding('utf-8')
 
@@ -95,6 +95,7 @@ class TranscriptList(object):
     This object represents a list of transcripts. It can be iterated over to list all transcripts which are available
     for a given YouTube video. Also it provides functionality to search for a transcript in a given language.
     """
+
     def __init__(self, video_id, manually_created_transcripts, generated_transcripts, translation_languages):
         """
         The constructor is only for internal use. Use the static build method instead.
@@ -191,7 +192,7 @@ class TranscriptList(object):
         :rtype Transcript:
         :raises: NoTranscriptFound
         """
-        return self._find_transcript(language_codes, [self._generated_transcripts,])
+        return self._find_transcript(language_codes, [self._generated_transcripts])
 
     def find_manually_created_transcript(self, language_codes):
         """
@@ -205,7 +206,7 @@ class TranscriptList(object):
         :rtype Transcript:
         :raises: NoTranscriptFound
         """
-        return self._find_transcript(language_codes, [self._manually_created_transcripts,])
+        return self._find_transcript(language_codes, [self._manually_created_transcripts])
 
     def _find_transcript(self, language_codes, transcript_dicts):
         for language_code in language_codes:
@@ -287,7 +288,8 @@ class Transcript(object):
         """
         response = self._http_client.get(self._url)
         return _TranscriptParser(preserve_formatting=preserve_formatting).parse(
-            _raise_http_errors(response, self.video_id).text,)
+            _raise_http_errors(response, self.video_id).text,
+        )
 
     def __str__(self):
         return '{language_code} ("{language}"){translation_description}'.format(
@@ -319,24 +321,24 @@ class Transcript(object):
 
 
 class _TranscriptParser(object):
-    def __init__(self, preserve_formatting=False):
-        self.preserve_formatting = preserve_formatting
-        self._FORMATTING_TAGS = [
-            'strong',  # important
-            'em',  # emphasized
-            'b',  # bold
-            'i',  # italic
-            'mark',  # marked
-            'small',  # smaller
-            'del',  # deleted
-            'ins',  # inserted
-            'sub',  # subscript
-            'sup',  # superscript
-            ]
-        self._html_regex = self.get_html_regex()
+    _FORMATTING_TAGS = [
+        'strong',  # important
+        'em',  # emphasized
+        'b',  # bold
+        'i',  # italic
+        'mark',  # marked
+        'small',  # smaller
+        'del',  # deleted
+        'ins',  # inserted
+        'sub',  # subscript
+        'sup',  # superscript
+    ]
 
-    def get_html_regex(self):
-        if self.preserve_formatting:
+    def __init__(self, preserve_formatting=False):
+        self._html_regex = self._get_html_regex(preserve_formatting)
+
+    def _get_html_regex(self, preserve_formatting):
+        if preserve_formatting:
             formats_regex = '|'.join(self._FORMATTING_TAGS)
             formats_regex = r'<\/?(?!\/?(' + formats_regex + r')\b).*?\b>'
             html_regex = re.compile(formats_regex, re.IGNORECASE)
