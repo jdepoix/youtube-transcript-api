@@ -24,6 +24,7 @@ from ._errors import (
     TranslationLanguageNotAvailable,
     NoTranscriptAvailable,
     FailedToCreateConsentCookie,
+    InvalidVideoId,
 )
 from ._settings import WATCH_URL
 
@@ -41,7 +42,6 @@ class TranscriptListFetcher(object):
         self._http_client = http_client
 
     def fetch(self, video_id):
-
         return TranscriptList.build(
             self._http_client,
             video_id,
@@ -52,6 +52,8 @@ class TranscriptListFetcher(object):
         splitted_html = html.split('"captions":')
 
         if len(splitted_html) <= 1:
+            if video_id.startswith('http://') or video_id.startswith('https://'):
+                raise InvalidVideoId(video_id)
             if 'class="g-recaptcha"' in html:
                 raise TooManyRequests(video_id)
             if '"playabilityStatus":' not in html:
@@ -182,7 +184,7 @@ class TranscriptList(object):
 
     def find_generated_transcript(self, language_codes):
         """
-        Finds a automatically generated transcript for a given language code.
+        Finds an automatically generated transcript for a given language code.
 
         :param language_codes: A list of language codes in a descending priority. For example, if this is set to
         ['de', 'en'] it will first try to fetch the german transcript (de) and then fetch the english transcript (en) if

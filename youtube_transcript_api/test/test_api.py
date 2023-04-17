@@ -20,6 +20,7 @@ from youtube_transcript_api import (
     CookiesInvalid,
     FailedToCreateConsentCookie,
     YouTubeRequestFailed,
+    InvalidVideoId,
 )
 
 
@@ -96,6 +97,16 @@ class TestYouTubeTranscriptApi(TestCase):
         transcript = transcript_list.find_generated_transcript(['en'])
 
         self.assertTrue(transcript.is_generated)
+
+    def test_list_transcripts__url_as_video_id(self):
+        httpretty.register_uri(
+            httpretty.GET,
+            'https://www.youtube.com/watch',
+            body=load_asset('youtube_transcripts_disabled.html.static')
+        )
+
+        with self.assertRaises(InvalidVideoId):
+            YouTubeTranscriptApi.list_transcripts('https://www.youtube.com/watch?v=GJLlxj_dtq8')
 
     def test_translate_transcript(self):
         transcript = YouTubeTranscriptApi.list_transcripts('GJLlxj_dtq8').find_transcript(['en'])
