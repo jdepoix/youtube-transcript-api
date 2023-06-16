@@ -88,7 +88,7 @@ class TranscriptListFetcher(object):
         return html
 
     def _fetch_html(self, video_id):
-        response = self._http_client.get(WATCH_URL.format(video_id=video_id))
+        response = self._http_client.get(WATCH_URL.format(video_id=video_id), headers={'Accept-Language': 'en-US'})
         return unescape(_raise_http_errors(response, video_id).text)
 
 
@@ -288,7 +288,7 @@ class Transcript(object):
         :return: a list of dictionaries containing the 'text', 'start' and 'duration' keys
         :rtype [{'text': str, 'start': float, 'end': float}]:
         """
-        response = self._http_client.get(self._url)
+        response = self._http_client.get(self._url, headers={'Accept-Language': 'en-US'})
         return _TranscriptParser(preserve_formatting=preserve_formatting).parse(
             _raise_http_errors(response, self.video_id).text,
         )
