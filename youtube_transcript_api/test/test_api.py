@@ -1,3 +1,4 @@
+import os
 from unittest import TestCase
 from mock import patch
 
@@ -21,6 +22,8 @@ from youtube_transcript_api import (
     FailedToCreateConsentCookie,
     YouTubeRequestFailed,
     InvalidVideoId,
+    VideoUnplayable,
+    LoginRequired
 )
 
 
@@ -198,6 +201,26 @@ class TestYouTubeTranscriptApi(TestCase):
         with self.assertRaises(VideoUnavailable):
             YouTubeTranscriptApi.get_transcript('abc')
 
+    def test_get_transcript__exception_if_video_unplayable(self):
+        httpretty.register_uri(
+            httpretty.GET,
+            'https://www.youtube.com/watch',
+            body=load_asset('youtube_video_unplayable.html.static')
+        )
+
+        with self.assertRaises(VideoUnplayable):
+            YouTubeTranscriptApi.get_transcript('kZsVStYdmws')
+    
+    def test_get_transcript__exception_if_login_required(self):
+        httpretty.register_uri(
+            httpretty.GET,
+            'https://www.youtube.com/watch',
+            body=load_asset('youtube_video_login_required.html.static')
+        )
+
+        with self.assertRaises(LoginRequired):
+            YouTubeTranscriptApi.get_transcript('4FN12sqoC4Y')
+    
     def test_get_transcript__exception_if_youtube_request_fails(self):
         httpretty.register_uri(
             httpretty.GET,
