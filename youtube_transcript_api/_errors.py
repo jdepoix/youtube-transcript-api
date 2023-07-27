@@ -8,6 +8,7 @@ class CouldNotRetrieveTranscript(Exception):
     ERROR_MESSAGE = '\nCould not retrieve a transcript for the video {video_url}!'
     CAUSE_MESSAGE_INTRO = ' This is most likely caused by:\n\n{cause}'
     CAUSE_MESSAGE = ''
+    REASON_MESSAGE = '{cause}: {reason}\n{subreason}'
     GITHUB_REFERRAL = (
         '\n\nIf you are sure that the described cause is not responsible for this error '
         'and that a transcript should be retrievable, please create an issue at '
@@ -17,7 +18,8 @@ class CouldNotRetrieveTranscript(Exception):
         'Also make sure that there are no open issues which already describe your problem!'
     )
 
-    def __init__(self, video_id):
+    def __init__(self, video_id, playability=None):
+        self.playability = playability
         self.video_id = video_id
         super(CouldNotRetrieveTranscript, self).__init__(self._build_error_message())
 
@@ -32,6 +34,14 @@ class CouldNotRetrieveTranscript(Exception):
 
     @property
     def cause(self):
+        if self.playability:
+            # if self.playability IS NOT None, use the playability error reason the API presented.
+            
+            subreason = get_playability_subreason(self.playability)
+            return self.REASON_MESSAGE.format(
+                cause=self.CAUSE_MESSAGE,
+                reason=self.playability.get("reason"),
+                subreason=subreason)
         return self.CAUSE_MESSAGE
 
 
@@ -100,6 +110,12 @@ class CookiesInvalid(CouldNotRetrieveTranscript):
 class FailedToCreateConsentCookie(CouldNotRetrieveTranscript):
     CAUSE_MESSAGE = 'Failed to automatically give consent to saving cookies'
 
+class VideoUnplayable(CouldNotRetrieveTranscript):
+    CAUSE_MESSAGE = 'Unplayable video'
+
+class LoginRequired(CouldNotRetrieveTranscript):
+    CAUSE_MESSAGE = 'Login required'
+
 
 class NoTranscriptFound(CouldNotRetrieveTranscript):
     CAUSE_MESSAGE = (
@@ -118,3 +134,46 @@ class NoTranscriptFound(CouldNotRetrieveTranscript):
             requested_language_codes=self._requested_language_codes,
             transcript_data=str(self._transcript_data),
         )
+
+
+def get_playability_error(playability_json):
+    """
+    Using the json extracted from playabilityStatus,
+    returns a custom error based on the value of the "status" key.
+    
+    Anything that is not {"status": "OK"} is likely an error.
+    """
+    reason = playability_json.get("status")
+    if reason == 'LOGIN_REQUIRED':
+        # error for age related playability
+        return LoginRequired
+    elif reason == 'UNPLAYABLE':
+        # error for region/country lock playability
+        return VideoUnplayable
+    else:
+        # error fallback
+        return TranscriptsDisabled
+
+
+def get_playability_subreason(playability_json):
+    """
+    Traverses playability json nested struct to pick out the subreason, if any.
+    """
+    
+    # check for each nested keys and fail fast if they dont exist.
+    error_screen = playability_json.get("errorScreen")
+    if not error_screen:
+        return ""
+    
+    renderer = error_screen.get("playerErrorMessageRenderer")
+    if not renderer:
+        return ""
+    
+    subreason = renderer.get("subreason", dict()).get("runs", list())
+    
+    if not subreason:
+        return ""
+    
+    if len(subreason) > 0:
+        return subreason[0]['text']
+    return ""
