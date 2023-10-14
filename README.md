@@ -50,20 +50,20 @@ This will return a list of dictionaries looking somewhat like this:
     # ...
 ]
 ```
-### Translate transcript
+### Retrieve different languages
 
 You can add the `languages` param if you want to make sure the transcripts are retrieved in your desired language (it defaults to english).
 
 ```python
-YouTubeTranscriptApi.get_transcript(video_ids, languages=['de', 'en'])
+YouTubeTranscriptApi.get_transcript(video_id, languages=['de', 'en'])
 ```
 
 It's a list of language codes in a descending priority. In this example it will first try to fetch the german transcript (`'de'`) and then fetch the english transcript (`'en'`) if it fails to do so. If you want to find out which languages are available first, [have a look at `list_transcripts()`](#list-available-transcripts).
 
-If you only want one language, you still need to format the languages argument as a list, i.e.,
+If you only want one language, you still need to format the `languages` argument as a list
 
 ```python
-YouTubeTranscriptApi.get_transcript(video_ids, languages=['de'])
+YouTubeTranscriptApi.get_transcript(video_id, languages=['de'])
 ```
 ### Batch fetching of transcripts
 
