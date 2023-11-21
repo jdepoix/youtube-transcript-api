@@ -15,6 +15,12 @@ I tend to read faster than the Youtube can play video-wise.
 And I retain the content better when I read.
 And this is why I took the approach below.
 
+Edit and alter "run.py" to execute, future version will take cmd line args
+
+"fixthisrun.py" is my attempt to use Selenium to grab the Title of the video
+However, doing it this way is a screen scrape, and I'd rather use the Google API
+to avoid messing with Google's terms of service with Youtube posts.
+
 This is the same content below from the README.md, 
 no further changes to the original README.md file to read. 
 
