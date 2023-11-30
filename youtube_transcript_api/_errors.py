@@ -161,19 +161,11 @@ def get_playability_subreason(playability_json):
     """
     
     # check for each nested keys and fail fast if they dont exist.
-    error_screen = playability_json.get("errorScreen")
-    if not error_screen:
-        return ""
-    
-    renderer = error_screen.get("playerErrorMessageRenderer")
-    if not renderer:
-        return ""
-    
-    subreason = renderer.get("subreason", dict()).get("runs", list())
-    
-    if not subreason:
-        return ""
-    
-    if len(subreason) > 0:
-        return subreason[0]['text']
+    error_screen = playability_json.get("errorScreen", {})
+    renderer = error_screen.get("playerErrorMessageRenderer", {})
+    subreason = renderer.get("subreason", {}).get("runs", [])
+
+    if subreason:
+        return subreason[0].get('text', '')
+
     return ""
