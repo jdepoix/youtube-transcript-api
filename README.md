@@ -107,7 +107,7 @@ transcript = transcript_list.find_manually_created_transcript(['de', 'en'])
 transcript = transcript_list.find_generated_transcript(['de', 'en'])
 ```
 
-The methods `find_generated_transcript`, `find_manually_created_transcript`, `find_generated_transcript` return `Transcript` objects. They contain metadata regarding the transcript:
+The methods `find_generated_transcript`, `find_manually_created_transcript`, `find_transcript` return `Transcript` objects. They contain metadata regarding the transcript:
 
 ```python
 print(
