@@ -130,12 +130,12 @@ class TranscriptList(object):
         :return: the created TranscriptList
         :rtype TranscriptList:
         """
-        translation_languages = [
-            {
-                'language': translation_language['languageName']['simpleText'],
-                'language_code': translation_language['languageCode'],
-            } for translation_language in captions_json['translationLanguages']
-        ]
+        # translation_languages = [
+        #     {
+        #         'language': translation_language['languageName']['simpleText'],
+        #         'language_code': translation_language['languageCode'],
+        #     } for translation_language in captions_json['translationLanguages']
+        # ]
 
         manually_created_transcripts = {}
         generated_transcripts = {}
@@ -153,14 +153,14 @@ class TranscriptList(object):
                 caption['name']['simpleText'],
                 caption['languageCode'],
                 caption.get('kind', '') == 'asr',
-                translation_languages if caption.get('isTranslatable', False) else [],
+                [],
             )
 
         return TranscriptList(
             video_id,
             manually_created_transcripts,
             generated_transcripts,
-            translation_languages,
+            [],
         )
 
     def __iter__(self):
