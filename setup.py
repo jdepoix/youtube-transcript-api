@@ -42,7 +42,7 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ),
     install_requires=[
-        'requests>=2.31.0,<3.0.0',
+        'requests>=2.31.0',
     ],
     tests_require=[
         'mock',

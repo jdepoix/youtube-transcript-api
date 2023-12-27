@@ -1,4 +1,4 @@
-requests>=2.31.0,<3.0.0
+requests>=2.31.0
 
 # testing
 mock==3.0.5
