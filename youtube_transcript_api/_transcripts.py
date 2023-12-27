@@ -134,7 +134,7 @@ class TranscriptList(object):
             {
                 'language': translation_language['languageName']['simpleText'],
                 'language_code': translation_language['languageCode'],
-            } for translation_language in captions_json['translationLanguages']
+            } for translation_language in captions_json.get('translationLanguages', [])
         ]
 
         manually_created_transcripts = {}

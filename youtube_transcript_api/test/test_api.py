@@ -108,6 +108,19 @@ class TestYouTubeTranscriptApi(TestCase):
         with self.assertRaises(InvalidVideoId):
             YouTubeTranscriptApi.list_transcripts('https://www.youtube.com/watch?v=GJLlxj_dtq8')
 
+
+    def test_list_transcripts__no_translation_languages_provided(self):
+        httpretty.register_uri(
+            httpretty.GET,
+            'https://www.youtube.com/watch',
+            body=load_asset('youtube_no_translation_languages.html.static')
+        )
+
+        transcript_list = YouTubeTranscriptApi.list_transcripts('GJLlxj_dtq8')
+        for transcript in transcript_list:
+            self.assertEqual(len(transcript.translation_languages), 0)
+
+
     def test_translate_transcript(self):
         transcript = YouTubeTranscriptApi.list_transcripts('GJLlxj_dtq8').find_transcript(['en'])
 
