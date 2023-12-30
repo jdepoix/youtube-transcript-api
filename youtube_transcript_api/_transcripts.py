@@ -25,6 +25,9 @@ from ._errors import (
     NoTranscriptAvailable,
     FailedToCreateConsentCookie,
     InvalidVideoId,
+    VideoUnplayable,
+    LoginRequired,
+    get_playability_error
 )
 from ._settings import WATCH_URL
 
@@ -50,7 +53,6 @@ class TranscriptListFetcher(object):
 
     def _extract_captions_json(self, html, video_id):
         splitted_html = html.split('"captions":')
-
         if len(splitted_html) <= 1:
             if video_id.startswith('http://') or video_id.startswith('https://'):
                 raise InvalidVideoId(video_id)
@@ -58,9 +60,26 @@ class TranscriptListFetcher(object):
                 raise TooManyRequests(video_id)
             if '"playabilityStatus":' not in html:
                 raise VideoUnavailable(video_id)
-
-            raise TranscriptsDisabled(video_id)
-
+            
+            # attempt to parse the playability reason from the html.
+            playability_splitted_html = html.split('"playabilityStatus":')
+            if len(playability_splitted_html) <= 1:
+                # if we didnt find "playabilityStatus" to split on, fallback.
+                raise TranscriptsDisabled(video_id)
+            
+            # if we cannot split on videoDetails (a key after "playabilityStatus")
+            raw_details = playability_splitted_html[1].split(',"videoDetails')
+            if len(raw_details) <= 1:
+                raise TranscriptsDisabled(video_id)
+            
+            playability_status_json = json.loads(
+                raw_details[0].replace('\n', '')
+            )
+            
+            playability_error = get_playability_error(playability_status_json)
+            raise playability_error(video_id, playability_status_json)
+        
+        # we were able to split on "captions":
         captions_json = json.loads(
             splitted_html[1].split(',"videoDetails')[0].replace('\n', '')
         ).get('playerCaptionsTracklistRenderer')
