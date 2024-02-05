@@ -76,6 +76,9 @@ class TooManyRequests(CouldNotRetrieveTranscript):
 class TranscriptsDisabled(CouldNotRetrieveTranscript):
     CAUSE_MESSAGE = 'Subtitles are disabled for this video'
 
+class ChaptersNotAvailable(CouldNotRetrieveTranscript):
+    CAUSE_MESSAGE = 'No chapter info available for this video'
+
 
 class NoTranscriptAvailable(CouldNotRetrieveTranscript):
     CAUSE_MESSAGE = 'No transcripts are available for this video'

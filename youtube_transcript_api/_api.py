@@ -16,7 +16,7 @@ from ._errors import (
 
 class YouTubeTranscriptApi(object):
     @classmethod
-    def list_transcripts(cls, video_id, proxies=None, cookies=None):
+    def list_transcripts(cls, video_id, proxies=None, cookies=None, include_chapter_tags=False):
         """
         Retrieves the list of transcripts which are available for a given video. It returns a `TranscriptList` object
         which is iterable and provides methods to filter the list of transcripts for specific languages. While iterating
@@ -68,11 +68,11 @@ class YouTubeTranscriptApi(object):
             if cookies:
                 http_client.cookies = cls._load_cookies(cookies, video_id)
             http_client.proxies = proxies if proxies else {}
-            return TranscriptListFetcher(http_client).fetch(video_id)
+            return TranscriptListFetcher(http_client).fetch(video_id, include_chapter_tags)
 
     @classmethod
     def get_transcripts(cls, video_ids, languages=('en',), continue_after_error=False, proxies=None,
-                        cookies=None, preserve_formatting=False):
+                        cookies=None, preserve_formatting=False, include_chapter_tags=False):
         """
         Retrieves the transcripts for a list of videos.
 
@@ -102,7 +102,7 @@ class YouTubeTranscriptApi(object):
 
         for video_id in video_ids:
             try:
-                data[video_id] = cls.get_transcript(video_id, languages, proxies, cookies, preserve_formatting)
+                data[video_id] = cls.get_transcript(video_id, languages, proxies, cookies, preserve_formatting, include_chapter_tags)
             except Exception as exception:
                 if not continue_after_error:
                     raise exception
@@ -112,7 +112,8 @@ class YouTubeTranscriptApi(object):
         return data, unretrievable_videos
 
     @classmethod
-    def get_transcript(cls, video_id, languages=('en',), proxies=None, cookies=None, preserve_formatting=False):
+    def get_transcript(cls, video_id, languages=('en',), proxies=None, cookies=None, preserve_formatting=False
+                       , include_chapter_tags=False):
         """
         Retrieves the transcript for a single video. This is just a shortcut for calling::
 
@@ -134,7 +135,7 @@ class YouTubeTranscriptApi(object):
         :rtype [{'text': str, 'start': float, 'end': float}]:
         """
         assert isinstance(video_id, str), "`video_id` must be a string"
-        return cls.list_transcripts(video_id, proxies, cookies).find_transcript(languages).fetch(preserve_formatting=preserve_formatting)
+        return cls.list_transcripts(video_id, proxies, cookies, include_chapter_tags).find_transcript(languages).fetch(preserve_formatting=preserve_formatting)
 
     @classmethod
     def _load_cookies(cls, cookies, video_id):
