@@ -19,7 +19,7 @@ If you want to use it from source, you'll have to install the dependencies manua
 pip install -r requirements.txt
 ```
 
-You can either integrate this module [into an existing application](#api), or just use it via an [CLI](#cli).
+You can either integrate this module [into an existing application](#api) or just use it via a [CLI](#cli).
 
 ## API
 
