@@ -1,9 +1,39 @@
 
-# YouTube Transcript/Subtitle API (including automatically generated subtitles and subtitle translations)  
+<h1 align="center">
+  ✨ YouTube Transcript API ✨
+</h1>
 
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BAENLEW8VUJ6G&source=url) [![Build Status](https://travis-ci.com/jdepoix/youtube-transcript-api.svg?branch=master)](https://app.travis-ci.com/jdepoix/youtube-transcript-api) [![Coverage Status](https://coveralls.io/repos/github/jdepoix/youtube-transcript-api/badge.svg?branch=master)](https://coveralls.io/github/jdepoix/youtube-transcript-api?branch=master) [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](http://opensource.org/licenses/MIT) [![image](https://img.shields.io/pypi/v/youtube-transcript-api.svg)](https://pypi.org/project/youtube-transcript-api/) [![image](https://img.shields.io/pypi/pyversions/youtube-transcript-api.svg)](https://pypi.org/project/youtube-transcript-api/)
+<p align="center">
+  <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BAENLEW8VUJ6G&source=url">
+    <img src="https://img.shields.io/badge/Donate-PayPal-green.svg" alt="Donate">
+  </a>
+  <a href="https://app.travis-ci.com/jdepoix/youtube-transcript-api">
+    <img src="https://travis-ci.com/jdepoix/youtube-transcript-api.svg?branch=master" alt="Build Status">
+  </a>
+  <a href="https://coveralls.io/github/jdepoix/youtube-transcript-api?branch=master">
+    <img src="https://coveralls.io/repos/github/jdepoix/youtube-transcript-api/badge.svg?branch=master" alt="Coverage Status">
+  </a>
+  <a href="http://opensource.org/licenses/MIT">
+    <img src="http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat" alt="MIT license">
+  </a>
+  <a href="https://pypi.org/project/youtube-transcript-api/">
+    <img src="https://img.shields.io/pypi/v/youtube-transcript-api.svg" alt="Current Version">
+  </a>
+  <a href="https://pypi.org/project/youtube-transcript-api/">
+    <img src="https://img.shields.io/pypi/pyversions/youtube-transcript-api.svg" alt="Supported Python Versions">
+  </a>
+</p>
 
-This is a python API which allows you to get the transcript/subtitles for a given YouTube video. It also works for automatically generated subtitles, supports translating subtitles and it does not require a headless browser, like other selenium based solutions do!
+<p align="center">
+  <b>This is a python API which allows you to retrieve the transcript/subtitles for a given YouTube video. It also works for automatically generated subtitles, supports translating subtitles and it does not require a headless browser, like other selenium based solutions do!</b>
+</p>
+<p align="center">
+ Maintenance of this project is made possible by all the <a href="https://github.com/jdepoix/youtube-transcript-api/graphs/contributors">contributors</a> and <a href="https://github.com/sponsors/jdepoix">sponsors</a>. If you'd like to sponsor this project and have your avatar or company logo appear below <a href="https://github.com/sponsors/jdepoix">click here</a>. 💖
+</p>
+
+<p align="center">
+<a href="https://www.searchapi.io"><img src="https://www.searchapi.io/press/searchapi-logo-symbol-screen.png" width="80px" alt="SearchAPI" /></a>&nbsp;&nbsp;
+</p>
 
 ## Install
 
@@ -340,8 +370,8 @@ youtube_transcript_api <first_video_id> <second_video_id> --cookies /path/to/you
 
  This code uses an undocumented part of the YouTube API, which is called by the YouTube web-client. So there is no guarantee that it won't stop working tomorrow, if they change how things work. I will however do my best to make things working again as soon as possible if that happens. So if it stops working, let me know!  
 
-## Donation  
+## Donations
 
-If this project makes you happy by reducing your development time, you can make me happy by treating me to a cup of coffee :)  
+If this project makes you happy by reducing your development time, you can make me happy by treating me to a cup of coffee, or become a [Sponsor of this project](https://github.com/sponsors/jdepoix) :)  
 
 [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BAENLEW8VUJ6G&source=url)
