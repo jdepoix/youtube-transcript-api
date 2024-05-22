@@ -32,7 +32,13 @@
 </p>
 
 <p align="center">
-<a href="https://www.searchapi.io"><img src="https://www.searchapi.io/press/searchapi-logo-symbol-screen.png" width="80px" alt="SearchAPI" /></a>&nbsp;&nbsp;
+  <a href="https://www.searchapi.io">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://www.searchapi.io/press/v1/svg/searchapi_logo_white_h.svg">
+      <source media="(prefers-color-scheme: light)" srcset="https://www.searchapi.io/press/v1/svg/searchapi_logo_black_h.svg">
+      <img alt="SearchAPI" src="https://www.searchapi.io/press/v1/svg/searchapi_logo_black_h.svg" height="40px">
+    </picture>
+  </a>&nbsp;&nbsp;
 </p>
 
 ## Install
