@@ -1,3 +1,5 @@
+import re
+
 import requests
 try: # pragma: no cover
     import http.cookiejar as cookiejar
@@ -15,6 +17,7 @@ from ._errors import (
 
 
 class YouTubeTranscriptApi(object):
+    youtube_regex = r'(?:https?://)?(?:www\.)?(?:youtube\.com/watch\?v=|youtu\.be/)([a-zA-Z0-9_-]{11})'
     @classmethod
     def list_transcripts(cls, video_id, proxies=None, cookies=None):
         """
@@ -101,6 +104,8 @@ class YouTubeTranscriptApi(object):
         unretrievable_videos = []
 
         for video_id in video_ids:
+            assert isinstance(video_id, str), "`video_id` must be a string"
+            video_id = (*re.findall(cls.youtube_regex, video_id), video_id)[0]
             try:
                 data[video_id] = cls.get_transcript(video_id, languages, proxies, cookies, preserve_formatting)
             except Exception as exception:
@@ -134,7 +139,9 @@ class YouTubeTranscriptApi(object):
         :rtype [{'text': str, 'start': float, 'end': float}]:
         """
         assert isinstance(video_id, str), "`video_id` must be a string"
-        return cls.list_transcripts(video_id, proxies, cookies).find_transcript(languages).fetch(preserve_formatting=preserve_formatting)
+        video_id = (*re.findall(cls.youtube_regex, video_id), video_id)[0]
+        return cls.list_transcripts(video_id, proxies, cookies).find_transcript(languages).fetch(
+            preserve_formatting=preserve_formatting)
 
     @classmethod
     def _load_cookies(cls, cookies, video_id):
