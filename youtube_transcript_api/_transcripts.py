@@ -171,6 +171,7 @@ class TranscriptList(object):
         Finds a transcript for a given language code. Manually created transcripts are returned first and only if none
         are found, generated transcripts are used. If you only want generated transcripts use
         `find_manually_created_transcript` instead.
+        If there is no match of provided language codes, the first transcript available is returned.
 
         :param language_codes: A list of language codes in a descending priority. For example, if this is set to
         ['de', 'en'] it will first try to fetch the german transcript (de) and then fetch the english transcript (en) if
@@ -215,7 +216,9 @@ class TranscriptList(object):
             for transcript_dict in transcript_dicts:
                 if language_code in transcript_dict:
                     return transcript_dict[language_code]
-
+        if transcript_dicts:
+            if transcript_dicts[0]:
+                return transcript_dicts[0][list(transcript_dicts[0].keys())[0]]
         raise NoTranscriptFound(
             self.video_id,
             language_codes,
