@@ -112,7 +112,7 @@ class YouTubeTranscriptApi(object):
         return data, unretrievable_videos
 
     @classmethod
-    def get_transcript(cls, video_id, languages=('en',), proxies=None, cookies=None, preserve_formatting=False):
+    def get_transcript(cls, video_id, languages=('en', 'en-US'), proxies=None, cookies=None, preserve_formatting=False):
         """
         Retrieves the transcript for a single video. This is just a shortcut for calling::
 
