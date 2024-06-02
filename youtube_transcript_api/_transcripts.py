@@ -25,6 +25,7 @@ from ._errors import (
     NoTranscriptAvailable,
     FailedToCreateConsentCookie,
     InvalidVideoId,
+    ChaptersNotAvailable
 )
 from ._settings import WATCH_URL
 
@@ -41,12 +42,50 @@ class TranscriptListFetcher(object):
     def __init__(self, http_client):
         self._http_client = http_client
 
-    def fetch(self, video_id):
+    def fetch(self, video_id, include_chapter_tags=False):
+        video_html = self._fetch_video_html(video_id)
+        chapters = None
+        if include_chapter_tags:
+            try:
+                chapters = self._extract_chapters_json(video_html, video_id)
+            except Exception as e:
+                pass
+        
         return TranscriptList.build(
             self._http_client,
             video_id,
-            self._extract_captions_json(self._fetch_video_html(video_id), video_id),
+            self._extract_captions_json(video_html, video_id),
+            chapters
         )
+    
+    def _extract_chapters_json(self, html, video_id):
+        splitted_html = html.split('"chapters":')
+
+        if len(splitted_html) <= 1:
+            if video_id.startswith('http://') or video_id.startswith('https://'):
+                raise InvalidVideoId(video_id)
+            if 'class="g-recaptcha"' in html:
+                raise TooManyRequests(video_id)
+            if '"playabilityStatus":' not in html:
+                raise VideoUnavailable(video_id)
+
+            raise ChaptersNotAvailable(video_id)
+
+        chapters_json = json.loads(
+            splitted_html[1].split(',"trackingParams":')[0].replace('\n', '')
+        )
+        if chapters_json is None:
+            raise ChaptersNotAvailable(video_id)
+        
+        chapters_json = [
+            {
+                'title': chapter['chapterRenderer']['title']['simpleText'],
+                'time_range_start_ms': chapter['chapterRenderer']['timeRangeStartMillis'],
+                'next_time_range_start_ms': chapters_json[i+1]['chapterRenderer']['timeRangeStartMillis'] if i+1 < len(chapters_json) else float('inf'),
+            } for i, chapter in enumerate(chapters_json)
+        ]
+
+        return chapters_json
 
     def _extract_captions_json(self, html, video_id):
         splitted_html = html.split('"captions":')
@@ -117,7 +156,7 @@ class TranscriptList(object):
         self._translation_languages = translation_languages
 
     @staticmethod
-    def build(http_client, video_id, captions_json):
+    def build(http_client, video_id, captions_json, chapters_json=None):
         """
         Factory method for TranscriptList.
 
@@ -154,6 +193,7 @@ class TranscriptList(object):
                 caption['languageCode'],
                 caption.get('kind', '') == 'asr',
                 translation_languages if caption.get('isTranslatable', False) else [],
+                chapters_json
             )
 
         return TranscriptList(
@@ -253,7 +293,7 @@ class TranscriptList(object):
 
 
 class Transcript(object):
-    def __init__(self, http_client, video_id, url, language, language_code, is_generated, translation_languages):
+    def __init__(self, http_client, video_id, url, language, language_code, is_generated, translation_languages, chapters=None):
         """
         You probably don't want to initialize this directly. Usually you'll access Transcript objects using a
         TranscriptList.
@@ -267,6 +307,7 @@ class Transcript(object):
         :param language_code:
         :param is_generated:
         :param translation_languages:
+        :param chapters:
         """
         self._http_client = http_client
         self.video_id = video_id
@@ -279,6 +320,7 @@ class Transcript(object):
             translation_language['language_code']: translation_language['language']
             for translation_language in translation_languages
         }
+        self.chapters = chapters
 
     def fetch(self, preserve_formatting=False):
         """
@@ -291,6 +333,7 @@ class Transcript(object):
         response = self._http_client.get(self._url, headers={'Accept-Language': 'en-US'})
         return _TranscriptParser(preserve_formatting=preserve_formatting).parse(
             _raise_http_errors(response, self.video_id).text,
+            self.chapters
         )
 
     def __str__(self):
@@ -348,8 +391,8 @@ class _TranscriptParser(object):
             html_regex = re.compile(r'<[^>]*>', re.IGNORECASE)
         return html_regex
 
-    def parse(self, plain_data):
-        return [
+    def parse(self, plain_data, chapters=None):
+        data = [
             {
                 'text': re.sub(self._html_regex, '', unescape(xml_element.text)),
                 'start': float(xml_element.attrib['start']),
@@ -358,3 +401,15 @@ class _TranscriptParser(object):
             for xml_element in ElementTree.fromstring(plain_data)
             if xml_element.text is not None
         ]
+        if chapters:
+            for d in data:
+                start_ms = d['start'] * 1000
+                end_ms = start_ms + d['duration'] * 1000
+                d['chapters'] = [c['title'] for c in chapters if 
+                                 (start_ms >= c['time_range_start_ms'] and start_ms <= c['next_time_range_start_ms'])
+                                 or 
+                                 (end_ms >= c['time_range_start_ms'] and end_ms <= c['next_time_range_start_ms'])
+                                 ]
+
+        return data
+
