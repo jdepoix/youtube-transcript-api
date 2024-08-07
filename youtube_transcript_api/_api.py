@@ -16,7 +16,7 @@ from ._errors import (
 
 class YouTubeTranscriptApi(object):
     @classmethod
-    def list_transcripts(cls, video_id, proxies=None, cookies=None):
+    def list_transcripts(cls, video_id, proxies=None, cookies=None, verify=None):
         """
         Retrieves the list of transcripts which are available for a given video. It returns a `TranscriptList` object
         which is iterable and provides methods to filter the list of transcripts for specific languages. While iterating
@@ -61,6 +61,8 @@ class YouTubeTranscriptApi(object):
         :type proxies: {'http': str, 'https': str} - http://docs.python-requests.org/en/master/user/advanced/#proxies
         :param cookies: a string of the path to a text file containing youtube authorization cookies
         :type cookies: str
+        :param verify: the path to a CA_BUNDLE file or directory with certificates of trusted CAs
+        :type verify: str
         :return: the list of available transcripts
         :rtype TranscriptList:
         """
@@ -68,11 +70,12 @@ class YouTubeTranscriptApi(object):
             if cookies:
                 http_client.cookies = cls._load_cookies(cookies, video_id)
             http_client.proxies = proxies if proxies else {}
+            http_client.verify = verify if verify else {}
             return TranscriptListFetcher(http_client).fetch(video_id)
 
     @classmethod
     def get_transcripts(cls, video_ids, languages=('en',), continue_after_error=False, proxies=None,
-                        cookies=None, preserve_formatting=False):
+                        cookies=None, preserve_formatting=False, verify=None):
         """
         Retrieves the transcripts for a list of videos.
 
@@ -91,6 +94,8 @@ class YouTubeTranscriptApi(object):
         :type cookies: str
         :param preserve_formatting: whether to keep select HTML text formatting
         :type preserve_formatting: bool
+        :param verify: the path to a CA_BUNDLE file or directory with certificates of trusted CAs
+        :type verify: str
         :return: a tuple containing a dictionary mapping video ids onto their corresponding transcripts, and a list of
         video ids, which could not be retrieved
         :rtype ({str: [{'text': str, 'start': float, 'end': float}]}, [str]}):
@@ -102,7 +107,7 @@ class YouTubeTranscriptApi(object):
 
         for video_id in video_ids:
             try:
-                data[video_id] = cls.get_transcript(video_id, languages, proxies, cookies, preserve_formatting)
+                data[video_id] = cls.get_transcript(video_id, languages, proxies, cookies, preserve_formatting, verify)
             except Exception as exception:
                 if not continue_after_error:
                     raise exception
@@ -112,7 +117,7 @@ class YouTubeTranscriptApi(object):
         return data, unretrievable_videos
 
     @classmethod
-    def get_transcript(cls, video_id, languages=('en',), proxies=None, cookies=None, preserve_formatting=False):
+    def get_transcript(cls, video_id, languages=('en',), proxies=None, cookies=None, preserve_formatting=False, verify=None):
         """
         Retrieves the transcript for a single video. This is just a shortcut for calling::
 
@@ -130,11 +135,13 @@ class YouTubeTranscriptApi(object):
         :type cookies: str
         :param preserve_formatting: whether to keep select HTML text formatting
         :type preserve_formatting: bool
+        :param verify: the path to a CA_BUNDLE file or directory with certificates of trusted CAs
+        :type verify: str
         :return: a list of dictionaries containing the 'text', 'start' and 'duration' keys
         :rtype [{'text': str, 'start': float, 'end': float}]:
         """
         assert isinstance(video_id, str), "`video_id` must be a string"
-        return cls.list_transcripts(video_id, proxies, cookies).find_transcript(languages).fetch(preserve_formatting=preserve_formatting)
+        return cls.list_transcripts(video_id, proxies, cookies, verify).find_transcript(languages).fetch(preserve_formatting=preserve_formatting)
 
     @classmethod
     def _load_cookies(cls, cookies, video_id):
