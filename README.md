@@ -345,6 +345,20 @@ YouTubeTranscriptApi.get_transcript(video_id, proxies={"https": "https://user:pa
 
 As the `proxies` dict is passed on to the `requests.get(...)` call, it follows the [format used by the requests library](https://requests.readthedocs.io/en/latest/user/advanced/#proxies).  
 
+### SSL Cert Verification
+
+Requests [verifies SSL](https://docs.python-requests.org/en/latest/user/advanced/#ssl-cert-verification) certificates for HTTPS by default, throwing an SSLError if verification fails. You can specify a CA_BUNDLE file or directory. Setting `verify` to False accepts any TLS certificate, risking MitM attacks. Useful for local development. Default is `verify=True`.
+
+
+```python  
+from youtube_transcript_api import YouTubeTranscriptApi  
+
+YouTubeTranscriptApi.list_transcripts(video_id, proxies={"http": "http://api-key:@proxy-provider:port/","https": "http://api-key:@proxy-provider:port/",}, verify='/path/to/certificate.crt')
+
+YouTubeTranscriptApi.get_transcript(video_id, proxies={"http": "http://api-key:@proxy-provider:port/","https": "http://api-key:@proxy-provider:port/",}, verify='/path/to/certificate.crt')
+```  
+
+
 Using the CLI:  
 
 ```  
