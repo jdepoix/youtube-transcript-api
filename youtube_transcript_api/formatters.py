@@ -61,23 +61,29 @@ class JSONFormatter(Formatter):
 
 
 class TextFormatter(Formatter):
-    def format_transcript(self, transcript, **kwargs):
+    def format_transcript(self, transcript, sep="\n", **kwargs):
         """Converts a transcript into plain text with no timestamps.
 
         :param transcript:
-        :return: all transcript text lines separated by newline breaks.'
+        :param sep: A separator for each line in the transcript with default set as newline break ('\n').
+        :type str:
+        :return: all transcript text lines separated by `sep`.'
         :rtype str
         """
-        return '\n'.join(line['text'] for line in transcript)
+        return sep.join(line['text'] for line in transcript)
 
-    def format_transcripts(self, transcripts, **kwargs):
+    def format_transcripts(self, transcripts, sep="\n", end="\n\n\n", **kwargs):
         """Converts a list of transcripts into plain text with no timestamps.
 
         :param transcripts:
-        :return: all transcript text lines separated by newline breaks.'
+        :param sep: A separator for each line in the transcript with default set as newline break ('\n').
+        :type str:
+        :param end: Each individual transcript to be followed by `end`  with default set as 3 newline breaks ('\n\n\n').
+        :type str:
+        :return: list of all transcript with text lines separated by `sep` and each transcript followed by `end`.
         :rtype str
         """
-        return '\n\n\n'.join([self.format_transcript(transcript, **kwargs) for transcript in transcripts])
+        return end.join([self.format_transcript(transcript, sep=sep, **kwargs) for transcript in transcripts])
 
 class _TextBasedFormatter(TextFormatter):
     def _format_timestamp(self, hours, mins, secs, ms):
