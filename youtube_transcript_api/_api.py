@@ -61,8 +61,8 @@ class YouTubeTranscriptApi(object):
         :type proxies: {'http': str, 'https': str} - http://docs.python-requests.org/en/master/user/advanced/#proxies
         :param cookies: a string of the path to a text file containing youtube authorization cookies
         :type cookies: str
-        :param verify: the path to a CA_BUNDLE file or directory with certificates of trusted CAs
-        :type verify: str
+        :param verify: the path to a CA certificate file or False to ignore verifying the SSL certificate
+        :type verify: bool | str - https://docs.python-requests.org/en/latest/user/advanced/#ssl-cert-verification
         :return: the list of available transcripts
         :rtype TranscriptList:
         """
@@ -70,7 +70,9 @@ class YouTubeTranscriptApi(object):
             if cookies:
                 http_client.cookies = cls._load_cookies(cookies, video_id)
             http_client.proxies = proxies if proxies else {}
-            http_client.verify = verify if verify else {}
+            if verify is not None:
+                http_client.verify = verify
+        
             return TranscriptListFetcher(http_client).fetch(video_id)
 
     @classmethod
@@ -94,8 +96,8 @@ class YouTubeTranscriptApi(object):
         :type cookies: str
         :param preserve_formatting: whether to keep select HTML text formatting
         :type preserve_formatting: bool
-        :param verify: the path to a CA_BUNDLE file or directory with certificates of trusted CAs
-        :type verify: str
+        :param verify: the path to a CA certificate file or False to ignore verifying the SSL certificate
+        :type verify: bool | str - https://docs.python-requests.org/en/latest/user/advanced/#ssl-cert-verification
         :return: a tuple containing a dictionary mapping video ids onto their corresponding transcripts, and a list of
         video ids, which could not be retrieved
         :rtype ({str: [{'text': str, 'start': float, 'end': float}]}, [str]}):
@@ -135,8 +137,8 @@ class YouTubeTranscriptApi(object):
         :type cookies: str
         :param preserve_formatting: whether to keep select HTML text formatting
         :type preserve_formatting: bool
-        :param verify: the path to a CA_BUNDLE file or directory with certificates of trusted CAs
-        :type verify: str
+        :param verify: the path to a CA certificate file or False to ignore verifying the SSL certificate
+        :type verify: bool | str - https://docs.python-requests.org/en/latest/user/advanced/#ssl-cert-verification
         :return: a list of dictionaries containing the 'text', 'start' and 'duration' keys
         :rtype [{'text': str, 'start': float, 'end': float}]:
         """
