@@ -16,7 +16,7 @@ from ._errors import (
 
 class YouTubeTranscriptApi(object):
     @classmethod
-    def list_transcripts(cls, video_id, proxies=None, cookies=None):
+    def list_transcripts(cls, video_id, proxies=None, cookies=None, headers=None):
         """
         Retrieves the list of transcripts which are available for a given video. It returns a `TranscriptList` object
         which is iterable and provides methods to filter the list of transcripts for specific languages. While iterating
@@ -61,6 +61,8 @@ class YouTubeTranscriptApi(object):
         :type proxies: {'http': str, 'https': str} - http://docs.python-requests.org/en/master/user/advanced/#proxies
         :param cookies: a string of the path to a text file containing youtube authorization cookies
         :type cookies: str
+        :param headers: a dictionary of additional headers to include in the requests
+        :type headers: dict
         :return: the list of available transcripts
         :rtype TranscriptList:
         """
@@ -68,6 +70,7 @@ class YouTubeTranscriptApi(object):
             if cookies:
                 http_client.cookies = cls._load_cookies(cookies, video_id)
             http_client.proxies = proxies if proxies else {}
+            http_client.headers.update(headers) if headers else {}
             return TranscriptListFetcher(http_client).fetch(video_id)
 
     @classmethod

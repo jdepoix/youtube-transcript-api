@@ -291,6 +291,12 @@ class TestYouTubeTranscriptApi(TestCase):
             ]
         )
 
+    def test_get_transcript__with_headers(self):
+        headers = {'Accept-Encoding': 'gzip, deflate'}
+        transcript_list = YouTubeTranscriptApi.list_transcripts('GJLlxj_dtq8', headers=headers)
+        language_codes = {transcript.language_code for transcript in transcript_list}
+        self.assertGreater(len(language_codes), 0)
+
     def test_get_transcript__assertionerror_if_input_not_string(self):
         with self.assertRaises(AssertionError):
             YouTubeTranscriptApi.get_transcript(['video_id_1', 'video_id_2'])
