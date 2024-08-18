@@ -288,7 +288,8 @@ class Transcript(object):
         :return: a list of dictionaries containing the 'text', 'start' and 'duration' keys
         :rtype [{'text': str, 'start': float, 'end': float}]:
         """
-        response = self._http_client.get(self._url, headers={'Accept-Language': 'en-US'})
+        self._http_client.headers.update({'Accept-Language': 'en-US'})
+        response = self._http_client.get(self._url)
         return _TranscriptParser(preserve_formatting=preserve_formatting).parse(
             _raise_http_errors(response, self.video_id).text,
         )
