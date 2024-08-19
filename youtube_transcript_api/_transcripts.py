@@ -88,7 +88,8 @@ class TranscriptListFetcher(object):
         return html
 
     def _fetch_html(self, video_id):
-        response = self._http_client.get(WATCH_URL.format(video_id=video_id), headers={'Accept-Language': 'en-US'})
+        self._http_client.headers.update({'Accept-Language': 'en-US'})
+        response = self._http_client.get(WATCH_URL.format(video_id=video_id))
         return unescape(_raise_http_errors(response, video_id).text)
 
 
