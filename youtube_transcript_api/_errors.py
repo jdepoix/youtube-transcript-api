@@ -77,6 +77,10 @@ class TranscriptsDisabled(CouldNotRetrieveTranscript):
     CAUSE_MESSAGE = 'Subtitles are disabled for this video'
 
 
+class BotRestricted(CouldNotRetrieveTranscript):
+    CAUSE_MESSAGE = 'Login required because video is restricted by bot detection system'
+
+
 class NoTranscriptAvailable(CouldNotRetrieveTranscript):
     CAUSE_MESSAGE = 'No transcripts are available for this video'
 
