@@ -2,6 +2,7 @@ import sys
 
 # This can only be tested by using different python versions, therefore it is not covered by coverage.py
 if sys.version_info.major == 2:  # pragma: no cover
+    # ruff: noqa: F821
     reload(sys)
     sys.setdefaultencoding("utf-8")
 

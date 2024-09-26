@@ -41,6 +41,7 @@ youtube_transcript_api = "youtube_transcript_api.__main__:main"
 test = "pytest youtube_transcript_api"
 coverage.shell = "pytest youtube_transcript_api && coverage report -m"
 format = "black youtube_transcript_api"
+lint = "ruff check youtube_transcript_api"
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.13"
@@ -53,6 +54,7 @@ mock = "^5.1.0"
 httpretty = "^1.1.4"
 coveralls = "^4.0.1"
 black = "^24.8.0"
+ruff = "^0.6.8"
 
 [tool.coverage.run]
 source = ["youtube_transcript_api"]
