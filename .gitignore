@@ -7,3 +7,4 @@ build
 *.egg-info
 upload_new_version.sh
 .coverage
+.DS_STORE

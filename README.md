@@ -49,12 +49,6 @@ It is recommended to [install this module by using pip](https://pypi.org/project
 pip install youtube-transcript-api
 ```
 
-If you want to use it from source, you'll have to install the dependencies manually:
-
-```
-pip install -r requirements.txt
-```
-
 You can either integrate this module [into an existing application](#api) or just use it via a [CLI](#cli).
 
 ## API
@@ -371,10 +365,24 @@ Using the CLI:
 youtube_transcript_api <first_video_id> <second_video_id> --cookies /path/to/your/cookies.txt
 ```
 
-
 ## Warning  
 
- This code uses an undocumented part of the YouTube API, which is called by the YouTube web-client. So there is no guarantee that it won't stop working tomorrow, if they change how things work. I will however do my best to make things working again as soon as possible if that happens. So if it stops working, let me know!  
+This code uses an undocumented part of the YouTube API, which is called by the YouTube web-client. So there is no guarantee that it won't stop working tomorrow, if they change how things work. I will however do my best to make things working again as soon as possible if that happens. So if it stops working, let me know!  
+
+## Contributing
+
+To setup the project locally run (requires [poetry](https://python-poetry.org/docs/) to be installed):
+```shell
+poetry install
+```
+
+There's [poe](https://github.com/nat-n/poethepoet?tab=readme-ov-file#quick-start) tasks to run tests, coverage, the linter and formatter (you'll need to pass all of those for the build to pass):
+```shell
+poe test
+poe coverage
+poe format
+poe lint
+```
 
 ## Donations
 
