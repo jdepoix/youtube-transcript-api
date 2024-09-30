@@ -371,6 +371,14 @@ Using the CLI:
 youtube_transcript_api <first_video_id> <second_video_id> --cookies /path/to/your/cookies.txt
 ```
 
+## Headers
+
+You can pass additional headers to the `list_transcripts` method by providing a dictionary of headers as the `headers` parameter. This can be useful for various purposes, such as specifying the accepted encoding, setting a custom user agent, or including any other necessary headers for the request.
+
+```python
+headers = {'Accept-Encoding': 'gzip, deflate'}
+transcript_list = YouTubeTranscriptApi.list_transcripts(video_id, headers=headers)
+```
 
 ## Warning  
 
