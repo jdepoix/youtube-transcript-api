@@ -1,8 +1,10 @@
 import requests
-try: # pragma: no cover
+import multiprocessing
+from functools import partial
+try:  # pragma: no cover
     import http.cookiejar as cookiejar
     CookieLoadError = (FileNotFoundError, cookiejar.LoadError)
-except ImportError: # pragma: no cover
+except ImportError:  # pragma: no cover
     import cookielib as cookiejar
     CookieLoadError = IOError
 
@@ -71,6 +73,62 @@ class YouTubeTranscriptApi(object):
             return TranscriptListFetcher(http_client).fetch(video_id)
 
     @classmethod
+    def parallel_get_transcripts(cls, video_ids, languages=('en',), continue_after_error=False, proxies=None,
+                                 cookies=None, preserve_formatting=False, num_workers=1):
+        """
+        Retrieves the transcripts for a list of videos using Python's multiprocessing library
+
+        :param video_ids: a list of youtube video ids
+        :type video_ids: list[str]
+        :param languages: A list of language codes in a descending priority. For example, if this is set to ['de', 'en']
+        it will first try to fetch the german transcript (de) and then fetch the english transcript (en) if it fails to
+        do so.
+        :type languages: list[str]
+        :param continue_after_error: if this is set the execution won't be stopped, if an error occurs while retrieving
+        one of the video transcripts
+        :type continue_after_error: bool
+        :param proxies: a dictionary mapping of http and https proxies to be used for the network requests
+        :type proxies: {'http': str, 'https': str} - http://docs.python-requests.org/en/master/user/advanced/#proxies
+        :param cookies: a string of the path to a text file containing youtube authorization cookies
+        :type cookies: str
+        :param preserve_formatting: whether to keep select HTML text formatting
+        :type preserve_formatting: bool
+        :para num_workers: number of workers to use
+        :type num_workers: int
+        :return: a tuple containing a dictionary mapping video ids onto their corresponding transcripts, and a list of
+        video ids, which could not be retrieved
+        :rtype ({str: [{'text': str, 'start': float, 'end': float}]}, [str]}):
+        """
+        assert isinstance(
+            video_ids, list), "`video_ids` must be a list of strings"
+
+        data = {}
+        unretrievable_videos = []
+
+        # Partial function gets all paramaters the same except video_ids, which get split amongst the workers
+        process_partial = partial(cls.get_transcripts, languages=languages,
+                                  continue_after_error=continue_after_error, proxies=proxies, cookies=cookies, preserve_formatting=preserve_formatting)
+
+        # Split video_ids into even lists
+        sublist_length = len(video_ids) / float(num_workers)
+        video_ids_sublists = []
+        last = 0.0
+        while last < len(video_ids):
+            video_ids_sublists.append(
+                video_ids[int(last):int(last + sublist_length)])
+            last += sublist_length
+
+        # run the pool of workers, maps to a list of tuples [(data, unretrievable_videos) * num_workers]
+        with multiprocessing.Pool(num_workers) as pool:
+            results = pool.map(process_partial, video_ids_sublists)
+        # concat the results
+        for tup in results:
+            data.update(tup[0])
+            unretrievable_videos += tup[1]
+
+        return data, unretrievable_videos
+
+    @classmethod
     def get_transcripts(cls, video_ids, languages=('en',), continue_after_error=False, proxies=None,
                         cookies=None, preserve_formatting=False):
         """
@@ -95,14 +153,15 @@ class YouTubeTranscriptApi(object):
         video ids, which could not be retrieved
         :rtype ({str: [{'text': str, 'start': float, 'end': float}]}, [str]}):
         """
-        assert isinstance(video_ids, list), "`video_ids` must be a list of strings"
-
+        assert isinstance(
+            video_ids, list), "`video_ids` must be a list of strings"
         data = {}
         unretrievable_videos = []
 
         for video_id in video_ids:
             try:
-                data[video_id] = cls.get_transcript(video_id, languages, proxies, cookies, preserve_formatting)
+                data[video_id] = cls.get_transcript(
+                    video_id, languages, proxies, cookies, preserve_formatting)
             except Exception as exception:
                 if not continue_after_error:
                     raise exception
