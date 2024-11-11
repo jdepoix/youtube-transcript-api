@@ -52,7 +52,7 @@ jobs:
           flag-name: run-python-${{ matrix.python-version }}
           parallel: true
 
-  report-coverage:
+  coverage:
     needs: test
     runs-on: ubuntu-latest
 
@@ -72,7 +72,7 @@ jobs:
           pip install poetry poethepoet
           poetry install --only test
       - name: Check coverage
-        run: poe coverage-report
+        run: poe coverage
 
   publish:
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
