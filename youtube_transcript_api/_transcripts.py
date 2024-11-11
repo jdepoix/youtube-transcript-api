@@ -231,10 +231,15 @@ class TranscriptList(object):
         )
 
     def _find_transcript(self, language_codes, transcript_dicts):
-        for language_code in language_codes:
+        if isinstance(language_codes, str):
             for transcript_dict in transcript_dicts:
                 if language_code in transcript_dict:
                     return transcript_dict[language_code]
+        else:
+            for language_code in language_codes:
+                for transcript_dict in transcript_dicts:
+                    if language_code in transcript_dict:
+                        return transcript_dict[language_code]
 
         raise NoTranscriptFound(self.video_id, language_codes, self)
 
