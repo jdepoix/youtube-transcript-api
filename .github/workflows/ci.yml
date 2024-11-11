@@ -52,7 +52,7 @@ jobs:
           flag-name: run-python-${{ matrix.python-version }}
           parallel: true
 
-  finish:
+  report-coverage:
     needs: test
     runs-on: ubuntu-latest
 

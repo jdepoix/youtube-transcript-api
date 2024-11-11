@@ -373,7 +373,7 @@ This code uses an undocumented part of the YouTube API, which is called by the Y
 
 To setup the project locally run (requires [poetry](https://python-poetry.org/docs/) to be installed):
 ```shell
-poetry install
+poetry install --with test,dev
 ```
 
 There's [poe](https://github.com/nat-n/poethepoet?tab=readme-ov-file#quick-start) tasks to run tests, coverage, the linter and formatter (you'll need to pass all of those for the build to pass):
