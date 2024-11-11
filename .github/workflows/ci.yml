@@ -50,14 +50,14 @@ jobs:
           flag-name: run-python-${{ matrix.python-version }}
           parallel: true
 
-finish:
-  needs: test
-  runs-on: ubuntu-latest
+  finish:
+    needs: test
+    runs-on: ubuntu-latest
 
-  steps:
-    - name: Finalize coverage report
-      uses: coverallsapp/github-action@v2
-      with:
-        parallel-finished: true
-        carryforward: "run-python-3.8,run-python-3.9,run-python-3.10,run-python-3.11,run-python-3.12,run-python-3.13,run-python-3.14"
+    steps:
+      - name: Finalize coverage report
+        uses: coverallsapp/github-action@v2
+        with:
+          parallel-finished: true
+          carryforward: "run-python-3.8,run-python-3.9,run-python-3.10,run-python-3.11,run-python-3.12,run-python-3.13,run-python-3.14"
 
