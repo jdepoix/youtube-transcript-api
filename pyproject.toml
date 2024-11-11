@@ -46,7 +46,7 @@ ci-format = "ruff format youtube_transcript_api --check"
 lint = "ruff check youtube_transcript_api"
 
 [tool.poetry.dependencies]
-python = ">=3.8,<=3.14"
+python = ">=3.8,<3.14"
 requests = "*"
 
 [tool.poetry.group.test]
