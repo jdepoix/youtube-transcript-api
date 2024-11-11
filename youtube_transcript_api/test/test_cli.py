@@ -255,7 +255,7 @@ class TestYouTubeTranscriptCli(TestCase):
         )
 
     def test_run__translate(self):
-        YouTubeTranscriptCli("v1 v2 --languages de en --translate cz".split()).run(),
+        (YouTubeTranscriptCli("v1 v2 --languages de en --translate cz".split()).run(),)
 
         self.transcript_mock.translate.assert_any_call("cz")
 
