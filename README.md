@@ -7,8 +7,8 @@
   <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BAENLEW8VUJ6G&source=url">
     <img src="https://img.shields.io/badge/Donate-PayPal-green.svg" alt="Donate">
   </a>
-  <a href="https://app.travis-ci.com/jdepoix/youtube-transcript-api">
-    <img src="https://travis-ci.com/jdepoix/youtube-transcript-api.svg?branch=master" alt="Build Status">
+  <a href="https://github.com/jdepoix/youtube-transcript-api/actions">
+    <img src="https://github.com/jdepoix/youtube-transcript-api/actions/workflows/ci.yml/badge.svg?branch=master" alt="Build Status">
   </a>
   <a href="https://coveralls.io/github/jdepoix/youtube-transcript-api?branch=master">
     <img src="https://coveralls.io/repos/github/jdepoix/youtube-transcript-api/badge.svg?branch=master" alt="Coverage Status">
@@ -47,12 +47,6 @@ It is recommended to [install this module by using pip](https://pypi.org/project
 
 ```
 pip install youtube-transcript-api
-```
-
-If you want to use it from source, you'll have to install the dependencies manually:
-
-```
-pip install -r requirements.txt
 ```
 
 You can either integrate this module [into an existing application](#api) or just use it via a [CLI](#cli).
@@ -371,10 +365,29 @@ Using the CLI:
 youtube_transcript_api <first_video_id> <second_video_id> --cookies /path/to/your/cookies.txt
 ```
 
-
 ## Warning  
 
- This code uses an undocumented part of the YouTube API, which is called by the YouTube web-client. So there is no guarantee that it won't stop working tomorrow, if they change how things work. I will however do my best to make things working again as soon as possible if that happens. So if it stops working, let me know!  
+This code uses an undocumented part of the YouTube API, which is called by the YouTube web-client. So there is no guarantee that it won't stop working tomorrow, if they change how things work. I will however do my best to make things working again as soon as possible if that happens. So if it stops working, let me know!  
+
+## Contributing
+
+To setup the project locally run (requires [poetry](https://python-poetry.org/docs/) to be installed):
+```shell
+poetry install --with test,dev
+```
+
+There's [poe](https://github.com/nat-n/poethepoet?tab=readme-ov-file#quick-start) tasks to run tests, coverage, the linter and formatter (you'll need to pass all of those for the build to pass):
+```shell
+poe test
+poe coverage
+poe format
+poe lint
+```
+
+If you just want to make sure that your code passes all the necessary checks to get a green build, you can simply run:
+```shell
+poe precommit
+```
 
 ## Donations
 

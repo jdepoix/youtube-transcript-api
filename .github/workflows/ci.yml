@@ -1,0 +1,95 @@
+name: CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+
+jobs:
+  static-checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.9
+      - name: Install dependencies
+        run: |
+          pip install poetry poethepoet
+          poetry install --only dev
+      - name: Format
+        run: poe ci-format
+      - name: Lint
+        run: poe lint
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          pip install poetry poethepoet
+          poetry install --with test
+      - name: Run tests
+        run: |
+          poe ci-test
+      - name: Report intermediate coverage report
+        uses: coverallsapp/github-action@v2
+        with:
+          file: coverage.xml
+          format: cobertura
+          flag-name: run-python-${{ matrix.python-version }}
+          parallel: true
+
+  coverage:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Finalize coverage report
+        uses: coverallsapp/github-action@v2
+        with:
+          parallel-finished: true
+          carryforward: "run-python-3.8,run-python-3.9,run-python-3.10,run-python-3.11,run-python-3.12,run-python-3.13"
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.9
+      - name: Install dependencies
+        run: |
+          pip install poetry poethepoet
+          poetry install --with test
+      - name: Check coverage
+        run: poe coverage
+
+  publish:
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    needs: [coverage, static-checks]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.9
+      - name: Install dependencies
+        run: |
+          pip install poetry
+          poetry install
+      - name: Build
+        run: poetry build
+      - name: Publish
+        run: poetry publish -u __token__ -p ${{ secrets.PYPI_TOKEN }}

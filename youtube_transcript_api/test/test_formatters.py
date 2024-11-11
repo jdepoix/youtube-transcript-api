@@ -10,16 +10,17 @@ from youtube_transcript_api.formatters import (
     TextFormatter,
     SRTFormatter,
     WebVTTFormatter,
-    PrettyPrintFormatter, FormatterLoader
+    PrettyPrintFormatter,
+    FormatterLoader,
 )
 
 
 class TestFormatters(TestCase):
     def setUp(self):
         self.transcript = [
-            {'text': 'Test line 1', 'start': 0.0, 'duration': 1.50},
-            {'text': 'line between', 'start': 1.5, 'duration': 2.0},
-            {'text': 'testing the end line', 'start': 2.5, 'duration': 3.25}
+            {"text": "Test line 1", "start": 0.0, "duration": 1.50},
+            {"text": "line between", "start": 1.5, "duration": 2.0},
+            {"text": "testing the end line", "start": 2.5, "duration": 3.25},
         ]
         self.transcripts = [self.transcript, self.transcript]
 
@@ -31,27 +32,27 @@ class TestFormatters(TestCase):
 
     def test_srt_formatter_starting(self):
         content = SRTFormatter().format_transcript(self.transcript)
-        lines = content.split('\n')
+        lines = content.split("\n")
 
         # test starting lines
         self.assertEqual(lines[0], "1")
         self.assertEqual(lines[1], "00:00:00,000 --> 00:00:01,500")
-        
+
     def test_srt_formatter_middle(self):
         content = SRTFormatter().format_transcript(self.transcript)
-        lines = content.split('\n')
+        lines = content.split("\n")
 
         # test middle lines
         self.assertEqual(lines[4], "2")
         self.assertEqual(lines[5], "00:00:01,500 --> 00:00:02,500")
-        self.assertEqual(lines[6], self.transcript[1]['text'])
+        self.assertEqual(lines[6], self.transcript[1]["text"])
 
     def test_srt_formatter_ending(self):
         content = SRTFormatter().format_transcript(self.transcript)
-        lines = content.split('\n')
+        lines = content.split("\n")
 
         # test ending lines
-        self.assertEqual(lines[-2], self.transcript[-1]['text'])
+        self.assertEqual(lines[-2], self.transcript[-1]["text"])
         self.assertEqual(lines[-1], "")
 
     def test_srt_formatter_many(self):
@@ -59,22 +60,25 @@ class TestFormatters(TestCase):
         content = formatter.format_transcripts(self.transcripts)
         formatted_single_transcript = formatter.format_transcript(self.transcript)
 
-        self.assertEqual(content, formatted_single_transcript + '\n\n\n' + formatted_single_transcript)
+        self.assertEqual(
+            content,
+            formatted_single_transcript + "\n\n\n" + formatted_single_transcript,
+        )
 
     def test_webvtt_formatter_starting(self):
         content = WebVTTFormatter().format_transcript(self.transcript)
-        lines = content.split('\n')
+        lines = content.split("\n")
 
         # test starting lines
         self.assertEqual(lines[0], "WEBVTT")
         self.assertEqual(lines[1], "")
-    
+
     def test_webvtt_formatter_ending(self):
         content = WebVTTFormatter().format_transcript(self.transcript)
-        lines = content.split('\n')
+        lines = content.split("\n")
 
         # test ending lines
-        self.assertEqual(lines[-2], self.transcript[-1]['text'])
+        self.assertEqual(lines[-2], self.transcript[-1]["text"])
         self.assertEqual(lines[-1], "")
 
     def test_webvtt_formatter_many(self):
@@ -82,7 +86,10 @@ class TestFormatters(TestCase):
         content = formatter.format_transcripts(self.transcripts)
         formatted_single_transcript = formatter.format_transcript(self.transcript)
 
-        self.assertEqual(content, formatted_single_transcript + '\n\n\n' + formatted_single_transcript)
+        self.assertEqual(
+            content,
+            formatted_single_transcript + "\n\n\n" + formatted_single_transcript,
+        )
 
     def test_pretty_print_formatter(self):
         content = PrettyPrintFormatter().format_transcript(self.transcript)
@@ -106,7 +113,7 @@ class TestFormatters(TestCase):
 
     def test_text_formatter(self):
         content = TextFormatter().format_transcript(self.transcript)
-        lines = content.split('\n')
+        lines = content.split("\n")
 
         self.assertEqual(lines[0], self.transcript[0]["text"])
         self.assertEqual(lines[-1], self.transcript[-1]["text"])
@@ -116,11 +123,14 @@ class TestFormatters(TestCase):
         content = formatter.format_transcripts(self.transcripts)
         formatted_single_transcript = formatter.format_transcript(self.transcript)
 
-        self.assertEqual(content, formatted_single_transcript + '\n\n\n' + formatted_single_transcript)
+        self.assertEqual(
+            content,
+            formatted_single_transcript + "\n\n\n" + formatted_single_transcript,
+        )
 
     def test_formatter_loader(self):
         loader = FormatterLoader()
-        formatter = loader.load('json')
+        formatter = loader.load("json")
 
         self.assertTrue(isinstance(formatter, JSONFormatter))
 
@@ -132,4 +142,4 @@ class TestFormatters(TestCase):
 
     def test_formatter_loader__unknown_format(self):
         with self.assertRaises(FormatterLoader.UnknownFormatterType):
-            FormatterLoader().load('png')
+            FormatterLoader().load("png")

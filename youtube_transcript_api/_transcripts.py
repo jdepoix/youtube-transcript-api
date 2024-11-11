@@ -2,8 +2,9 @@ import sys
 
 # This can only be tested by using different python versions, therefore it is not covered by coverage.py
 if sys.version_info.major == 2:  # pragma: no cover
+    # ruff: noqa: F821
     reload(sys)
-    sys.setdefaultencoding('utf-8')
+    sys.setdefaultencoding("utf-8")
 
 import json
 
@@ -52,7 +53,7 @@ class TranscriptListFetcher(object):
         splitted_html = html.split('"captions":')
 
         if len(splitted_html) <= 1:
-            if video_id.startswith('http://') or video_id.startswith('https://'):
+            if video_id.startswith("http://") or video_id.startswith("https://"):
                 raise InvalidVideoId(video_id)
             if 'class="g-recaptcha"' in html:
                 raise TooManyRequests(video_id)
@@ -62,12 +63,12 @@ class TranscriptListFetcher(object):
             raise TranscriptsDisabled(video_id)
 
         captions_json = json.loads(
-            splitted_html[1].split(',"videoDetails')[0].replace('\n', '')
-        ).get('playerCaptionsTracklistRenderer')
+            splitted_html[1].split(',"videoDetails')[0].replace("\n", "")
+        ).get("playerCaptionsTracklistRenderer")
         if captions_json is None:
             raise TranscriptsDisabled(video_id)
 
-        if 'captionTracks' not in captions_json:
+        if "captionTracks" not in captions_json:
             raise NoTranscriptAvailable(video_id)
 
         return captions_json
@@ -76,7 +77,9 @@ class TranscriptListFetcher(object):
         match = re.search('name="v" value="(.*?)"', html)
         if match is None:
             raise FailedToCreateConsentCookie(video_id)
-        self._http_client.cookies.set('CONSENT', 'YES+' + match.group(1), domain='.youtube.com')
+        self._http_client.cookies.set(
+            "CONSENT", "YES+" + match.group(1), domain=".youtube.com"
+        )
 
     def _fetch_video_html(self, video_id):
         html = self._fetch_html(video_id)
@@ -88,7 +91,9 @@ class TranscriptListFetcher(object):
         return html
 
     def _fetch_html(self, video_id):
-        response = self._http_client.get(WATCH_URL.format(video_id=video_id), headers={'Accept-Language': 'en-US'})
+        response = self._http_client.get(
+            WATCH_URL.format(video_id=video_id), headers={"Accept-Language": "en-US"}
+        )
         return unescape(_raise_http_errors(response, video_id).text)
 
 
@@ -98,7 +103,13 @@ class TranscriptList(object):
     for a given YouTube video. Also it provides functionality to search for a transcript in a given language.
     """
 
-    def __init__(self, video_id, manually_created_transcripts, generated_transcripts, translation_languages):
+    def __init__(
+        self,
+        video_id,
+        manually_created_transcripts,
+        generated_transcripts,
+        translation_languages,
+    ):
         """
         The constructor is only for internal use. Use the static build method instead.
 
@@ -132,28 +143,29 @@ class TranscriptList(object):
         """
         translation_languages = [
             {
-                'language': translation_language['languageName']['simpleText'],
-                'language_code': translation_language['languageCode'],
-            } for translation_language in captions_json.get('translationLanguages', [])
+                "language": translation_language["languageName"]["simpleText"],
+                "language_code": translation_language["languageCode"],
+            }
+            for translation_language in captions_json.get("translationLanguages", [])
         ]
 
         manually_created_transcripts = {}
         generated_transcripts = {}
 
-        for caption in captions_json['captionTracks']:
-            if caption.get('kind', '') == 'asr':
+        for caption in captions_json["captionTracks"]:
+            if caption.get("kind", "") == "asr":
                 transcript_dict = generated_transcripts
             else:
                 transcript_dict = manually_created_transcripts
 
-            transcript_dict[caption['languageCode']] = Transcript(
+            transcript_dict[caption["languageCode"]] = Transcript(
                 http_client,
                 video_id,
-                caption['baseUrl'],
-                caption['name']['simpleText'],
-                caption['languageCode'],
-                caption.get('kind', '') == 'asr',
-                translation_languages if caption.get('isTranslatable', False) else [],
+                caption["baseUrl"],
+                caption["name"]["simpleText"],
+                caption["languageCode"],
+                caption.get("kind", "") == "asr",
+                translation_languages if caption.get("isTranslatable", False) else [],
             )
 
         return TranscriptList(
@@ -164,7 +176,10 @@ class TranscriptList(object):
         )
 
     def __iter__(self):
-        return iter(list(self._manually_created_transcripts.values()) + list(self._generated_transcripts.values()))
+        return iter(
+            list(self._manually_created_transcripts.values())
+            + list(self._generated_transcripts.values())
+        )
 
     def find_transcript(self, language_codes):
         """
@@ -180,7 +195,10 @@ class TranscriptList(object):
         :rtype Transcript:
         :raises: NoTranscriptFound
         """
-        return self._find_transcript(language_codes, [self._manually_created_transcripts, self._generated_transcripts])
+        return self._find_transcript(
+            language_codes,
+            [self._manually_created_transcripts, self._generated_transcripts],
+        )
 
     def find_generated_transcript(self, language_codes):
         """
@@ -208,7 +226,9 @@ class TranscriptList(object):
         :rtype Transcript:
         :raises: NoTranscriptFound
         """
-        return self._find_transcript(language_codes, [self._manually_created_transcripts])
+        return self._find_transcript(
+            language_codes, [self._manually_created_transcripts]
+        )
 
     def _find_transcript(self, language_codes, transcript_dicts):
         for language_code in language_codes:
@@ -216,44 +236,54 @@ class TranscriptList(object):
                 if language_code in transcript_dict:
                     return transcript_dict[language_code]
 
-        raise NoTranscriptFound(
-            self.video_id,
-            language_codes,
-            self
-        )
+        raise NoTranscriptFound(self.video_id, language_codes, self)
 
     def __str__(self):
         return (
-            'For this video ({video_id}) transcripts are available in the following languages:\n\n'
-            '(MANUALLY CREATED)\n'
-            '{available_manually_created_transcript_languages}\n\n'
-            '(GENERATED)\n'
-            '{available_generated_transcripts}\n\n'
-            '(TRANSLATION LANGUAGES)\n'
-            '{available_translation_languages}'
+            "For this video ({video_id}) transcripts are available in the following languages:\n\n"
+            "(MANUALLY CREATED)\n"
+            "{available_manually_created_transcript_languages}\n\n"
+            "(GENERATED)\n"
+            "{available_generated_transcripts}\n\n"
+            "(TRANSLATION LANGUAGES)\n"
+            "{available_translation_languages}"
         ).format(
             video_id=self.video_id,
             available_manually_created_transcript_languages=self._get_language_description(
-                str(transcript) for transcript in self._manually_created_transcripts.values()
+                str(transcript)
+                for transcript in self._manually_created_transcripts.values()
             ),
             available_generated_transcripts=self._get_language_description(
                 str(transcript) for transcript in self._generated_transcripts.values()
             ),
             available_translation_languages=self._get_language_description(
                 '{language_code} ("{language}")'.format(
-                    language=translation_language['language'],
-                    language_code=translation_language['language_code'],
-                ) for translation_language in self._translation_languages
-            )
+                    language=translation_language["language"],
+                    language_code=translation_language["language_code"],
+                )
+                for translation_language in self._translation_languages
+            ),
         )
 
     def _get_language_description(self, transcript_strings):
-        description = '\n'.join(' - {transcript}'.format(transcript=transcript) for transcript in transcript_strings)
-        return description if description else 'None'
+        description = "\n".join(
+            " - {transcript}".format(transcript=transcript)
+            for transcript in transcript_strings
+        )
+        return description if description else "None"
 
 
 class Transcript(object):
-    def __init__(self, http_client, video_id, url, language, language_code, is_generated, translation_languages):
+    def __init__(
+        self,
+        http_client,
+        video_id,
+        url,
+        language,
+        language_code,
+        is_generated,
+        translation_languages,
+    ):
         """
         You probably don't want to initialize this directly. Usually you'll access Transcript objects using a
         TranscriptList.
@@ -276,7 +306,7 @@ class Transcript(object):
         self.is_generated = is_generated
         self.translation_languages = translation_languages
         self._translation_languages_dict = {
-            translation_language['language_code']: translation_language['language']
+            translation_language["language_code"]: translation_language["language"]
             for translation_language in translation_languages
         }
 
@@ -288,7 +318,9 @@ class Transcript(object):
         :return: a list of dictionaries containing the 'text', 'start' and 'duration' keys
         :rtype [{'text': str, 'start': float, 'end': float}]:
         """
-        response = self._http_client.get(self._url, headers={'Accept-Language': 'en-US'})
+        response = self._http_client.get(
+            self._url, headers={"Accept-Language": "en-US"}
+        )
         return _TranscriptParser(preserve_formatting=preserve_formatting).parse(
             _raise_http_errors(response, self.video_id).text,
         )
@@ -297,7 +329,7 @@ class Transcript(object):
         return '{language_code} ("{language}"){translation_description}'.format(
             language=self.language,
             language_code=self.language_code,
-            translation_description='[TRANSLATABLE]' if self.is_translatable else ''
+            translation_description="[TRANSLATABLE]" if self.is_translatable else "",
         )
 
     @property
@@ -314,7 +346,9 @@ class Transcript(object):
         return Transcript(
             self._http_client,
             self.video_id,
-            '{url}&tlang={language_code}'.format(url=self._url, language_code=language_code),
+            "{url}&tlang={language_code}".format(
+                url=self._url, language_code=language_code
+            ),
             self._translation_languages_dict[language_code],
             language_code,
             True,
@@ -324,16 +358,16 @@ class Transcript(object):
 
 class _TranscriptParser(object):
     _FORMATTING_TAGS = [
-        'strong',  # important
-        'em',  # emphasized
-        'b',  # bold
-        'i',  # italic
-        'mark',  # marked
-        'small',  # smaller
-        'del',  # deleted
-        'ins',  # inserted
-        'sub',  # subscript
-        'sup',  # superscript
+        "strong",  # important
+        "em",  # emphasized
+        "b",  # bold
+        "i",  # italic
+        "mark",  # marked
+        "small",  # smaller
+        "del",  # deleted
+        "ins",  # inserted
+        "sub",  # subscript
+        "sup",  # superscript
     ]
 
     def __init__(self, preserve_formatting=False):
@@ -341,19 +375,19 @@ class _TranscriptParser(object):
 
     def _get_html_regex(self, preserve_formatting):
         if preserve_formatting:
-            formats_regex = '|'.join(self._FORMATTING_TAGS)
-            formats_regex = r'<\/?(?!\/?(' + formats_regex + r')\b).*?\b>'
+            formats_regex = "|".join(self._FORMATTING_TAGS)
+            formats_regex = r"<\/?(?!\/?(" + formats_regex + r")\b).*?\b>"
             html_regex = re.compile(formats_regex, re.IGNORECASE)
         else:
-            html_regex = re.compile(r'<[^>]*>', re.IGNORECASE)
+            html_regex = re.compile(r"<[^>]*>", re.IGNORECASE)
         return html_regex
 
     def parse(self, plain_data):
         return [
             {
-                'text': re.sub(self._html_regex, '', unescape(xml_element.text)),
-                'start': float(xml_element.attrib['start']),
-                'duration': float(xml_element.attrib.get('dur', '0.0')),
+                "text": re.sub(self._html_regex, "", unescape(xml_element.text)),
+                "start": float(xml_element.attrib["start"]),
+                "duration": float(xml_element.attrib.get("dur", "0.0")),
             }
             for xml_element in ElementTree.fromstring(plain_data)
             if xml_element.text is not None
