@@ -44,6 +44,7 @@ coverage.shell = "coverage run -m unittest discover && coverage report -m --fail
 format = "ruff format youtube_transcript_api"
 ci-format = "ruff format youtube_transcript_api --check"
 lint = "ruff check youtube_transcript_api"
+precommit.shell = "poe format && poe lint && poe coverage"
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.14"

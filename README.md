@@ -384,6 +384,11 @@ poe format
 poe lint
 ```
 
+If you just want to make sure that your code passes all the necessary checks to get a green build, you can simply run:
+```shell
+poe precommit
+```
+
 ## Donations
 
 If this project makes you happy by reducing your development time, you can make me happy by treating me to a cup of coffee, or become a [Sponsor of this project](https://github.com/sponsors/jdepoix) :)  
