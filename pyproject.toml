@@ -39,14 +39,14 @@ youtube_transcript_api = "youtube_transcript_api.__main__:main"
 
 [tool.poe.tasks]
 test = "pytest youtube_transcript_api"
-ci-test.shell = "coverage run -m unittest discover && coverage report -m --fail-under=100"
+ci-test.shell = "coverage run -m unittest discover"
 coverage.shell = "coverage run -m unittest discover && coverage report -m"
 format = "ruff format youtube_transcript_api"
 ci-format = "ruff format youtube_transcript_api --check"
 lint = "ruff check youtube_transcript_api"
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.13"
+python = ">=3.8,<=3.14"
 requests = "*"
 
 [tool.poetry.group.test]
@@ -57,7 +57,6 @@ pytest = "^8.3.3"
 coverage = "^7.6.1"
 mock = "^5.1.0"
 httpretty = "^1.1.4"
-coveralls = "^4.0.1"
 
 [tool.poetry.group.dev]
 optional = true

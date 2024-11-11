@@ -24,12 +24,12 @@ jobs:
       - name: Lint
         run: poe lint
 
-  test-coverage:
+  test:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
 
     steps:
       - uses: actions/checkout@v4
@@ -44,3 +44,20 @@ jobs:
       - name: Run tests
         run: |
           poe ci-test
+      - name: Report intermediate coverage report
+        uses: coverallsapp/github-action@v2
+        with:
+          flag-name: run-python-${{ matrix.python-version }}
+          parallel: true
+
+finish:
+  needs: test
+  runs-on: ubuntu-latest
+
+  steps:
+    - name: Finalize coverage report
+      uses: coverallsapp/github-action@v2
+      with:
+        parallel-finished: true
+        carryforward: "run-python-3.8,run-python-3.9,run-python-3.10,run-python-3.11,run-python-3.12,run-python-3.13,run-python-3.14"
+
