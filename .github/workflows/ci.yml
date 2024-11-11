@@ -70,7 +70,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install poetry poethepoet
-          poetry install --only test
+          poetry install --with test
       - name: Check coverage
         run: poe coverage
 
