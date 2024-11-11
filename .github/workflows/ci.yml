@@ -63,3 +63,24 @@ jobs:
           parallel-finished: true
           carryforward: "run-python-3.8,run-python-3.9,run-python-3.10,run-python-3.11,run-python-3.12,run-python-3.13"
 
+  publish:
+#    TODO
+#    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    needs: report-coverage
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.9
+      - name: Install dependencies
+        run: |
+          pip install poetry
+          poetry install
+      - name: Build
+        run: poetry build
+      - name: Publish
+        # TODO update repo and username/pw
+        run: poetry publish -r testpypi -u ${{ secrets.PYPI_USERNAME }} -p ${{ secrets.PYPI_PASSWORD }}
