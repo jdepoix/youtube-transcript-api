@@ -17,14 +17,14 @@ jobs:
           python-version: 3.9
       - name: Install dependencies
         run: |
-          pip install poetry poe
+          pip install poetry poethepoet
           poetry install --only dev
       - name: Format
         run: poe ci-format
       - name: Lint
         run: poe lint
 
-  test:
+  test-coverage:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -39,7 +39,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          pip install poetry poe
+          pip install poetry poethepoet
           poetry install --with test
       - name: Run tests
         run: |
