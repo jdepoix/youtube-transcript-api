@@ -406,8 +406,8 @@ class TestYouTubeTranscriptApi(TestCase):
         with self.assertRaises(CookiePathInvalid):
             YouTubeTranscriptApi._load_cookies(bad_cookies, "GJLlxj_dtq8")
 
-    # def test_load_cookies__no_valid_cookies(self):
-    #     dirname, filename = os.path.split(os.path.abspath(__file__))
-    #     expired_cookies = dirname + "/expired_example_cookies.txt"
-    #     with self.assertRaises(CookiesInvalid):
-    #         YouTubeTranscriptApi._load_cookies(expired_cookies, "GJLlxj_dtq8")
+    def test_load_cookies__no_valid_cookies(self):
+        dirname, filename = os.path.split(os.path.abspath(__file__))
+        expired_cookies = dirname + "/expired_example_cookies.txt"
+        with self.assertRaises(CookiesInvalid):
+            YouTubeTranscriptApi._load_cookies(expired_cookies, "GJLlxj_dtq8")
