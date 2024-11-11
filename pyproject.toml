@@ -40,7 +40,7 @@ youtube_transcript_api = "youtube_transcript_api.__main__:main"
 
 [tool.poe.tasks]
 test = "pytest youtube_transcript_api"
-ci-test.shell = "coverage run -m unittest discover && coverage xml"
+ci-test.shell = "coverage run -m unittest discover && coverage xml --fail-under=100"
 coverage.shell = "coverage run -m unittest discover && coverage report -m"
 format = "ruff format youtube_transcript_api"
 ci-format = "ruff format youtube_transcript_api --check"

@@ -84,5 +84,5 @@ jobs:
       - name: Publish
         # TODO update repo and username/pw
         run: |
-          poetry config repositories.testpypi https://test.pypi.org/legacy/
+          poetry config repositories.testpypi https://test.pypi.org/simple/
           poetry publish -r testpypi -u __token__ -p ${{ secrets.PYPI_TOKEN_TEST }}
