@@ -47,6 +47,8 @@ jobs:
       - name: Report intermediate coverage report
         uses: coverallsapp/github-action@v2
         with:
+          file: .coverage
+          format: python
           flag-name: run-python-${{ matrix.python-version }}
           parallel: true
 
