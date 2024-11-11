@@ -7,8 +7,8 @@
   <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BAENLEW8VUJ6G&source=url">
     <img src="https://img.shields.io/badge/Donate-PayPal-green.svg" alt="Donate">
   </a>
-  <a href="https://app.travis-ci.com/jdepoix/youtube-transcript-api">
-    <img src="https://travis-ci.com/jdepoix/youtube-transcript-api.svg?branch=master" alt="Build Status">
+  <a href="https://github.com/jdepoix/youtube-transcript-api/actions">
+    <img src="https://github.com/jdepoix/youtube-transcript-api/actions/workflows/ci.yml/badge.svg?branch=master" alt="Build Status">
   </a>
   <a href="https://coveralls.io/github/jdepoix/youtube-transcript-api?branch=master">
     <img src="https://coveralls.io/repos/github/jdepoix/youtube-transcript-api/badge.svg?branch=master" alt="Coverage Status">
