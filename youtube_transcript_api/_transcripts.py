@@ -17,6 +17,7 @@ from requests import HTTPError
 from ._html_unescaping import unescape
 from ._errors import (
     VideoUnavailable,
+    BotRestricted,
     TooManyRequests,
     YouTubeRequestFailed,
     NoTranscriptFound,
@@ -59,6 +60,8 @@ class TranscriptListFetcher(object):
                 raise TooManyRequests(video_id)
             if '"playabilityStatus":' not in html:
                 raise VideoUnavailable(video_id)
+            if '"playabilityStatus":' in html and '"Sign in to confirm you’re not a bot"' in html:
+                raise BotRestricted(video_id)
 
             raise TranscriptsDisabled(video_id)
 
