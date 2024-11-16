@@ -8,7 +8,7 @@ if sys.version_info.major == 2:  # pragma: no cover
 
 import json
 
-from xml.etree import ElementTree
+from defusedxml import ElementTree
 
 import re
 
