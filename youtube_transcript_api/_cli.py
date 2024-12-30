@@ -47,7 +47,7 @@ class YouTubeTranscriptCli(object):
 
     def _fetch_transcript(self, parsed_args, proxies, cookies, video_id):
         transcript_list = YouTubeTranscriptApi.list_transcripts(
-            video_id, proxies=proxies, cookies=cookies
+            video_id, proxies=proxies, cookies=cookies, verify=parsed_args.verify
         )
 
         if parsed_args.list_transcripts:
@@ -147,8 +147,22 @@ class YouTubeTranscriptCli(object):
             default=None,
             help="The cookie file that will be used for authorization with youtube.",
         )
+        parser.add_argument(
+            "--verify",
+            default=None,
+            type=self._parse_verify,
+            help="Path to a custom SSL certificate bundle or False to disable verification.",
+        )
 
         return self._sanitize_video_ids(parser.parse_args(self._args))
+
+    def _parse_verify(self, value):
+        if value.lower() == 'false':
+            return False
+        elif value.lower() == 'true':
+            return True
+        else:
+            return value
 
     def _sanitize_video_ids(self, args):
         args.video_ids = [video_id.replace("\\", "") for video_id in args.video_ids]

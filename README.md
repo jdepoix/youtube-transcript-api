@@ -1,4 +1,3 @@
-
 <h1 align="center">
   ✨ YouTube Transcript API ✨
 </h1>
@@ -363,6 +362,30 @@ Using the CLI:
 
 ```
 youtube_transcript_api <first_video_id> <second_video_id> --cookies /path/to/your/cookies.txt
+```
+
+## SSL Verification
+
+You can customize SSL certificate verification by providing a path to a custom certificate bundle or disabling verification entirely:
+
+```python
+from youtube_transcript_api import YouTubeTranscriptApi
+
+# Using custom certificate bundle
+YouTubeTranscriptApi.get_transcript(video_id, verify='/path/to/cacert.pem')
+
+# Disabling SSL verification (not recommended for production)
+YouTubeTranscriptApi.get_transcript(video_id, verify=False)
+```
+
+Using the CLI:
+
+```
+# Using custom certificate bundle
+youtube_transcript_api <first_video_id> <second_video_id> --verify /path/to/cacert.pem
+
+# Disabling SSL verification
+youtube_transcript_api <first_video_id> <second_video_id> --verify False
 ```
 
 ## Warning  
