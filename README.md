@@ -36,9 +36,17 @@
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://www.searchapi.io/press/v1/svg/searchapi_logo_white_h.svg">
       <source media="(prefers-color-scheme: light)" srcset="https://www.searchapi.io/press/v1/svg/searchapi_logo_black_h.svg">
-      <img alt="SearchAPI" src="https://www.searchapi.io/press/v1/svg/searchapi_logo_black_h.svg" height="40px">
+      <img alt="SearchAPI" src="https://www.searchapi.io/press/v1/svg/searchapi_logo_black_h.svg" height="40px" style="vertical-align: middle;">
     </picture>
-  </a>&nbsp;&nbsp;
+  </a>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="https://supadata.ai">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://supadata.ai/logo-dark.svg">
+      <source media="(prefers-color-scheme: light)" srcset="https://supadata.ai/logo-light.svg">
+      <img alt="supadata" src="https://supadata.ai/logo-light.svg" height="40px">
+    </picture>
+  </a>
 </p>
 
 ## Install
