@@ -309,8 +309,29 @@ class TestYouTubeTranscriptCli(TestCase):
             ("v1 v2 --languages de en " "--cookies blahblah.txt").split()
         ).run()
         YouTubeTranscriptApi.list_transcripts.assert_any_call(
-            "v1", proxies=None, cookies="blahblah.txt"
+            "v1", proxies=None, cookies="blahblah.txt", verify=None
         )
         YouTubeTranscriptApi.list_transcripts.assert_any_call(
-            "v2", proxies=None, cookies="blahblah.txt"
+            "v2", proxies=None, cookies="blahblah.txt", verify=None
+        )
+
+    def test_run__verify(self):
+        YouTubeTranscriptCli(
+            ("v1 v2 --languages de en " "--verify /path/to/cert.pem").split()
+        ).run()
+        YouTubeTranscriptApi.list_transcripts.assert_any_call(
+            "v1", proxies=None, cookies=None, verify="/path/to/cert.pem"
+        )
+        YouTubeTranscriptApi.list_transcripts.assert_any_call(
+            "v2", proxies=None, cookies=None, verify="/path/to/cert.pem"
+        )
+
+        YouTubeTranscriptCli(
+            ("v1 v2 --languages de en " "--verify False").split()
+        ).run()
+        YouTubeTranscriptApi.list_transcripts.assert_any_call(
+            "v1", proxies=None, cookies=None, verify="False"
+        )
+        YouTubeTranscriptApi.list_transcripts.assert_any_call(
+            "v2", proxies=None, cookies=None, verify="False"
         )

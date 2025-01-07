@@ -16,7 +16,7 @@ from ._errors import CookiePathInvalid, CookiesInvalid
 
 class YouTubeTranscriptApi(object):
     @classmethod
-    def list_transcripts(cls, video_id, proxies=None, cookies=None):
+    def list_transcripts(cls, video_id, proxies=None, cookies=None, verify=None):
         """
         Retrieves the list of transcripts which are available for a given video. It returns a `TranscriptList` object
         which is iterable and provides methods to filter the list of transcripts for specific languages. While iterating
@@ -61,6 +61,8 @@ class YouTubeTranscriptApi(object):
         :type proxies: {'http': str, 'https': str} - http://docs.python-requests.org/en/master/user/advanced/#proxies
         :param cookies: a string of the path to a text file containing youtube authorization cookies
         :type cookies: str
+        :param verify: custom SSL verification path or boolean
+        :type verify: str|bool|None
         :return: the list of available transcripts
         :rtype TranscriptList:
         """
@@ -68,6 +70,8 @@ class YouTubeTranscriptApi(object):
             if cookies:
                 http_client.cookies = cls._load_cookies(cookies, video_id)
             http_client.proxies = proxies if proxies else {}
+            if verify is not None:
+                http_client.verify = verify
             return TranscriptListFetcher(http_client).fetch(video_id)
 
     @classmethod
@@ -79,6 +83,7 @@ class YouTubeTranscriptApi(object):
         proxies=None,
         cookies=None,
         preserve_formatting=False,
+        verify=None,
     ):
         """
         Retrieves the transcripts for a list of videos.
@@ -98,6 +103,8 @@ class YouTubeTranscriptApi(object):
         :type cookies: str
         :param preserve_formatting: whether to keep select HTML text formatting
         :type preserve_formatting: bool
+        :param verify: custom SSL verification path or boolean
+        :type verify: str|bool|None
         :return: a tuple containing a dictionary mapping video ids onto their corresponding transcripts, and a list of
         video ids, which could not be retrieved
         :rtype ({str: [{'text': str, 'start': float, 'end': float}]}, [str]}):
@@ -110,7 +117,7 @@ class YouTubeTranscriptApi(object):
         for video_id in video_ids:
             try:
                 data[video_id] = cls.get_transcript(
-                    video_id, languages, proxies, cookies, preserve_formatting
+                    video_id, languages, proxies, cookies, preserve_formatting, verify
                 )
             except Exception as exception:
                 if not continue_after_error:
@@ -128,6 +135,7 @@ class YouTubeTranscriptApi(object):
         proxies=None,
         cookies=None,
         preserve_formatting=False,
+        verify=None,
     ):
         """
         Retrieves the transcript for a single video. This is just a shortcut for calling::
@@ -146,12 +154,14 @@ class YouTubeTranscriptApi(object):
         :type cookies: str
         :param preserve_formatting: whether to keep select HTML text formatting
         :type preserve_formatting: bool
+        :param verify: custom SSL verification path or boolean
+        :type verify: str|bool|None
         :return: a list of dictionaries containing the 'text', 'start' and 'duration' keys
         :rtype [{'text': str, 'start': float, 'end': float}]:
         """
         assert isinstance(video_id, str), "`video_id` must be a string"
         return (
-            cls.list_transcripts(video_id, proxies, cookies)
+            cls.list_transcripts(video_id, proxies, cookies, verify)
             .find_transcript(languages)
             .fetch(preserve_formatting=preserve_formatting)
         )
