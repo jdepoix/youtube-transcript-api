@@ -5,7 +5,7 @@ import logging
 from ._cli import YouTubeTranscriptCli
 
 
-def main():
+def main():               #main function of program
     logging.basicConfig()
 
     print(YouTubeTranscriptCli(sys.argv[1:]).run())
