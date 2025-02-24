@@ -12,7 +12,7 @@ from youtube_transcript_api import (
     TranscriptsDisabled,
     NoTranscriptFound,
     VideoUnavailable,
-    TooManyRequests,
+    IpBlocked,
     NoTranscriptAvailable,
     NotTranslatable,
     TranslationLanguageNotAvailable,
@@ -254,7 +254,7 @@ class TestYouTubeTranscriptApi(TestCase):
             body=load_asset("youtube_too_many_requests.html.static"),
         )
 
-        with self.assertRaises(TooManyRequests):
+        with self.assertRaises(IpBlocked):
             YouTubeTranscriptApi.get_transcript("abc")
 
     def test_get_transcript__exception_if_transcripts_disabled(self):

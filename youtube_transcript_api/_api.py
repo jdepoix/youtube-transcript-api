@@ -15,6 +15,9 @@ from ._errors import CookiePathInvalid, CookiesInvalid
 
 
 class YouTubeTranscriptApi(object):
+    def __init__(self):
+        pass
+
     @classmethod
     def list_transcripts(cls, video_id, proxies=None, cookies=None):
         """

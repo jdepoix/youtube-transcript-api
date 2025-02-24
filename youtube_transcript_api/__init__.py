@@ -6,7 +6,9 @@ from ._errors import (
     NoTranscriptFound,
     CouldNotRetrieveTranscript,
     VideoUnavailable,
-    TooManyRequests,
+    VideoUnplayable,
+    IpBlocked,
+    RequestBlocked,
     NotTranslatable,
     TranslationLanguageNotAvailable,
     NoTranscriptAvailable,
@@ -15,4 +17,5 @@ from ._errors import (
     FailedToCreateConsentCookie,
     YouTubeRequestFailed,
     InvalidVideoId,
+    AgeRestricted,
 )
