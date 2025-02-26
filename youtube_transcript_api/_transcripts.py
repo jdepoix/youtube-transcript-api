@@ -26,16 +26,27 @@ from ._errors import (
 from ._settings import WATCH_URL
 
 
-# TODO docs
 @dataclass
 class FetchedTranscriptSnippet:
     text: str
     start: float
+    """
+    The timestamp at which this transcript snippet appears on screen in seconds.
+    """
     duration: float
+    """
+    The duration of how long the snippet in seconds. Be aware that this is not the 
+    duration of the transcribed speech, but how long the snippet stays on screen.
+    Therefore, there can be overlaps between snippets!
+    """
 
 
 @dataclass
 class FetchedTranscript:
+    """
+    Represents a fetched transcript. This object is iterable, which allows you to
+    iterate over the transcript snippets.
+    """
     snippets: List[FetchedTranscriptSnippet]
     video_id: str
     language: str
