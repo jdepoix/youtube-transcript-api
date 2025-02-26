@@ -3,8 +3,6 @@ from typing import Iterable
 
 from requests import HTTPError
 
-from ._transcripts import TranscriptList
-
 from ._settings import WATCH_URL
 
 
@@ -135,7 +133,7 @@ class NoTranscriptFound(CouldNotRetrieveTranscript):
         self,
         video_id: str,
         requested_language_codes: Iterable[str],
-        transcript_data: TranscriptList,
+        transcript_data: "TranscriptList",
     ):
         self._requested_language_codes = requested_language_codes
         self._transcript_data = transcript_data

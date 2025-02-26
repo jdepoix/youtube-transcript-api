@@ -165,7 +165,7 @@ class TranscriptList:
         video_id: str,
         manually_created_transcripts: Dict[str, Transcript],
         generated_transcripts: Dict[str, Transcript],
-        translation_languages: List[Dict[str, str]],
+        translation_languages: List[_TranslationLanguage],
     ):
         """
         The constructor is only for internal use. Use the static build method instead.
@@ -193,10 +193,10 @@ class TranscriptList:
         :return: the created TranscriptList
         """
         translation_languages = [
-            {
-                "language": translation_language["languageName"]["simpleText"],
-                "language_code": translation_language["languageCode"],
-            }
+            _TranslationLanguage(
+                language=translation_language["languageName"]["simpleText"],
+                language_code=translation_language["languageCode"],
+            )
             for translation_language in captions_json.get("translationLanguages", [])
         ]
 
@@ -306,8 +306,8 @@ class TranscriptList:
             ),
             available_translation_languages=self._get_language_description(
                 '{language_code} ("{language}")'.format(
-                    language=translation_language["language"],
-                    language_code=translation_language["language_code"],
+                    language=translation_language.language,
+                    language_code=translation_language.language_code,
                 )
                 for translation_language in self._translation_languages
             ),
