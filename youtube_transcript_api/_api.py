@@ -8,6 +8,10 @@ from ._errors import CookiePathInvalid, CookiesInvalid
 
 
 class YouTubeTranscriptApi:
+    # TODO constructor
+    # TODO depricate old methods
+    def get(self, video_id: str):
+        pass
 
     @classmethod
     def list_transcripts(cls, video_id, proxies=None, cookies=None):

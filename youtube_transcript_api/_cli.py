@@ -1,4 +1,5 @@
 import argparse
+from typing import List
 
 from .formatters import FormatterLoader
 
@@ -6,10 +7,10 @@ from ._api import YouTubeTranscriptApi
 
 
 class YouTubeTranscriptCli:
-    def __init__(self, args):
+    def __init__(self, args: List[str]):
         self._args = args
 
-    def run(self):
+    def run(self) -> str:
         parsed_args = self._parse_args()
 
         if parsed_args.exclude_manually_created and parsed_args.exclude_generated:

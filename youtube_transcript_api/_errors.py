@@ -1,3 +1,8 @@
+from typing import Iterable
+
+from requests import HTTPError
+
+from ._transcripts import TranscriptList
 from ._settings import WATCH_URL
 
 
@@ -18,11 +23,11 @@ class CouldNotRetrieveTranscript(Exception):
         "Also make sure that there are no open issues which already describe your problem!"
     )
 
-    def __init__(self, video_id):
+    def __init__(self, video_id: str):
         self.video_id = video_id
-        super(CouldNotRetrieveTranscript, self).__init__(self._build_error_message())
+        super().__init__(self._build_error_message())
 
-    def _build_error_message(self):
+    def _build_error_message(self) -> str:
         cause = self.cause
         error_message = self.ERROR_MESSAGE.format(
             video_url=WATCH_URL.format(video_id=self.video_id)
@@ -36,19 +41,19 @@ class CouldNotRetrieveTranscript(Exception):
         return error_message
 
     @property
-    def cause(self):
+    def cause(self) -> str:
         return self.CAUSE_MESSAGE
 
 
 class YouTubeRequestFailed(CouldNotRetrieveTranscript):
     CAUSE_MESSAGE = "Request to YouTube failed: {reason}"
 
-    def __init__(self, video_id, http_error):
+    def __init__(self, video_id: str, http_error: HTTPError):
         self.reason = str(http_error)
-        super(YouTubeRequestFailed, self).__init__(video_id)
+        super().__init__(video_id)
 
     @property
-    def cause(self):
+    def cause(self) -> str:
         return self.CAUSE_MESSAGE.format(
             reason=self.reason,
         )
@@ -112,13 +117,18 @@ class NoTranscriptFound(CouldNotRetrieveTranscript):
         "{transcript_data}"
     )
 
-    def __init__(self, video_id, requested_language_codes, transcript_data):
+    def __init__(
+        self,
+        video_id: str,
+        requested_language_codes: Iterable[str],
+        transcript_data: TranscriptList,
+    ):
         self._requested_language_codes = requested_language_codes
         self._transcript_data = transcript_data
-        super(NoTranscriptFound, self).__init__(video_id)
+        super().__init__(video_id)
 
     @property
-    def cause(self):
+    def cause(self) -> str:
         return self.CAUSE_MESSAGE.format(
             requested_language_codes=self._requested_language_codes,
             transcript_data=str(self._transcript_data),
