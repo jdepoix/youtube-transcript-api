@@ -182,7 +182,7 @@ class YouTubeTranscriptApi:
 
         ytt_api = YouTubeTranscriptApi(
             proxy_settings=proxies,
-            cookie_path=Path(cookies),
+            cookie_path=Path(cookies) if cookies else None,
         )
         return ytt_api.list(video_id)
 

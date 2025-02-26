@@ -1,3 +1,4 @@
+from pathlib import Path
 from unittest import TestCase
 from mock import patch
 
@@ -24,12 +25,14 @@ from youtube_transcript_api import (
 )
 
 
-def load_asset(filename):
-    filepath = "{dirname}/assets/{filename}".format(
+def get_asset_path(filename: str) -> Path:
+    return Path("{dirname}/assets/{filename}".format(
         dirname=os.path.dirname(__file__), filename=filename
-    )
+    ))
 
-    with open(filepath, mode="rb") as file:
+
+def load_asset(filename: str):
+    with open(get_asset_path(filename), mode="rb") as file:
         return file.read()
 
 
@@ -310,9 +313,8 @@ class TestYouTubeTranscriptApi(TestCase):
         )
 
     def test_get_transcript__with_cookies(self):
-        dirname, filename = os.path.split(os.path.abspath(__file__))
-        cookies = dirname + "/example_cookies.txt"
-        transcript = YouTubeTranscriptApi.get_transcript("GJLlxj_dtq8", cookies=cookies)
+        cookies_path = get_asset_path("example_cookies.txt")
+        transcript = YouTubeTranscriptApi.get_transcript("GJLlxj_dtq8", cookies=str(cookies_path))
 
         self.assertEqual(
             transcript,
@@ -378,10 +380,10 @@ class TestYouTubeTranscriptApi(TestCase):
 
     @patch("youtube_transcript_api.YouTubeTranscriptApi.get_transcript")
     def test_get_transcripts__with_cookies(self, mock_get_transcript):
-        cookies = "/example_cookies.txt"
-        YouTubeTranscriptApi.get_transcripts(["GJLlxj_dtq8"], cookies=cookies)
+        cookie_path = get_asset_path("example_cookies.txt")
+        YouTubeTranscriptApi.get_transcripts(["GJLlxj_dtq8"], cookies=str(cookie_path))
         mock_get_transcript.assert_any_call(
-            "GJLlxj_dtq8", ("en",), None, cookies, False
+            "GJLlxj_dtq8", ("en",), None, str(cookie_path), False
         )
 
     @patch("youtube_transcript_api.YouTubeTranscriptApi.get_transcript")
@@ -393,21 +395,22 @@ class TestYouTubeTranscriptApi(TestCase):
         )
 
     def test_load_cookies(self):
-        dirname, filename = os.path.split(os.path.abspath(__file__))
-        cookies = dirname + "/example_cookies.txt"
-        session_cookies = YouTubeTranscriptApi._load_cookies(cookies, "GJLlxj_dtq8")
+        cookie_path = get_asset_path("example_cookies.txt")
+
+        ytt_api = YouTubeTranscriptApi(cookie_path=cookie_path)
+
+        session_cookies = ytt_api._fetcher._http_client.cookies
         self.assertEqual(
             {"TEST_FIELD": "TEST_VALUE"},
             requests.utils.dict_from_cookiejar(session_cookies),
         )
 
     def test_load_cookies__bad_file_path(self):
-        bad_cookies = "nonexistent_cookies.txt"
+        cookie_path = get_asset_path("nonexistent_cookies.txt")
         with self.assertRaises(CookiePathInvalid):
-            YouTubeTranscriptApi._load_cookies(bad_cookies, "GJLlxj_dtq8")
+            YouTubeTranscriptApi(cookie_path=cookie_path)
 
     def test_load_cookies__no_valid_cookies(self):
-        dirname, filename = os.path.split(os.path.abspath(__file__))
-        expired_cookies = dirname + "/expired_example_cookies.txt"
+        cookie_path = get_asset_path("expired_example_cookies.txt")
         with self.assertRaises(CookieInvalid):
-            YouTubeTranscriptApi._load_cookies(expired_cookies, "GJLlxj_dtq8")
+            YouTubeTranscriptApi(cookie_path=cookie_path)
