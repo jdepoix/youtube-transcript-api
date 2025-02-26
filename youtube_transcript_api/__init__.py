@@ -7,6 +7,10 @@ from ._transcripts import (
     FetchedTranscriptSnippet,
 )
 from ._errors import (
+    YouTubeTranscriptApiException,
+    CookieError,
+    CookiePathInvalid,
+    CookieInvalid,
     TranscriptsDisabled,
     NoTranscriptFound,
     CouldNotRetrieveTranscript,
@@ -15,8 +19,6 @@ from ._errors import (
     NotTranslatable,
     TranslationLanguageNotAvailable,
     NoTranscriptAvailable,
-    CookiePathInvalid,
-    CookiesInvalid,
     FailedToCreateConsentCookie,
     YouTubeRequestFailed,
     InvalidVideoId,

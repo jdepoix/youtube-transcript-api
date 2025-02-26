@@ -50,7 +50,6 @@ class YouTubeTranscriptCli:
         transcript_list = YouTubeTranscriptApi.list_transcripts(
             video_id, proxies=proxies, cookies=cookies
         )
-
         if parsed_args.list_transcripts:
             return str(transcript_list)
 

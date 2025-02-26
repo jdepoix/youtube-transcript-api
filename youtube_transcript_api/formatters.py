@@ -62,7 +62,9 @@ class JSONFormatter(Formatter):
         :param transcripts:
         :return: A JSON string representation of the transcript.
         """
-        return json.dumps([transcript.to_raw_data() for transcript in transcripts], **kwargs)
+        return json.dumps(
+            [transcript.to_raw_data() for transcript in transcripts], **kwargs
+        )
 
 
 class TextFormatter(Formatter):

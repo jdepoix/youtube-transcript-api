@@ -1,12 +1,34 @@
+from pathlib import Path
 from typing import Iterable
 
 from requests import HTTPError
 
 from ._transcripts import TranscriptList
+
 from ._settings import WATCH_URL
 
 
-class CouldNotRetrieveTranscript(Exception):
+class YouTubeTranscriptApiException(Exception):
+    pass
+
+
+class CookieError(YouTubeTranscriptApiException):
+    pass
+
+
+class CookiePathInvalid(CookieError):
+    def __init__(self, cookie_path: Path):
+        super().__init__(f"Can't load the provided cookie file: {cookie_path}")
+
+
+class CookieInvalid(CookieError):
+    def __init__(self, cookie_path: Path):
+        super().__init__(
+            f"The cookies provided are not valid (may have expired): {cookie_path}"
+        )
+
+
+class CouldNotRetrieveTranscript(YouTubeTranscriptApiException):
     """
     Raised if a transcript could not be retrieved.
     """
@@ -28,11 +50,11 @@ class CouldNotRetrieveTranscript(Exception):
         super().__init__(self._build_error_message())
 
     def _build_error_message(self) -> str:
-        cause = self.cause
         error_message = self.ERROR_MESSAGE.format(
             video_url=WATCH_URL.format(video_id=self.video_id)
         )
 
+        cause = self.cause
         if cause:
             error_message += (
                 self.CAUSE_MESSAGE_INTRO.format(cause=cause) + self.GITHUB_REFERRAL
@@ -97,14 +119,6 @@ class NotTranslatable(CouldNotRetrieveTranscript):
 
 class TranslationLanguageNotAvailable(CouldNotRetrieveTranscript):
     CAUSE_MESSAGE = "The requested translation language is not available"
-
-
-class CookiePathInvalid(CouldNotRetrieveTranscript):
-    CAUSE_MESSAGE = "The provided cookie file was unable to be loaded"
-
-
-class CookiesInvalid(CouldNotRetrieveTranscript):
-    CAUSE_MESSAGE = "The cookies provided are not valid (may have expired)"
 
 
 class FailedToCreateConsentCookie(CouldNotRetrieveTranscript):

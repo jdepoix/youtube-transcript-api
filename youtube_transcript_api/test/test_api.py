@@ -17,7 +17,7 @@ from youtube_transcript_api import (
     NotTranslatable,
     TranslationLanguageNotAvailable,
     CookiePathInvalid,
-    CookiesInvalid,
+    CookieInvalid,
     FailedToCreateConsentCookie,
     YouTubeRequestFailed,
     InvalidVideoId,
@@ -409,5 +409,5 @@ class TestYouTubeTranscriptApi(TestCase):
     def test_load_cookies__no_valid_cookies(self):
         dirname, filename = os.path.split(os.path.abspath(__file__))
         expired_cookies = dirname + "/expired_example_cookies.txt"
-        with self.assertRaises(CookiesInvalid):
+        with self.assertRaises(CookieInvalid):
             YouTubeTranscriptApi._load_cookies(expired_cookies, "GJLlxj_dtq8")
