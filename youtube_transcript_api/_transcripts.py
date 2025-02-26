@@ -1,12 +1,6 @@
-import sys
-
-# This can only be tested by using different python versions, therefore it is not covered by coverage.py
-if sys.version_info.major == 2:  # pragma: no cover
-    # ruff: noqa: F821
-    reload(sys)
-    sys.setdefaultencoding("utf-8")
-
 import json
+
+from html import unescape
 
 from defusedxml import ElementTree
 
@@ -14,7 +8,6 @@ import re
 
 from requests import HTTPError
 
-from ._html_unescaping import unescape
 from ._errors import (
     VideoUnavailable,
     TooManyRequests,
@@ -38,7 +31,7 @@ def _raise_http_errors(response, video_id):
         raise YouTubeRequestFailed(error, video_id)
 
 
-class TranscriptListFetcher(object):
+class TranscriptListFetcher:
     def __init__(self, http_client):
         self._http_client = http_client
 
@@ -97,7 +90,7 @@ class TranscriptListFetcher(object):
         return unescape(_raise_http_errors(response, video_id).text)
 
 
-class TranscriptList(object):
+class TranscriptList:
     """
     This object represents a list of transcripts. It can be iterated over to list all transcripts which are available
     for a given YouTube video. Also it provides functionality to search for a transcript in a given language.
@@ -273,7 +266,7 @@ class TranscriptList(object):
         return description if description else "None"
 
 
-class Transcript(object):
+class Transcript:
     def __init__(
         self,
         http_client,
@@ -356,7 +349,7 @@ class Transcript(object):
         )
 
 
-class _TranscriptParser(object):
+class _TranscriptParser:
     _FORMATTING_TAGS = [
         "strong",  # important
         "em",  # emphasized

@@ -1,11 +1,11 @@
 import argparse
 
-from ._api import YouTubeTranscriptApi
-
 from .formatters import FormatterLoader
 
+from ._api import YouTubeTranscriptApi
 
-class YouTubeTranscriptCli(object):
+
+class YouTubeTranscriptCli:
     def __init__(self, args):
         self._args = args
 

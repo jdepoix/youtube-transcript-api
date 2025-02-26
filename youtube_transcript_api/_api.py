@@ -1,20 +1,14 @@
 import requests
 
-try:  # pragma: no cover
-    import http.cookiejar as cookiejar
-
-    CookieLoadError = (FileNotFoundError, cookiejar.LoadError)
-except ImportError:  # pragma: no cover
-    import cookielib as cookiejar
-
-    CookieLoadError = IOError
+import http.cookiejar as cookiejar
 
 from ._transcripts import TranscriptListFetcher
 
 from ._errors import CookiePathInvalid, CookiesInvalid
 
 
-class YouTubeTranscriptApi(object):
+class YouTubeTranscriptApi:
+
     @classmethod
     def list_transcripts(cls, video_id, proxies=None, cookies=None):
         """
@@ -164,5 +158,5 @@ class YouTubeTranscriptApi(object):
             if not cookie_jar:
                 raise CookiesInvalid(video_id)
             return cookie_jar
-        except CookieLoadError:
+        except (FileNotFoundError, cookiejar.LoadError):
             raise CookiePathInvalid(video_id)

@@ -3,7 +3,7 @@ import json
 import pprint
 
 
-class Formatter(object):
+class Formatter:
     """Formatter should be used as an abstract base class.
 
     Formatter classes should inherit from this class and implement
@@ -171,7 +171,7 @@ class WebVTTFormatter(_TextBasedFormatter):
         return "{}\n{}".format(time_text, line["text"])
 
 
-class FormatterLoader(object):
+class FormatterLoader:
     TYPES = {
         "json": JSONFormatter,
         "pretty": PrettyPrintFormatter,
