@@ -21,6 +21,7 @@ from ._errors import (
     FailedToCreateConsentCookie,
     InvalidVideoId,
     AgeRestricted,
+    VideoUnplayable,
 )
 from ._settings import WATCH_URL
 
@@ -69,29 +70,36 @@ class TranscriptListFetcher(object):
             splitted_html[1].split("</script>")[0].strip().rstrip(";")
         )
 
-        playability_status = video_data.get("playabilityStatus")
-        if playability_status["status"] != _PlayabilityStatus.OK.value:
-            if playability_status["status"] == _PlayabilityStatus.LOGIN_REQUIRED.value:
-                if (
-                    playability_status["reason"]
-                    == _PlayabilityFailedReason.BOT_DETECTED.value
-                ):
+        playability_status_data = video_data.get("playabilityStatus")
+        playability_status = playability_status_data.get("status")
+        if (
+            playability_status != _PlayabilityStatus.OK.value
+            and playability_status is not None
+        ):
+            reason = playability_status_data.get("reason")
+            if playability_status == _PlayabilityStatus.LOGIN_REQUIRED.value:
+                if reason == _PlayabilityFailedReason.BOT_DETECTED.value:
                     raise RequestBlocked(video_id)
-                if (
-                    playability_status["reason"]
-                    == _PlayabilityFailedReason.AGE_RESTRICTED.value
-                ):
+                if reason == _PlayabilityFailedReason.AGE_RESTRICTED.value:
                     raise AgeRestricted(video_id)
             if (
-                playability_status["status"] == _PlayabilityStatus.ERROR.value
-                and playability_status["reason"]
-                == _PlayabilityFailedReason.VIDEO_UNAVAILABLE.value
+                playability_status == _PlayabilityStatus.ERROR.value
+                and reason == _PlayabilityFailedReason.VIDEO_UNAVAILABLE.value
             ):
                 raise VideoUnavailable(video_id)
-            # TODO custom exception that uses reason and subReason
-            # raise UnplayableException()
+            subreasons = (
+                playability_status_data.get("errorScreen", {})
+                .get("playerErrorMessageRenderer", {})
+                .get("subreason", {})
+                .get("runs", [])
+            )
+            raise VideoUnplayable(
+                video_id, reason, [run.get("text", "") for run in subreasons]
+            )
 
-        captions_json = video_data.get("captions", {}).get("playerCaptionsTracklistRenderer")
+        captions_json = video_data.get("captions", {}).get(
+            "playerCaptionsTracklistRenderer"
+        )
         if captions_json is None:
             raise TranscriptsDisabled(video_id)
 

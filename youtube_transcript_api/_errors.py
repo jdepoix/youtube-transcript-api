@@ -1,3 +1,5 @@
+from typing import Optional, List
+
 from ._settings import WATCH_URL
 
 
@@ -54,9 +56,26 @@ class YouTubeRequestFailed(CouldNotRetrieveTranscript):
         )
 
 
-# TODO handle reason etc.
 class VideoUnplayable(CouldNotRetrieveTranscript):
-    CAUSE_MESSAGE = "The video is no longer available"
+    CAUSE_MESSAGE = "The video is unplayable for the following reason: {reason}"
+    SUBREASON_MESSAGE = "\n\nAdditional Details:\n{sub_reasons}"
+
+    def __init__(self, video_id: str, reason: Optional[str], sub_reasons: List[str]):
+        self._reason = reason
+        self._sub_reasons = sub_reasons
+        super().__init__(video_id)
+
+    @property
+    def cause(self):
+        reason = "No reason specified!" if self._reason is None else self._reason
+        if self._sub_reasons:
+            sub_reasons = "\n".join(
+                f" - {sub_reason}" for sub_reason in self._sub_reasons
+            )
+            reason = f"{reason}{self.SUBREASON_MESSAGE.format(sub_reasons=sub_reasons)}"
+        return self.CAUSE_MESSAGE.format(
+            reason=reason,
+        )
 
 
 class VideoUnavailable(CouldNotRetrieveTranscript):
@@ -85,7 +104,7 @@ class RequestBlocked(CouldNotRetrieveTranscript):
         "There are two things you can do to work around this:\n"
         '1. Use proxies to hide your IP address, as explained in the "Work around IP '
         'bans" section of the README (https://github.com/jdepoix/youtube-transcript-api'
-        '?tab=readme-ov-file#work-around-ip-bans).\n'
+        "?tab=readme-ov-file#work-around-ip-bans).\n"
         "2. (NOT RECOMMENDED) If you authenticate your requests using cookies, you "
         "will be able to continue doing requests for a while. However, YouTube will "
         "eventually permanently ban the account that you have used to authenticate "
@@ -98,7 +117,7 @@ class IpBlocked(RequestBlocked):
         f"{RequestBlocked.BASE_CAUSE_MESSAGE}"
         'Ways to work around this are explained in the "Work around IP '
         'bans" section of the README (https://github.com/jdepoix/youtube-transcript-api'
-        '?tab=readme-ov-file#work-around-ip-bans).\n'
+        "?tab=readme-ov-file#work-around-ip-bans).\n"
     )
 
 
@@ -111,7 +130,7 @@ class AgeRestricted(CouldNotRetrieveTranscript):
         "This video is age-restricted. Therefore, you will have to authenticate to be "
         "able to retrieve transcripts for it. You will have to provide a cookie to "
         'authenticate yourself, as explained in the "Cookies" section of the README '
-        '(https://github.com/jdepoix/youtube-transcript-api?tab=readme-ov-file#cookies)'
+        "(https://github.com/jdepoix/youtube-transcript-api?tab=readme-ov-file#cookies)"
     )
 
 
