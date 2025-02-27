@@ -63,9 +63,6 @@ class FetchedTranscript:
     def __len__(self) -> int:
         return len(self.snippets)
 
-    def __str__(self) -> str:
-        return str(self.to_raw_data())
-
     def to_raw_data(self) -> List[Dict]:
         return [asdict(snippet) for snippet in self]
 
