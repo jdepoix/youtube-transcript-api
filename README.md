@@ -392,23 +392,36 @@ a argument name. For example to get the transcript for the video with the ID `-a
 youtube_transcript_api "\-abc123"
 ```
 
-## Proxy  
+[//]: # (## Proxy  )
 
-You can specify a https proxy, which will be used during the requests to YouTube:
+[//]: # ()
+[//]: # (You can specify a https proxy, which will be used during the requests to YouTube:)
 
-```python  
-from youtube_transcript_api import YouTubeTranscriptApi  
+[//]: # ()
+[//]: # (```python  )
 
-YouTubeTranscriptApi.get_transcript(video_id, proxies={"https": "https://user:pass@domain:port"})
-```  
+[//]: # (from youtube_transcript_api import YouTubeTranscriptApi  )
 
-As the `proxies` dict is passed on to the `requests.get(...)` call, it follows the [format used by the requests library](https://requests.readthedocs.io/en/latest/user/advanced/#proxies).  
+[//]: # ()
+[//]: # (YouTubeTranscriptApi.get_transcript&#40;video_id, proxies={"https": "https://user:pass@domain:port"}&#41;)
 
-Using the CLI:  
+[//]: # (```  )
 
-```  
-youtube_transcript_api <first_video_id> <second_video_id> --https-proxy https://user:pass@domain:port
-```
+[//]: # ()
+[//]: # (As the `proxies` dict is passed on to the `requests.get&#40;...&#41;` call, it follows the [format used by the requests library]&#40;https://requests.readthedocs.io/en/latest/user/advanced/#proxies&#41;.  )
+
+[//]: # ()
+[//]: # (Using the CLI:  )
+
+[//]: # ()
+[//]: # (```  )
+
+[//]: # (youtube_transcript_api <first_video_id> <second_video_id> --https-proxy https://user:pass@domain:port)
+
+[//]: # (```)
+
+## Work around IP bans
+TODO
 
 ## Cookies
 

@@ -12,8 +12,7 @@ from youtube_transcript_api import (
     TranscriptsDisabled,
     NoTranscriptFound,
     VideoUnavailable,
-    TooManyRequests,
-    NoTranscriptAvailable,
+    IpBlocked,
     NotTranslatable,
     TranslationLanguageNotAvailable,
     CookiePathInvalid,
@@ -23,6 +22,9 @@ from youtube_transcript_api import (
     InvalidVideoId,
     FetchedTranscript,
     FetchedTranscriptSnippet,
+    AgeRestricted,
+    RequestBlocked,
+    VideoUnplayable,
 )
 
 
@@ -59,7 +61,7 @@ class TestYouTubeTranscriptApi(TestCase):
                     duration=3.239,
                 ),
             ],
-            language="Englisch",
+            language="English",
             language_code="en",
             is_generated=False,
             video_id="GJLlxj_dtq8",
@@ -130,7 +132,7 @@ class TestYouTubeTranscriptApi(TestCase):
         httpretty.register_uri(
             httpretty.GET,
             "https://www.youtube.com/watch",
-            body=load_asset("youtube_transcripts_disabled.html.static"),
+            body=load_asset("youtube_video_unavailable.html.static"),
         )
 
         with self.assertRaises(InvalidVideoId):
@@ -247,15 +249,50 @@ class TestYouTubeTranscriptApi(TestCase):
         with self.assertRaises(YouTubeRequestFailed):
             YouTubeTranscriptApi().fetch("abc")
 
-    def test_fetch__exception_if_youtube_request_limit_reached(self):
+    def test_fetch__exception_if_age_restricted(self):
+        httpretty.register_uri(
+            httpretty.GET,
+            "https://www.youtube.com/watch",
+            body=load_asset("youtube_age_restricted.html.static"),
+        )
+
+        with self.assertRaises(AgeRestricted):
+            YouTubeTranscriptApi().fetch("Njp5uhTorCo")
+
+    def test_fetch__exception_if_ip_blocked(self):
         httpretty.register_uri(
             httpretty.GET,
             "https://www.youtube.com/watch",
             body=load_asset("youtube_too_many_requests.html.static"),
         )
 
-        with self.assertRaises(TooManyRequests):
+        with self.assertRaises(IpBlocked):
             YouTubeTranscriptApi().fetch("abc")
+
+    def test_fetch__exception_request_blocked(self):
+        httpretty.register_uri(
+            httpretty.GET,
+            "https://www.youtube.com/watch",
+            body=load_asset("youtube_request_blocked.html.static"),
+        )
+
+        with self.assertRaises(RequestBlocked):
+            YouTubeTranscriptApi().fetch("Njp5uhTorCo")
+
+
+    def test_fetch__exception_unplayable(self):
+        httpretty.register_uri(
+            httpretty.GET,
+            "https://www.youtube.com/watch",
+            body=load_asset("youtube_unplayable.html.static"),
+        )
+
+        with self.assertRaises(VideoUnplayable) as error:
+            YouTubeTranscriptApi().fetch("Njp5uhTorCo")
+        error = error.exception
+        self.assertEqual(error.reason, "Custom Reason")
+        self.assertEqual(error.sub_reasons, ["Sub Reason 1", "Sub Reason 2"])
+
 
     def test_fetch__exception_if_transcripts_disabled(self):
         httpretty.register_uri(
@@ -278,16 +315,6 @@ class TestYouTubeTranscriptApi(TestCase):
     def test_fetch__exception_if_language_unavailable(self):
         with self.assertRaises(NoTranscriptFound):
             YouTubeTranscriptApi().fetch("GJLlxj_dtq8", languages=["cz"])
-
-    def test_fetch__exception_if_no_transcript_available(self):
-        httpretty.register_uri(
-            httpretty.GET,
-            "https://www.youtube.com/watch",
-            body=load_asset("youtube_no_transcript_available.html.static"),
-        )
-
-        with self.assertRaises(NoTranscriptAvailable):
-            YouTubeTranscriptApi().fetch("MwBPvcYFY2E")
 
     def test_fetch__with_proxy(self):
         proxy_settings = {"http": "", "https:": ""}
@@ -402,7 +429,7 @@ class TestYouTubeTranscriptApi(TestCase):
         httpretty.register_uri(
             httpretty.GET,
             "https://www.youtube.com/watch",
-            body=load_asset("youtube_transcripts_disabled.html.static"),
+            body=load_asset("youtube_video_unavailable.html.static"),
         )
 
         with self.assertRaises(InvalidVideoId):
@@ -534,7 +561,7 @@ class TestYouTubeTranscriptApi(TestCase):
             body=load_asset("youtube_too_many_requests.html.static"),
         )
 
-        with self.assertRaises(TooManyRequests):
+        with self.assertRaises(IpBlocked):
             YouTubeTranscriptApi.get_transcript("abc")
 
     def test_get_transcript__exception_if_transcripts_disabled(self):
@@ -558,16 +585,6 @@ class TestYouTubeTranscriptApi(TestCase):
     def test_get_transcript__exception_if_language_unavailable(self):
         with self.assertRaises(NoTranscriptFound):
             YouTubeTranscriptApi.get_transcript("GJLlxj_dtq8", languages=["cz"])
-
-    def test_get_transcript__exception_if_no_transcript_available(self):
-        httpretty.register_uri(
-            httpretty.GET,
-            "https://www.youtube.com/watch",
-            body=load_asset("youtube_no_transcript_available.html.static"),
-        )
-
-        with self.assertRaises(NoTranscriptAvailable):
-            YouTubeTranscriptApi.get_transcript("MwBPvcYFY2E")
 
     def test_get_transcript__with_proxy(self):
         proxies = {"http": "", "https:": ""}

@@ -1,5 +1,6 @@
 import json
 from dataclasses import dataclass, asdict
+from enum import Enum
 from itertools import chain
 
 from html import unescape
@@ -13,15 +14,17 @@ from requests import HTTPError, Session, Response
 
 from ._errors import (
     VideoUnavailable,
-    TooManyRequests,
     YouTubeRequestFailed,
     NoTranscriptFound,
     TranscriptsDisabled,
     NotTranslatable,
     TranslationLanguageNotAvailable,
-    NoTranscriptAvailable,
     FailedToCreateConsentCookie,
     InvalidVideoId,
+    IpBlocked,
+    RequestBlocked,
+    AgeRestricted,
+    VideoUnplayable,
 )
 from ._settings import WATCH_URL
 
@@ -71,6 +74,18 @@ class FetchedTranscript:
 class _TranslationLanguage:
     language: str
     language_code: str
+
+
+class _PlayabilityStatus(str, Enum):
+    OK = "OK"
+    ERROR = "ERROR"
+    LOGIN_REQUIRED = "LOGIN_REQUIRED"
+
+
+class _PlayabilityFailedReason(str, Enum):
+    BOT_DETECTED = "Sign in to confirm you’re not a bot"
+    AGE_RESTRICTED = "Sign in to confirm your age"
+    VIDEO_UNAVAILABLE = "Video unavailable"
 
 
 def _raise_http_errors(response: Response, video_id: str) -> Response:
@@ -336,27 +351,51 @@ class TranscriptListFetcher:
             self._extract_captions_json(self._fetch_video_html(video_id), video_id),
         )
 
-    def _extract_captions_json(self, html: str, video_id: str) -> Dict:
-        splitted_html = html.split('"captions":')
+    def _extract_captions_json(self, html, video_id):
+        splitted_html = html.split("var ytInitialPlayerResponse = ")
 
         if len(splitted_html) <= 1:
-            if video_id.startswith("http://") or video_id.startswith("https://"):
-                raise InvalidVideoId(video_id)
             if 'class="g-recaptcha"' in html:
-                raise TooManyRequests(video_id)
-            if '"playabilityStatus":' not in html:
+                raise IpBlocked(video_id)
+
+        video_data = json.loads(
+            splitted_html[1].split("</script>")[0].strip().rstrip(";")
+        )
+
+        playability_status_data = video_data.get("playabilityStatus")
+        playability_status = playability_status_data.get("status")
+        if (
+            playability_status != _PlayabilityStatus.OK.value
+            and playability_status is not None
+        ):
+            reason = playability_status_data.get("reason")
+            if playability_status == _PlayabilityStatus.LOGIN_REQUIRED.value:
+                if reason == _PlayabilityFailedReason.BOT_DETECTED.value:
+                    raise RequestBlocked(video_id)
+                if reason == _PlayabilityFailedReason.AGE_RESTRICTED.value:
+                    raise AgeRestricted(video_id)
+            if (
+                playability_status == _PlayabilityStatus.ERROR.value
+                and reason == _PlayabilityFailedReason.VIDEO_UNAVAILABLE.value
+            ):
+                if video_id.startswith("http://") or video_id.startswith("https://"):
+                    raise InvalidVideoId(video_id)
                 raise VideoUnavailable(video_id)
+            subreasons = (
+                playability_status_data.get("errorScreen", {})
+                .get("playerErrorMessageRenderer", {})
+                .get("subreason", {})
+                .get("runs", [])
+            )
+            raise VideoUnplayable(
+                video_id, reason, [run.get("text", "") for run in subreasons]
+            )
 
+        captions_json = video_data.get("captions", {}).get(
+            "playerCaptionsTracklistRenderer"
+        )
+        if captions_json is None or "captionTracks" not in captions_json:
             raise TranscriptsDisabled(video_id)
-
-        captions_json = json.loads(
-            splitted_html[1].split(',"videoDetails')[0].replace("\n", "")
-        ).get("playerCaptionsTracklistRenderer")
-        if captions_json is None:
-            raise TranscriptsDisabled(video_id)
-
-        if "captionTracks" not in captions_json:
-            raise NoTranscriptAvailable(video_id)
 
         return captions_json
 
