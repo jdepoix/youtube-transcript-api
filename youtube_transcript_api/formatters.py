@@ -101,7 +101,7 @@ class _TextBasedFormatter(TextFormatter):
         )
 
     def _format_transcript_helper(
-        self, i: int, time_text: str, line: FetchedTranscriptSnippet
+        self, i: int, time_text: str, snippet: FetchedTranscriptSnippet
     ) -> str:
         raise NotImplementedError(
             "A subclass of _TextBasedFormatter must implement "
@@ -137,12 +137,12 @@ class _TextBasedFormatter(TextFormatter):
         """
         lines = []
         for i, line in enumerate(transcript):
-            end = line["start"] + line["duration"]
+            end = line.start + line.duration
             time_text = "{} --> {}".format(
-                self._seconds_to_timestamp(line["start"]),
+                self._seconds_to_timestamp(line.start),
                 self._seconds_to_timestamp(
-                    transcript[i + 1]["start"]
-                    if i < len(transcript) - 1 and transcript[i + 1]["start"] < end
+                    transcript[i + 1].start
+                    if i < len(transcript) - 1 and transcript[i + 1].start < end
                     else end
                 ),
             )
@@ -159,9 +159,9 @@ class SRTFormatter(_TextBasedFormatter):
         return "\n\n".join(lines) + "\n"
 
     def _format_transcript_helper(
-        self, i: int, time_text: str, line: FetchedTranscriptSnippet
+        self, i: int, time_text: str, snippet: FetchedTranscriptSnippet
     ) -> str:
-        return "{}\n{}\n{}".format(i + 1, time_text, line["text"])
+        return "{}\n{}\n{}".format(i + 1, time_text, snippet.text)
 
 
 class WebVTTFormatter(_TextBasedFormatter):
@@ -172,9 +172,9 @@ class WebVTTFormatter(_TextBasedFormatter):
         return "WEBVTT\n\n" + "\n\n".join(lines) + "\n"
 
     def _format_transcript_helper(
-        self, i: int, time_text: str, line: FetchedTranscriptSnippet
+        self, i: int, time_text: str, snippet: FetchedTranscriptSnippet
     ) -> str:
-        return "{}\n{}".format(time_text, line.text)
+        return "{}\n{}".format(time_text, snippet.text)
 
 
 class FormatterLoader:

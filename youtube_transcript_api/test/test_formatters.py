@@ -5,6 +5,8 @@ import json
 import pprint
 
 from youtube_transcript_api.formatters import (
+    FetchedTranscript,
+    FetchedTranscriptSnippet,
     Formatter,
     JSONFormatter,
     TextFormatter,
@@ -17,12 +19,22 @@ from youtube_transcript_api.formatters import (
 
 class TestFormatters(TestCase):
     def setUp(self):
-        self.transcript = [
-            {"text": "Test line 1", "start": 0.0, "duration": 1.50},
-            {"text": "line between", "start": 1.5, "duration": 2.0},
-            {"text": "testing the end line", "start": 2.5, "duration": 3.25},
-        ]
+        self.transcript = FetchedTranscript(
+            snippets=[
+                FetchedTranscriptSnippet(text="Test line 1", start=0.0, duration=1.50),
+                FetchedTranscriptSnippet(text="line between", start=1.5, duration=2.0),
+                FetchedTranscriptSnippet(
+                    text="testing the end line", start=2.5, duration=3.25
+                ),
+            ],
+            language="English",
+            language_code="en",
+            is_generated=True,
+            video_id="12345",
+        )
         self.transcripts = [self.transcript, self.transcript]
+        self.transcript_raw = self.transcript.to_raw_data()
+        self.transcripts_raw = [transcript.to_raw_data() for transcript in self.transcripts]
 
     def test_base_formatter_format_call(self):
         with self.assertRaises(NotImplementedError):
@@ -45,14 +57,14 @@ class TestFormatters(TestCase):
         # test middle lines
         self.assertEqual(lines[4], "2")
         self.assertEqual(lines[5], "00:00:01,500 --> 00:00:02,500")
-        self.assertEqual(lines[6], self.transcript[1]["text"])
+        self.assertEqual(lines[6], self.transcript_raw[1]["text"])
 
     def test_srt_formatter_ending(self):
         content = SRTFormatter().format_transcript(self.transcript)
         lines = content.split("\n")
 
         # test ending lines
-        self.assertEqual(lines[-2], self.transcript[-1]["text"])
+        self.assertEqual(lines[-2], self.transcript_raw[-1]["text"])
         self.assertEqual(lines[-1], "")
 
     def test_srt_formatter_many(self):
@@ -78,7 +90,7 @@ class TestFormatters(TestCase):
         lines = content.split("\n")
 
         # test ending lines
-        self.assertEqual(lines[-2], self.transcript[-1]["text"])
+        self.assertEqual(lines[-2], self.transcript_raw[-1]["text"])
         self.assertEqual(lines[-1], "")
 
     def test_webvtt_formatter_many(self):
@@ -94,29 +106,29 @@ class TestFormatters(TestCase):
     def test_pretty_print_formatter(self):
         content = PrettyPrintFormatter().format_transcript(self.transcript)
 
-        self.assertEqual(content, pprint.pformat(self.transcript))
+        self.assertEqual(content, pprint.pformat(self.transcript_raw))
 
     def test_pretty_print_formatter_many(self):
         content = PrettyPrintFormatter().format_transcripts(self.transcripts)
 
-        self.assertEqual(content, pprint.pformat(self.transcripts))
+        self.assertEqual(content, pprint.pformat(self.transcripts_raw))
 
     def test_json_formatter(self):
         content = JSONFormatter().format_transcript(self.transcript)
 
-        self.assertEqual(json.loads(content), self.transcript)
+        self.assertEqual(json.loads(content), self.transcript_raw)
 
     def test_json_formatter_many(self):
         content = JSONFormatter().format_transcripts(self.transcripts)
 
-        self.assertEqual(json.loads(content), self.transcripts)
+        self.assertEqual(json.loads(content), self.transcripts_raw)
 
     def test_text_formatter(self):
         content = TextFormatter().format_transcript(self.transcript)
         lines = content.split("\n")
 
-        self.assertEqual(lines[0], self.transcript[0]["text"])
-        self.assertEqual(lines[-1], self.transcript[-1]["text"])
+        self.assertEqual(lines[0], self.transcript_raw[0]["text"])
+        self.assertEqual(lines[-1], self.transcript_raw[-1]["text"])
 
     def test_text_formatter_many(self):
         formatter = TextFormatter()

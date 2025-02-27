@@ -57,6 +57,12 @@ class FetchedTranscript:
     def __iter__(self) -> Iterator[FetchedTranscriptSnippet]:
         return iter(self.snippets)
 
+    def __getitem__(self, index) -> FetchedTranscriptSnippet:
+        return self.snippets[index]
+
+    def __len__(self) -> int:
+        return len(self.snippets)
+
     def __str__(self) -> str:
         return str(self.to_raw_data())
 
