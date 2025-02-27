@@ -47,6 +47,7 @@ class FetchedTranscript:
     Represents a fetched transcript. This object is iterable, which allows you to
     iterate over the transcript snippets.
     """
+
     snippets: List[FetchedTranscriptSnippet]
     video_id: str
     language: str

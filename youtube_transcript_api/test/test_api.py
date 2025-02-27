@@ -26,9 +26,11 @@ from youtube_transcript_api import (
 
 
 def get_asset_path(filename: str) -> Path:
-    return Path("{dirname}/assets/{filename}".format(
-        dirname=os.path.dirname(__file__), filename=filename
-    ))
+    return Path(
+        "{dirname}/assets/{filename}".format(
+            dirname=os.path.dirname(__file__), filename=filename
+        )
+    )
 
 
 def load_asset(filename: str):
@@ -314,7 +316,9 @@ class TestYouTubeTranscriptApi(TestCase):
 
     def test_get_transcript__with_cookies(self):
         cookies_path = get_asset_path("example_cookies.txt")
-        transcript = YouTubeTranscriptApi.get_transcript("GJLlxj_dtq8", cookies=str(cookies_path))
+        transcript = YouTubeTranscriptApi.get_transcript(
+            "GJLlxj_dtq8", cookies=str(cookies_path)
+        )
 
         self.assertEqual(
             transcript,

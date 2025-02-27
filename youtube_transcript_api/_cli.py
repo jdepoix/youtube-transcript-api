@@ -3,7 +3,7 @@ from typing import List
 
 from .formatters import FormatterLoader
 
-from ._api import YouTubeTranscriptApi
+from ._api import YouTubeTranscriptApi, FetchedTranscript, TranscriptList
 
 
 class YouTubeTranscriptCli:
@@ -16,43 +16,58 @@ class YouTubeTranscriptCli:
         if parsed_args.exclude_manually_created and parsed_args.exclude_generated:
             return ""
 
-        proxies = None
+        proxy_settings = None
         if parsed_args.http_proxy != "" or parsed_args.https_proxy != "":
-            proxies = {"http": parsed_args.http_proxy, "https": parsed_args.https_proxy}
+            proxy_settings = {
+                "http": parsed_args.http_proxy,
+                "https": parsed_args.https_proxy,
+            }
 
-        cookies = parsed_args.cookies
+        cookie_path = parsed_args.cookies
 
         transcripts = []
         exceptions = []
 
+        ytt_api = YouTubeTranscriptApi(
+            proxy_settings=proxy_settings,
+            cookie_path=cookie_path,
+        )
+
         for video_id in parsed_args.video_ids:
             try:
-                transcripts.append(
-                    self._fetch_transcript(parsed_args, proxies, cookies, video_id)
-                )
+                transcript_list = ytt_api.list(video_id)
+                if parsed_args.list_transcripts:
+                    transcripts.append(transcript_list)
+                else:
+                    transcripts.append(
+                        self._fetch_transcript(
+                            parsed_args,
+                            transcript_list,
+                        )
+                    )
             except Exception as exception:
                 exceptions.append(exception)
 
-        return "\n\n".join(
-            [str(exception) for exception in exceptions]
-            + (
-                [
+        print_sections = [str(exception) for exception in exceptions]
+        if transcripts:
+            if parsed_args.list_transcripts:
+                print_sections.extend(
+                    str(transcript_list) for transcript_list in transcripts
+                )
+            else:
+                print_sections.append(
                     FormatterLoader()
                     .load(parsed_args.format)
                     .format_transcripts(transcripts)
-                ]
-                if transcripts
-                else []
-            )
-        )
+                )
 
-    def _fetch_transcript(self, parsed_args, proxies, cookies, video_id):
-        transcript_list = YouTubeTranscriptApi.list_transcripts(
-            video_id, proxies=proxies, cookies=cookies
-        )
-        if parsed_args.list_transcripts:
-            return str(transcript_list)
+        return "\n\n".join(print_sections)
 
+    def _fetch_transcript(
+        self,
+        parsed_args,
+        transcript_list: TranscriptList,
+    ) -> FetchedTranscript:
         if parsed_args.exclude_manually_created:
             transcript = transcript_list.find_generated_transcript(
                 parsed_args.languages
