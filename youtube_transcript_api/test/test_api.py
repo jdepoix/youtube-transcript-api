@@ -21,7 +21,8 @@ from youtube_transcript_api import (
     FailedToCreateConsentCookie,
     YouTubeRequestFailed,
     InvalidVideoId,
-    FetchedTranscript, FetchedTranscriptSnippet
+    FetchedTranscript,
+    FetchedTranscriptSnippet,
 )
 
 
@@ -133,9 +134,7 @@ class TestYouTubeTranscriptApi(TestCase):
         )
 
         with self.assertRaises(InvalidVideoId):
-            YouTubeTranscriptApi().list(
-                "https://www.youtube.com/watch?v=GJLlxj_dtq8"
-            )
+            YouTubeTranscriptApi().list("https://www.youtube.com/watch?v=GJLlxj_dtq8")
 
     def test_list__no_translation_languages_provided(self):
         httpretty.register_uri(
@@ -149,9 +148,7 @@ class TestYouTubeTranscriptApi(TestCase):
             self.assertEqual(len(transcript.translation_languages), 0)
 
     def test_translate_transcript(self):
-        transcript = YouTubeTranscriptApi().list(
-            "GJLlxj_dtq8"
-        ).find_transcript(["en"])
+        transcript = YouTubeTranscriptApi().list("GJLlxj_dtq8").find_transcript(["en"])
 
         translated_transcript = transcript.translate("af")
 
@@ -159,17 +156,13 @@ class TestYouTubeTranscriptApi(TestCase):
         self.assertIn("&tlang=af", translated_transcript._url)
 
     def test_translate_transcript__translation_language_not_available(self):
-        transcript = YouTubeTranscriptApi().list(
-            "GJLlxj_dtq8"
-        ).find_transcript(["en"])
+        transcript = YouTubeTranscriptApi().list("GJLlxj_dtq8").find_transcript(["en"])
 
         with self.assertRaises(TranslationLanguageNotAvailable):
             transcript.translate("xyz")
 
     def test_translate_transcript__not_translatable(self):
-        transcript = YouTubeTranscriptApi().list(
-            "GJLlxj_dtq8"
-        ).find_transcript(["en"])
+        transcript = YouTubeTranscriptApi().list("GJLlxj_dtq8").find_transcript(["en"])
         transcript.translation_languages = []
 
         with self.assertRaises(NotTranslatable):
@@ -298,7 +291,9 @@ class TestYouTubeTranscriptApi(TestCase):
 
     def test_fetch__with_proxy(self):
         proxy_settings = {"http": "", "https:": ""}
-        transcript = YouTubeTranscriptApi(proxy_settings=proxy_settings).fetch("GJLlxj_dtq8")
+        transcript = YouTubeTranscriptApi(proxy_settings=proxy_settings).fetch(
+            "GJLlxj_dtq8"
+        )
         self.assertEqual(
             transcript,
             self.ref_transcript,

@@ -34,7 +34,7 @@ class YouTubeTranscriptApi:
         :param cookie_path: Path to a text file containing youtube authorization cookies
         :param proxy_settings: a dictionary mapping of http and https proxies to be
             used for the network requests
-        :param http_client: You can optionally pass in a request.Session object, if you
+        :param http_client: You can optionally pass in a requests.Session object, if you
             manually want to share cookies between different instances of
             `YouTubeTranscriptApi`, overwrite defaults, specify SSL certificates, etc.
         """

@@ -34,7 +34,9 @@ class TestFormatters(TestCase):
         )
         self.transcripts = [self.transcript, self.transcript]
         self.transcript_raw = self.transcript.to_raw_data()
-        self.transcripts_raw = [transcript.to_raw_data() for transcript in self.transcripts]
+        self.transcripts_raw = [
+            transcript.to_raw_data() for transcript in self.transcripts
+        ]
 
     def test_base_formatter_format_call(self):
         with self.assertRaises(NotImplementedError):

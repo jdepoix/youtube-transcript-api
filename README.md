@@ -1,4 +1,3 @@
-
 <h1 align="center">
   ✨ YouTube Transcript API ✨
 </h1>
@@ -422,8 +421,6 @@ select "Netscape" during export, or the Firefox extension [cookies.txt](https://
 Once you have that, you can use it with the module to access age-restricted videos' captions like so.
 
 ```python  
-from youtube_transcript_api import YouTubeTranscriptApi  
-
 ytt_api = YouTubeTranscriptApi(cookie_path='/path/to/your/cookies.txt')
 ytt_api.fetch(video_id)
 ```
@@ -432,6 +429,33 @@ Using the CLI:
 
 ```
 youtube_transcript_api <first_video_id> <second_video_id> --cookies /path/to/your/cookies.txt
+```
+
+## Overwriting request defaults
+
+When initializing a `YouTubeTranscriptApi` object, it will create a `requests.Session` which will be used for all 
+HTTP(S) request. This allows for caching cookies when retrieving multiple requests. However, you can optionally pass a
+`requests.Session` object into its constructor, if you manually want to share cookies between different instances of 
+`YouTubeTranscriptApi`, overwrite defaults, set custom headers, specify SSL certificates, etc.
+
+```python
+from requests import Session
+
+http_client = Session()
+
+# set custom header
+http_client.headers.update({'x-test': 'true'})
+
+# set path to CA_BUNDLE file
+http_client.verify = '/path/to/certfile'
+
+ytt_api = YouTubeTranscriptApi(http_client=session)
+ytt_api.fetch(video_id)
+
+# share same Session between two instances of YouTubeTranscriptApi
+ytt_api_2 = YouTubeTranscriptApi(http_client=session)
+# now shares cookies with ytt_api
+ytt_api_2.fetch(video_id)
 ```
 
 ## Warning  
