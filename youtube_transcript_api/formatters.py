@@ -20,7 +20,7 @@ class Formatter:
             "their own .format_transcript() method."
         )
 
-    def format_transcripts(self, transcripts, **kwargs):
+    def format_transcripts(self, transcripts: List[FetchedTranscript], **kwargs):
         raise NotImplementedError(
             "A subclass of Formatter must implement "
             "their own .format_transcripts() method."
