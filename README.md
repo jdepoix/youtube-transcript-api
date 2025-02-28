@@ -457,10 +457,10 @@ from requests import Session
 http_client = Session()
 
 # set custom header
-http_client.headers.update({'x-test': 'true'})
+http_client.headers.update({"Accept-Encoding": "gzip, deflate"})
 
 # set path to CA_BUNDLE file
-http_client.verify = '/path/to/certfile'
+http_client.verify = "/path/to/certfile"
 
 ytt_api = YouTubeTranscriptApi(http_client=session)
 ytt_api.fetch(video_id)
