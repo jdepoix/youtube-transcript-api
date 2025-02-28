@@ -1,5 +1,5 @@
 from unittest import TestCase
-from mock import MagicMock
+from unittest.mock import MagicMock
 
 import json
 
@@ -290,13 +290,13 @@ class TestYouTubeTranscriptCli(TestCase):
             ).split()
         ).run()
 
-        YouTubeTranscriptApi.__init__.assert_any_call(
-            proxy_settings={
-                "http": "http://user:pass@domain:port",
-                "https": "https://user:pass@domain:port",
-            },
-            cookie_path=None,
+        proxy_config = YouTubeTranscriptApi.__init__.call_args.kwargs.get(
+            "proxy_config"
         )
+
+        self.assertIsNotNone(proxy_config)
+        self.assertEqual(proxy_config.http, "http://user:pass@domain:port")
+        self.assertEqual(proxy_config.https, "https://user:pass@domain:port")
 
     def test_run__cookies(self):
         YouTubeTranscriptCli(
@@ -304,6 +304,6 @@ class TestYouTubeTranscriptCli(TestCase):
         ).run()
 
         YouTubeTranscriptApi.__init__.assert_any_call(
-            proxy_settings=None,
+            proxy_config=None,
             cookie_path="blahblah.txt",
         )

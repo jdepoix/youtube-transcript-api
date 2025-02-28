@@ -1,6 +1,7 @@
 import argparse
 from typing import List
 
+from .proxies import GenericProxyConfig
 from .formatters import FormatterLoader
 
 from ._api import YouTubeTranscriptApi, FetchedTranscript, TranscriptList
@@ -16,12 +17,12 @@ class YouTubeTranscriptCli:
         if parsed_args.exclude_manually_created and parsed_args.exclude_generated:
             return ""
 
-        proxy_settings = None
+        proxy_config = None
         if parsed_args.http_proxy != "" or parsed_args.https_proxy != "":
-            proxy_settings = {
-                "http": parsed_args.http_proxy,
-                "https": parsed_args.https_proxy,
-            }
+            proxy_config = GenericProxyConfig(
+                http=parsed_args.http_proxy,
+                https=parsed_args.https_proxy,
+            )
 
         cookie_path = parsed_args.cookies
 
@@ -29,7 +30,7 @@ class YouTubeTranscriptCli:
         exceptions = []
 
         ytt_api = YouTubeTranscriptApi(
-            proxy_settings=proxy_settings,
+            proxy_config=proxy_config,
             cookie_path=cookie_path,
         )
 

@@ -26,6 +26,7 @@ from youtube_transcript_api import (
     RequestBlocked,
     VideoUnplayable,
 )
+from youtube_transcript_api.proxies import GenericProxyConfig
 
 
 def get_asset_path(filename: str) -> Path:
@@ -314,15 +315,20 @@ class TestYouTubeTranscriptApi(TestCase):
         with self.assertRaises(NoTranscriptFound):
             YouTubeTranscriptApi().fetch("GJLlxj_dtq8", languages=["cz"])
 
-    def test_fetch__with_proxy(self):
-        proxy_settings = {"http": "", "https:": ""}
-        transcript = YouTubeTranscriptApi(proxy_settings=proxy_settings).fetch(
+    @patch("youtube_transcript_api.proxies.GenericProxyConfig.to_requests_dict")
+    def test_fetch__with_proxy(self, to_requests_dict):
+        proxy_config = GenericProxyConfig(
+            http="http://localhost:8080",
+            https="http://localhost:8080",
+        )
+        transcript = YouTubeTranscriptApi(proxy_config=proxy_config).fetch(
             "GJLlxj_dtq8"
         )
         self.assertEqual(
             transcript,
             self.ref_transcript,
         )
+        to_requests_dict.assert_any_call()
 
     def test_fetch__with_cookies(self):
         cookie_path = get_asset_path("example_cookies.txt")
@@ -588,8 +594,12 @@ class TestYouTubeTranscriptApi(TestCase):
         with self.assertRaises(NoTranscriptFound):
             YouTubeTranscriptApi.get_transcript("GJLlxj_dtq8", languages=["cz"])
 
-    def test_get_transcript__with_proxy__deprecated(self):
-        proxies = {"http": "", "https:": ""}
+    @patch("youtube_transcript_api.proxies.GenericProxyConfig.to_requests_dict")
+    def test_get_transcript__with_proxy__deprecated(self, to_requests_dict):
+        proxies = {
+            "http": "http://localhost:8080",
+            "https": "http://localhost:8080",
+        }
         transcript = YouTubeTranscriptApi.get_transcript("GJLlxj_dtq8", proxies=proxies)
         self.assertEqual(
             transcript,
@@ -607,6 +617,7 @@ class TestYouTubeTranscriptApi(TestCase):
                 },
             ],
         )
+        to_requests_dict.assert_any_call()
 
     def test_get_transcript__with_cookies__deprecated(self):
         cookies_path = get_asset_path("example_cookies.txt")
@@ -686,7 +697,10 @@ class TestYouTubeTranscriptApi(TestCase):
 
     @patch("youtube_transcript_api.YouTubeTranscriptApi.get_transcript")
     def test_get_transcripts__with_proxies__deprecated(self, mock_get_transcript):
-        proxies = {"http": "", "https:": ""}
+        proxies = {
+            "http": "http://localhost:8080",
+            "https": "http://localhost:8080",
+        }
         YouTubeTranscriptApi.get_transcripts(["GJLlxj_dtq8"], proxies=proxies)
         mock_get_transcript.assert_any_call(
             "GJLlxj_dtq8", ("en",), proxies, None, False

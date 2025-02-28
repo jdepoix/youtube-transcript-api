@@ -1,10 +1,12 @@
 import warnings
 from pathlib import Path
-from typing import Optional, Dict, Iterable
+from typing import Optional, Iterable
 
 from http.cookiejar import MozillaCookieJar, LoadError
 
 from requests import Session
+
+from .proxies import ProxyConfig, GenericProxyConfig
 
 from ._transcripts import TranscriptListFetcher, FetchedTranscript, TranscriptList
 
@@ -27,13 +29,13 @@ class YouTubeTranscriptApi:
     def __init__(
         self,
         cookie_path: Optional[Path | str] = None,
-        proxy_settings: Optional[Dict] = None,
+        proxy_config: Optional[ProxyConfig] = None,
         http_client: Optional[Session] = None,
     ):
         """
-        :param cookie_path: Path to a text file containing youtube authorization cookies
-        :param proxy_settings: a dictionary mapping of http and https proxies to be
-            used for the network requests
+        :param cookie_path: Path to a text file containing YouTube authorization cookies
+        :param proxy_config: an optional ProxyConfig object, defining proxies used for
+            all network requests
         :param http_client: You can optionally pass in a requests.Session object, if you
             manually want to share cookies between different instances of
             `YouTubeTranscriptApi`, overwrite defaults, specify SSL certificates, etc.
@@ -42,8 +44,8 @@ class YouTubeTranscriptApi:
         http_client.headers.update({"Accept-Language": "en-US"})
         if cookie_path is not None:
             http_client.cookies = _load_cookie_jar(cookie_path)
-        if proxy_settings is not None:
-            http_client.proxies = proxy_settings
+        if proxy_config is not None:
+            http_client.proxies = proxy_config.to_requests_dict()
         self._fetcher = TranscriptListFetcher(http_client)
 
     def fetch(
@@ -182,7 +184,11 @@ class YouTubeTranscriptApi:
         )
 
         ytt_api = YouTubeTranscriptApi(
-            proxy_settings=proxies,
+            proxy_config=GenericProxyConfig(
+                http=proxies.get("http"), https=proxies.get("https")
+            )
+            if proxies
+            else None,
             cookie_path=Path(cookies) if cookies else None,
         )
         return ytt_api.list(video_id)
