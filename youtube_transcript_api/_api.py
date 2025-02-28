@@ -39,6 +39,7 @@ class YouTubeTranscriptApi:
             `YouTubeTranscriptApi`, overwrite defaults, specify SSL certificates, etc.
         """
         http_client = Session() if http_client is None else http_client
+        http_client.headers.update({"Accept-Language": "en-US"})
         if cookie_path is not None:
             http_client.cookies = _load_cookie_jar(cookie_path)
         if proxy_settings is not None:

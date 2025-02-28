@@ -279,7 +279,6 @@ class TestYouTubeTranscriptApi(TestCase):
         with self.assertRaises(RequestBlocked):
             YouTubeTranscriptApi().fetch("Njp5uhTorCo")
 
-
     def test_fetch__exception_unplayable(self):
         httpretty.register_uri(
             httpretty.GET,
@@ -292,7 +291,6 @@ class TestYouTubeTranscriptApi(TestCase):
         error = error.exception
         self.assertEqual(error.reason, "Custom Reason")
         self.assertEqual(error.sub_reasons, ["Sub Reason 1", "Sub Reason 2"])
-
 
     def test_fetch__exception_if_transcripts_disabled(self):
         httpretty.register_uri(
@@ -358,7 +356,7 @@ class TestYouTubeTranscriptApi(TestCase):
 
     ### DEPRECATED METHODS ###
 
-    def test_get_transcript(self):
+    def test_get_transcript__deprecated(self):
         transcript = YouTubeTranscriptApi.get_transcript("GJLlxj_dtq8")
 
         self.assertEqual(
@@ -378,7 +376,7 @@ class TestYouTubeTranscriptApi(TestCase):
             ],
         )
 
-    def test_get_transcript_formatted(self):
+    def test_get_transcript_formatted__deprecated(self):
         transcript = YouTubeTranscriptApi.get_transcript(
             "GJLlxj_dtq8", preserve_formatting=True
         )
@@ -400,7 +398,7 @@ class TestYouTubeTranscriptApi(TestCase):
             ],
         )
 
-    def test_list_transcripts(self):
+    def test_list_transcripts__deprecated(self):
         transcript_list = YouTubeTranscriptApi.list_transcripts("GJLlxj_dtq8")
 
         language_codes = {transcript.language_code for transcript in transcript_list}
@@ -409,13 +407,13 @@ class TestYouTubeTranscriptApi(TestCase):
             language_codes, {"zh", "de", "en", "hi", "ja", "ko", "es", "cs", "en"}
         )
 
-    def test_list_transcripts__find_manually_created(self):
+    def test_list_transcripts__find_manually_created__deprecated(self):
         transcript_list = YouTubeTranscriptApi.list_transcripts("GJLlxj_dtq8")
         transcript = transcript_list.find_manually_created_transcript(["cs"])
 
         self.assertFalse(transcript.is_generated)
 
-    def test_list_transcripts__find_generated(self):
+    def test_list_transcripts__find_generated__deprecated(self):
         transcript_list = YouTubeTranscriptApi.list_transcripts("GJLlxj_dtq8")
 
         with self.assertRaises(NoTranscriptFound):
@@ -425,7 +423,7 @@ class TestYouTubeTranscriptApi(TestCase):
 
         self.assertTrue(transcript.is_generated)
 
-    def test_list_transcripts__url_as_video_id(self):
+    def test_list_transcripts__url_as_video_id__deprecated(self):
         httpretty.register_uri(
             httpretty.GET,
             "https://www.youtube.com/watch",
@@ -437,7 +435,7 @@ class TestYouTubeTranscriptApi(TestCase):
                 "https://www.youtube.com/watch?v=GJLlxj_dtq8"
             )
 
-    def test_list_transcripts__no_translation_languages_provided(self):
+    def test_list_transcripts__no_translation_languages_provided__deprecated(self):
         httpretty.register_uri(
             httpretty.GET,
             "https://www.youtube.com/watch",
@@ -448,7 +446,7 @@ class TestYouTubeTranscriptApi(TestCase):
         for transcript in transcript_list:
             self.assertEqual(len(transcript.translation_languages), 0)
 
-    def test_translate_transcript(self):
+    def test_translate_transcript__deprecated(self):
         transcript = YouTubeTranscriptApi.list_transcripts(
             "GJLlxj_dtq8"
         ).find_transcript(["en"])
@@ -458,7 +456,7 @@ class TestYouTubeTranscriptApi(TestCase):
         self.assertEqual(translated_transcript.language_code, "af")
         self.assertIn("&tlang=af", translated_transcript._url)
 
-    def test_translate_transcript__translation_language_not_available(self):
+    def test_translate_transcript__translation_language_not_available__deprecated(self):
         transcript = YouTubeTranscriptApi.list_transcripts(
             "GJLlxj_dtq8"
         ).find_transcript(["en"])
@@ -466,7 +464,7 @@ class TestYouTubeTranscriptApi(TestCase):
         with self.assertRaises(TranslationLanguageNotAvailable):
             transcript.translate("xyz")
 
-    def test_translate_transcript__not_translatable(self):
+    def test_translate_transcript__not_translatable__deprecated(self):
         transcript = YouTubeTranscriptApi.list_transcripts(
             "GJLlxj_dtq8"
         ).find_transcript(["en"])
@@ -475,7 +473,7 @@ class TestYouTubeTranscriptApi(TestCase):
         with self.assertRaises(NotTranslatable):
             transcript.translate("af")
 
-    def test_get_transcript__correct_language_is_used(self):
+    def test_get_transcript__correct_language_is_used__deprecated(self):
         YouTubeTranscriptApi.get_transcript("GJLlxj_dtq8", ["de", "en"])
         query_string = httpretty.last_request().querystring
 
@@ -483,7 +481,7 @@ class TestYouTubeTranscriptApi(TestCase):
         self.assertEqual(len(query_string["lang"]), 1)
         self.assertEqual(query_string["lang"][0], "de")
 
-    def test_get_transcript__fallback_language_is_used(self):
+    def test_get_transcript__fallback_language_is_used__deprecated(self):
         httpretty.register_uri(
             httpretty.GET,
             "https://www.youtube.com/watch",
@@ -497,7 +495,7 @@ class TestYouTubeTranscriptApi(TestCase):
         self.assertEqual(len(query_string["lang"]), 1)
         self.assertEqual(query_string["lang"][0], "en")
 
-    def test_get_transcript__create_consent_cookie_if_needed(self):
+    def test_get_transcript__create_consent_cookie_if_needed__deprecated(self):
         httpretty.register_uri(
             httpretty.GET,
             "https://www.youtube.com/watch",
@@ -511,7 +509,9 @@ class TestYouTubeTranscriptApi(TestCase):
                 request.headers["cookie"], "CONSENT=YES+cb.20210328-17-p0.de+FX+119"
             )
 
-    def test_get_transcript__exception_if_create_consent_cookie_failed(self):
+    def test_get_transcript__exception_if_create_consent_cookie_failed__deprecated(
+        self,
+    ):
         httpretty.register_uri(
             httpretty.GET,
             "https://www.youtube.com/watch",
@@ -526,7 +526,7 @@ class TestYouTubeTranscriptApi(TestCase):
         with self.assertRaises(FailedToCreateConsentCookie):
             YouTubeTranscriptApi.get_transcript("F1xioXWb8CY")
 
-    def test_get_transcript__exception_if_consent_cookie_age_invalid(self):
+    def test_get_transcript__exception_if_consent_cookie_age_invalid__deprecated(self):
         httpretty.register_uri(
             httpretty.GET,
             "https://www.youtube.com/watch",
@@ -536,7 +536,7 @@ class TestYouTubeTranscriptApi(TestCase):
         with self.assertRaises(FailedToCreateConsentCookie):
             YouTubeTranscriptApi.get_transcript("F1xioXWb8CY")
 
-    def test_get_transcript__exception_if_video_unavailable(self):
+    def test_get_transcript__exception_if_video_unavailable__deprecated(self):
         httpretty.register_uri(
             httpretty.GET,
             "https://www.youtube.com/watch",
@@ -546,7 +546,7 @@ class TestYouTubeTranscriptApi(TestCase):
         with self.assertRaises(VideoUnavailable):
             YouTubeTranscriptApi.get_transcript("abc")
 
-    def test_get_transcript__exception_if_youtube_request_fails(self):
+    def test_get_transcript__exception_if_youtube_request_fails__deprecated(self):
         httpretty.register_uri(
             httpretty.GET, "https://www.youtube.com/watch", status=500
         )
@@ -554,7 +554,9 @@ class TestYouTubeTranscriptApi(TestCase):
         with self.assertRaises(YouTubeRequestFailed):
             YouTubeTranscriptApi.get_transcript("abc")
 
-    def test_get_transcript__exception_if_youtube_request_limit_reached(self):
+    def test_get_transcript__exception_if_youtube_request_limit_reached__deprecated(
+        self,
+    ):
         httpretty.register_uri(
             httpretty.GET,
             "https://www.youtube.com/watch",
@@ -564,7 +566,7 @@ class TestYouTubeTranscriptApi(TestCase):
         with self.assertRaises(IpBlocked):
             YouTubeTranscriptApi.get_transcript("abc")
 
-    def test_get_transcript__exception_if_transcripts_disabled(self):
+    def test_get_transcript__exception_if_transcripts_disabled__deprecated(self):
         httpretty.register_uri(
             httpretty.GET,
             "https://www.youtube.com/watch",
@@ -582,11 +584,11 @@ class TestYouTubeTranscriptApi(TestCase):
         with self.assertRaises(TranscriptsDisabled):
             YouTubeTranscriptApi.get_transcript("Fjg5lYqvzUs")
 
-    def test_get_transcript__exception_if_language_unavailable(self):
+    def test_get_transcript__exception_if_language_unavailable__deprecated(self):
         with self.assertRaises(NoTranscriptFound):
             YouTubeTranscriptApi.get_transcript("GJLlxj_dtq8", languages=["cz"])
 
-    def test_get_transcript__with_proxy(self):
+    def test_get_transcript__with_proxy__deprecated(self):
         proxies = {"http": "", "https:": ""}
         transcript = YouTubeTranscriptApi.get_transcript("GJLlxj_dtq8", proxies=proxies)
         self.assertEqual(
@@ -606,7 +608,7 @@ class TestYouTubeTranscriptApi(TestCase):
             ],
         )
 
-    def test_get_transcript__with_cookies(self):
+    def test_get_transcript__with_cookies__deprecated(self):
         cookies_path = get_asset_path("example_cookies.txt")
         transcript = YouTubeTranscriptApi.get_transcript(
             "GJLlxj_dtq8", cookies=str(cookies_path)
@@ -629,16 +631,16 @@ class TestYouTubeTranscriptApi(TestCase):
             ],
         )
 
-    def test_get_transcript__assertionerror_if_input_not_string(self):
+    def test_get_transcript__assertionerror_if_input_not_string__deprecated(self):
         with self.assertRaises(AssertionError):
             YouTubeTranscriptApi.get_transcript(["video_id_1", "video_id_2"])
 
-    def test_get_transcripts__assertionerror_if_input_not_list(self):
+    def test_get_transcripts__assertionerror_if_input_not_list__deprecated(self):
         with self.assertRaises(AssertionError):
             YouTubeTranscriptApi.get_transcripts("video_id_1")
 
     @patch("youtube_transcript_api.YouTubeTranscriptApi.get_transcript")
-    def test_get_transcripts(self, mock_get_transcript):
+    def test_get_transcripts__deprecated(self, mock_get_transcript):
         video_id_1 = "video_id_1"
         video_id_2 = "video_id_2"
         languages = ["de", "en"]
@@ -655,7 +657,7 @@ class TestYouTubeTranscriptApi(TestCase):
         "youtube_transcript_api.YouTubeTranscriptApi.get_transcript",
         side_effect=Exception("Error"),
     )
-    def test_get_transcripts__stop_on_error(self, mock_get_transcript):
+    def test_get_transcripts__stop_on_error__deprecated(self, mock_get_transcript):
         with self.assertRaises(Exception):
             YouTubeTranscriptApi.get_transcripts(["video_id_1", "video_id_2"])
 
@@ -663,7 +665,7 @@ class TestYouTubeTranscriptApi(TestCase):
         "youtube_transcript_api.YouTubeTranscriptApi.get_transcript",
         side_effect=Exception("Error"),
     )
-    def test_get_transcripts__continue_on_error(self, mock_get_transcript):
+    def test_get_transcripts__continue_on_error__deprecated(self, mock_get_transcript):
         video_id_1 = "video_id_1"
         video_id_2 = "video_id_2"
 
@@ -675,7 +677,7 @@ class TestYouTubeTranscriptApi(TestCase):
         mock_get_transcript.assert_any_call(video_id_2, ("en",), None, None, False)
 
     @patch("youtube_transcript_api.YouTubeTranscriptApi.get_transcript")
-    def test_get_transcripts__with_cookies(self, mock_get_transcript):
+    def test_get_transcripts__with_cookies__deprecated(self, mock_get_transcript):
         cookie_path = get_asset_path("example_cookies.txt")
         YouTubeTranscriptApi.get_transcripts(["GJLlxj_dtq8"], cookies=str(cookie_path))
         mock_get_transcript.assert_any_call(
@@ -683,7 +685,7 @@ class TestYouTubeTranscriptApi(TestCase):
         )
 
     @patch("youtube_transcript_api.YouTubeTranscriptApi.get_transcript")
-    def test_get_transcripts__with_proxies(self, mock_get_transcript):
+    def test_get_transcripts__with_proxies__deprecated(self, mock_get_transcript):
         proxies = {"http": "", "https:": ""}
         YouTubeTranscriptApi.get_transcripts(["GJLlxj_dtq8"], proxies=proxies)
         mock_get_transcript.assert_any_call(

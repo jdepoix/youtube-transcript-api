@@ -179,7 +179,7 @@ class NoTranscriptFound(CouldNotRetrieveTranscript):
         self,
         video_id: str,
         requested_language_codes: Iterable[str],
-        transcript_data: "TranscriptList",
+        transcript_data: "TranscriptList",  # noqa: F821
     ):
         self._requested_language_codes = requested_language_codes
         self._transcript_data = transcript_data
