@@ -25,7 +25,6 @@ def _load_cookie_jar(cookies: Path | str) -> MozillaCookieJar:
 
 
 class YouTubeTranscriptApi:
-    # TODO proxy docs when adjusted
     def __init__(
         self,
         cookie_path: Optional[Path | str] = None,
@@ -35,7 +34,10 @@ class YouTubeTranscriptApi:
         """
         :param cookie_path: Path to a text file containing YouTube authorization cookies
         :param proxy_config: an optional ProxyConfig object, defining proxies used for
-            all network requests
+            all network requests. This can be used to work around your IP being blocked
+            by YouTube, as described in the "Working around IP bans" section of the
+            README
+            (https://github.com/jdepoix/youtube-transcript-api?tab=readme-ov-file#working-around-ip-bans-requestblocked-or-ipblocked-exception)
         :param http_client: You can optionally pass in a requests.Session object, if you
             manually want to share cookies between different instances of
             `YouTubeTranscriptApi`, overwrite defaults, specify SSL certificates, etc.
