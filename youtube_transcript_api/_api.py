@@ -1,6 +1,6 @@
 import warnings
 from pathlib import Path
-from typing import Optional, Iterable
+from typing import Optional, Iterable, Union
 
 from http.cookiejar import MozillaCookieJar, LoadError
 
@@ -13,7 +13,7 @@ from ._transcripts import TranscriptListFetcher, FetchedTranscript, TranscriptLi
 from ._errors import CookiePathInvalid, CookieInvalid
 
 
-def _load_cookie_jar(cookies: Path | str) -> MozillaCookieJar:
+def _load_cookie_jar(cookies: Union[Path, str]) -> MozillaCookieJar:
     try:
         cookie_jar = MozillaCookieJar()
         cookie_jar.load(str(cookies))
