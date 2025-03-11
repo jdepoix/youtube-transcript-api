@@ -1,3 +1,5 @@
+from typing import Optional, List
+
 from ._settings import WATCH_URL
 
 
@@ -54,6 +56,28 @@ class YouTubeRequestFailed(CouldNotRetrieveTranscript):
         )
 
 
+class VideoUnplayable(CouldNotRetrieveTranscript):
+    CAUSE_MESSAGE = "The video is unplayable for the following reason: {reason}"
+    SUBREASON_MESSAGE = "\n\nAdditional Details:\n{sub_reasons}"
+
+    def __init__(self, video_id: str, reason: Optional[str], sub_reasons: List[str]):
+        self._reason = reason
+        self._sub_reasons = sub_reasons
+        super().__init__(video_id)
+
+    @property
+    def cause(self):
+        reason = "No reason specified!" if self._reason is None else self._reason
+        if self._sub_reasons:
+            sub_reasons = "\n".join(
+                f" - {sub_reason}" for sub_reason in self._sub_reasons
+            )
+            reason = f"{reason}{self.SUBREASON_MESSAGE.format(sub_reasons=sub_reasons)}"
+        return self.CAUSE_MESSAGE.format(
+            reason=reason,
+        )
+
+
 class VideoUnavailable(CouldNotRetrieveTranscript):
     CAUSE_MESSAGE = "The video is no longer available"
 
@@ -66,20 +90,48 @@ class InvalidVideoId(CouldNotRetrieveTranscript):
     )
 
 
-class TooManyRequests(CouldNotRetrieveTranscript):
+class RequestBlocked(CouldNotRetrieveTranscript):
+    BASE_CAUSE_MESSAGE = (
+        "YouTube is blocking requests from your IP. This usually is due to one of the "
+        "following reasons:\n"
+        "- You have done too many requests and your IP has been blocked by YouTube\n"
+        "- You are doing requests from an IP belonging to a cloud provider (like AWS, "
+        "Google Cloud Platform, Azure, etc.). Unfortunately, most IPs from cloud "
+        "providers are blocked by YouTube.\n\n"
+    )
     CAUSE_MESSAGE = (
-        "YouTube is receiving too many requests from this IP and now requires solving a captcha to continue. "
-        "One of the following things can be done to work around this:\n\
-        - Manually solve the captcha in a browser and export the cookie. "
-        "Read here how to use that cookie with "
-        "youtube-transcript-api: https://github.com/jdepoix/youtube-transcript-api#cookies\n\
-        - Use a different IP address\n\
-        - Wait until the ban on your IP has been lifted"
+        f"{BASE_CAUSE_MESSAGE}"
+        "There are two things you can do to work around this:\n"
+        '1. Use proxies to hide your IP address, as explained in the "Work around IP '
+        'bans" section of the README (https://github.com/jdepoix/youtube-transcript-api'
+        "?tab=readme-ov-file#work-around-ip-bans).\n"
+        "2. (NOT RECOMMENDED) If you authenticate your requests using cookies, you "
+        "will be able to continue doing requests for a while. However, YouTube will "
+        "eventually permanently ban the account that you have used to authenticate "
+        "with! So only do this if you don't mind your account being banned!"
+    )
+
+
+class IpBlocked(RequestBlocked):
+    CAUSE_MESSAGE = (
+        f"{RequestBlocked.BASE_CAUSE_MESSAGE}"
+        'Ways to work around this are explained in the "Work around IP '
+        'bans" section of the README (https://github.com/jdepoix/youtube-transcript-api'
+        "?tab=readme-ov-file#work-around-ip-bans).\n"
     )
 
 
 class TranscriptsDisabled(CouldNotRetrieveTranscript):
     CAUSE_MESSAGE = "Subtitles are disabled for this video"
+
+
+class AgeRestricted(CouldNotRetrieveTranscript):
+    CAUSE_MESSAGE = (
+        "This video is age-restricted. Therefore, you will have to authenticate to be "
+        "able to retrieve transcripts for it. You will have to provide a cookie to "
+        'authenticate yourself, as explained in the "Cookies" section of the README '
+        "(https://github.com/jdepoix/youtube-transcript-api?tab=readme-ov-file#cookies)"
+    )
 
 
 class NoTranscriptAvailable(CouldNotRetrieveTranscript):
