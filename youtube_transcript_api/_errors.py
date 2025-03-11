@@ -125,9 +125,10 @@ class RequestBlocked(CouldNotRetrieveTranscript):
     CAUSE_MESSAGE = (
         f"{BASE_CAUSE_MESSAGE}"
         "There are two things you can do to work around this:\n"
-        '1. Use proxies to hide your IP address, as explained in the "Work around IP '
-        'bans" section of the README (https://github.com/jdepoix/youtube-transcript-api'
-        "?tab=readme-ov-file#work-around-ip-bans).\n"
+        '1. Use proxies to hide your IP address, as explained in the "Working around '
+        'IP bans" section of the README '
+        '(https://github.com/jdepoix/youtube-transcript-api'
+        "?tab=readme-ov-file#working-around-ip-bans).\n"
         "2. (NOT RECOMMENDED) If you authenticate your requests using cookies, you "
         "will be able to continue doing requests for a while. However, YouTube will "
         "eventually permanently ban the account that you have used to authenticate "
@@ -138,9 +139,9 @@ class RequestBlocked(CouldNotRetrieveTranscript):
 class IpBlocked(RequestBlocked):
     CAUSE_MESSAGE = (
         f"{RequestBlocked.BASE_CAUSE_MESSAGE}"
-        'Ways to work around this are explained in the "Work around IP '
+        'Ways to work around this are explained in the "Working around IP '
         'bans" section of the README (https://github.com/jdepoix/youtube-transcript-api'
-        "?tab=readme-ov-file#work-around-ip-bans).\n"
+        "?tab=readme-ov-file#working-around-ip-bans).\n"
     )
 
 

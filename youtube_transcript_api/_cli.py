@@ -20,8 +20,8 @@ class YouTubeTranscriptCli:
         proxy_config = None
         if parsed_args.http_proxy != "" or parsed_args.https_proxy != "":
             proxy_config = GenericProxyConfig(
-                http=parsed_args.http_proxy,
-                https=parsed_args.https_proxy,
+                http_url=parsed_args.http_proxy,
+                https_url=parsed_args.https_proxy,
             )
 
         cookie_path = parsed_args.cookies

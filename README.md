@@ -420,7 +420,7 @@ youtube_transcript_api "\-abc123"
 
 [//]: # (```)
 
-## Work around IP bans
+## Working around IP bans
 TODO
 
 ## Cookies

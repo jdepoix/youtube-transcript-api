@@ -1,16 +1,19 @@
 import pytest
 
-from youtube_transcript_api.proxies import GenericProxyConfig, InvalidProxyConfig
+from youtube_transcript_api.proxies import (
+    GenericProxyConfig,
+    InvalidProxyConfig,
+    WebshareProxyConfig,
+)
 
 
 class TestGenericProxyConfig:
     def test_to_requests_dict(self):
         proxy_config = GenericProxyConfig(
-            http="http://myproxy.com",
-            https="https://myproxy.com",
+            http_url="http://myproxy.com",
+            https_url="https://myproxy.com",
         )
 
-        print(proxy_config.to_requests_dict)
         request_dict = proxy_config.to_requests_dict()
 
         assert request_dict == {
@@ -20,7 +23,7 @@ class TestGenericProxyConfig:
 
     def test_to_requests_dict__only_http(self):
         proxy_config = GenericProxyConfig(
-            http="http://myproxy.com",
+            http_url="http://myproxy.com",
         )
 
         request_dict = proxy_config.to_requests_dict()
@@ -32,7 +35,7 @@ class TestGenericProxyConfig:
 
     def test_to_requests_dict__only_https(self):
         proxy_config = GenericProxyConfig(
-            https="https://myproxy.com",
+            https_url="https://myproxy.com",
         )
 
         request_dict = proxy_config.to_requests_dict()
@@ -45,3 +48,18 @@ class TestGenericProxyConfig:
     def test__invalid_config(self):
         with pytest.raises(InvalidProxyConfig):
             GenericProxyConfig()
+
+
+class TestWebshareProxyConfig:
+    def test_to_requests_dict(self):
+        proxy_config = WebshareProxyConfig(
+            proxy_username="user",
+            proxy_password="password",
+        )
+
+        request_dict = proxy_config.to_requests_dict()
+
+        assert request_dict == {
+            "http": "http://user-rotate:password@p.webshare.io:80/",
+            "https": "http://user-rotate:password@p.webshare.io:80/",
+        }

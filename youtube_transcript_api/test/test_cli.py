@@ -295,8 +295,8 @@ class TestYouTubeTranscriptCli(TestCase):
         )
 
         self.assertIsNotNone(proxy_config)
-        self.assertEqual(proxy_config.http, "http://user:pass@domain:port")
-        self.assertEqual(proxy_config.https, "https://user:pass@domain:port")
+        self.assertEqual(proxy_config.http_url, "http://user:pass@domain:port")
+        self.assertEqual(proxy_config.https_url, "https://user:pass@domain:port")
 
     def test_run__cookies(self):
         YouTubeTranscriptCli(

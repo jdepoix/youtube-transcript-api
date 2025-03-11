@@ -183,12 +183,17 @@ class YouTubeTranscriptApi:
             DeprecationWarning,
         )
 
+        proxy_config = None
+        if proxies:
+            if isinstance(proxies, ProxyConfig):
+                proxy_config = proxies
+            else:
+                proxy_config = GenericProxyConfig(
+                    http_url=proxies.get("http"), https_url=proxies.get("https")
+                )
+
         ytt_api = YouTubeTranscriptApi(
-            proxy_config=GenericProxyConfig(
-                http=proxies.get("http"), https=proxies.get("https")
-            )
-            if proxies
-            else None,
+            proxy_config=proxy_config,
             cookie_path=Path(cookies) if cookies else None,
         )
         return ytt_api.list(video_id)

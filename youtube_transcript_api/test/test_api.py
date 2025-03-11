@@ -318,8 +318,8 @@ class TestYouTubeTranscriptApi(TestCase):
     @patch("youtube_transcript_api.proxies.GenericProxyConfig.to_requests_dict")
     def test_fetch__with_proxy(self, to_requests_dict):
         proxy_config = GenericProxyConfig(
-            http="http://localhost:8080",
-            https="http://localhost:8080",
+            http_url="http://localhost:8080",
+            https_url="http://localhost:8080",
         )
         transcript = YouTubeTranscriptApi(proxy_config=proxy_config).fetch(
             "GJLlxj_dtq8"
@@ -601,6 +601,33 @@ class TestYouTubeTranscriptApi(TestCase):
             "https": "http://localhost:8080",
         }
         transcript = YouTubeTranscriptApi.get_transcript("GJLlxj_dtq8", proxies=proxies)
+        self.assertEqual(
+            transcript,
+            [
+                {"text": "Hey, this is just a test", "start": 0.0, "duration": 1.54},
+                {
+                    "text": "this is not the original transcript",
+                    "start": 1.54,
+                    "duration": 4.16,
+                },
+                {
+                    "text": "just something shorter, I made up for testing",
+                    "start": 5.7,
+                    "duration": 3.239,
+                },
+            ],
+        )
+        to_requests_dict.assert_any_call()
+
+    @patch("youtube_transcript_api.proxies.GenericProxyConfig.to_requests_dict")
+    def test_get_transcript__with_proxy_config__deprecated(self, to_requests_dict):
+        proxy_config = GenericProxyConfig(
+            http_url="http://localhost:8080",
+            https_url="http://localhost:8080",
+        )
+        transcript = YouTubeTranscriptApi.get_transcript(
+            "GJLlxj_dtq8", proxies=proxy_config
+        )
         self.assertEqual(
             transcript,
             [
