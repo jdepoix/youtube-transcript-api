@@ -349,7 +349,7 @@ class TranscriptListFetcher:
             self._extract_captions_json(self._fetch_video_html(video_id), video_id),
         )
 
-    def _extract_captions_json(self, html, video_id):
+    def _extract_captions_json(self, html: str, video_id: str) -> Dict:
         splitted_html = html.split("var ytInitialPlayerResponse = ")
 
         if len(splitted_html) <= 1:
@@ -360,7 +360,17 @@ class TranscriptListFetcher:
             splitted_html[1].split("</script>")[0].strip().rstrip(";")
         )
 
-        playability_status_data = video_data.get("playabilityStatus")
+        self._assert_playability(video_data.get("playabilityStatus"), video_id)
+
+        captions_json = video_data.get("captions", {}).get(
+            "playerCaptionsTracklistRenderer"
+        )
+        if captions_json is None or "captionTracks" not in captions_json:
+            raise TranscriptsDisabled(video_id)
+
+        return captions_json
+
+    def _assert_playability(self, playability_status_data: Dict, video_id: str) -> None:
         playability_status = playability_status_data.get("status")
         if (
             playability_status != _PlayabilityStatus.OK.value
@@ -388,14 +398,6 @@ class TranscriptListFetcher:
             raise VideoUnplayable(
                 video_id, reason, [run.get("text", "") for run in subreasons]
             )
-
-        captions_json = video_data.get("captions", {}).get(
-            "playerCaptionsTracklistRenderer"
-        )
-        if captions_json is None or "captionTracks" not in captions_json:
-            raise TranscriptsDisabled(video_id)
-
-        return captions_json
 
     def _create_consent_cookie(self, html: str, video_id: str) -> None:
         match = re.search('name="v" value="(.*?)"', html)
