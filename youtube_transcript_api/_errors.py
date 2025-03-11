@@ -1,9 +1,32 @@
-from typing import Optional, List
+from pathlib import Path
+from typing import Iterable, Optional, List
+
+from requests import HTTPError
 
 from ._settings import WATCH_URL
 
 
-class CouldNotRetrieveTranscript(Exception):
+class YouTubeTranscriptApiException(Exception):
+    pass
+
+
+class CookieError(YouTubeTranscriptApiException):
+    pass
+
+
+class CookiePathInvalid(CookieError):
+    def __init__(self, cookie_path: Path):
+        super().__init__(f"Can't load the provided cookie file: {cookie_path}")
+
+
+class CookieInvalid(CookieError):
+    def __init__(self, cookie_path: Path):
+        super().__init__(
+            f"The cookies provided are not valid (may have expired): {cookie_path}"
+        )
+
+
+class CouldNotRetrieveTranscript(YouTubeTranscriptApiException):
     """
     Raised if a transcript could not be retrieved.
     """
@@ -20,16 +43,16 @@ class CouldNotRetrieveTranscript(Exception):
         "Also make sure that there are no open issues which already describe your problem!"
     )
 
-    def __init__(self, video_id):
+    def __init__(self, video_id: str):
         self.video_id = video_id
-        super(CouldNotRetrieveTranscript, self).__init__(self._build_error_message())
+        super().__init__(self._build_error_message())
 
-    def _build_error_message(self):
-        cause = self.cause
+    def _build_error_message(self) -> str:
         error_message = self.ERROR_MESSAGE.format(
             video_url=WATCH_URL.format(video_id=self.video_id)
         )
 
+        cause = self.cause
         if cause:
             error_message += (
                 self.CAUSE_MESSAGE_INTRO.format(cause=cause) + self.GITHUB_REFERRAL
@@ -38,19 +61,19 @@ class CouldNotRetrieveTranscript(Exception):
         return error_message
 
     @property
-    def cause(self):
+    def cause(self) -> str:
         return self.CAUSE_MESSAGE
 
 
 class YouTubeRequestFailed(CouldNotRetrieveTranscript):
     CAUSE_MESSAGE = "Request to YouTube failed: {reason}"
 
-    def __init__(self, video_id, http_error):
+    def __init__(self, video_id: str, http_error: HTTPError):
         self.reason = str(http_error)
-        super(YouTubeRequestFailed, self).__init__(video_id)
+        super().__init__(video_id)
 
     @property
-    def cause(self):
+    def cause(self) -> str:
         return self.CAUSE_MESSAGE.format(
             reason=self.reason,
         )
@@ -61,16 +84,16 @@ class VideoUnplayable(CouldNotRetrieveTranscript):
     SUBREASON_MESSAGE = "\n\nAdditional Details:\n{sub_reasons}"
 
     def __init__(self, video_id: str, reason: Optional[str], sub_reasons: List[str]):
-        self._reason = reason
-        self._sub_reasons = sub_reasons
+        self.reason = reason
+        self.sub_reasons = sub_reasons
         super().__init__(video_id)
 
     @property
     def cause(self):
-        reason = "No reason specified!" if self._reason is None else self._reason
-        if self._sub_reasons:
+        reason = "No reason specified!" if self.reason is None else self.reason
+        if self.sub_reasons:
             sub_reasons = "\n".join(
-                f" - {sub_reason}" for sub_reason in self._sub_reasons
+                f" - {sub_reason}" for sub_reason in self.sub_reasons
             )
             reason = f"{reason}{self.SUBREASON_MESSAGE.format(sub_reasons=sub_reasons)}"
         return self.CAUSE_MESSAGE.format(
@@ -102,9 +125,11 @@ class RequestBlocked(CouldNotRetrieveTranscript):
     CAUSE_MESSAGE = (
         f"{BASE_CAUSE_MESSAGE}"
         "There are two things you can do to work around this:\n"
-        '1. Use proxies to hide your IP address, as explained in the "Work around IP '
-        'bans" section of the README (https://github.com/jdepoix/youtube-transcript-api'
-        "?tab=readme-ov-file#work-around-ip-bans).\n"
+        '1. Use proxies to hide your IP address, as explained in the "Working around '
+        'IP bans" section of the README '
+        "(https://github.com/jdepoix/youtube-transcript-api"
+        "?tab=readme-ov-file"
+        "#working-around-ip-bans-requestblocked-or-ipblocked-exception).\n"
         "2. (NOT RECOMMENDED) If you authenticate your requests using cookies, you "
         "will be able to continue doing requests for a while. However, YouTube will "
         "eventually permanently ban the account that you have used to authenticate "
@@ -115,9 +140,10 @@ class RequestBlocked(CouldNotRetrieveTranscript):
 class IpBlocked(RequestBlocked):
     CAUSE_MESSAGE = (
         f"{RequestBlocked.BASE_CAUSE_MESSAGE}"
-        'Ways to work around this are explained in the "Work around IP '
+        'Ways to work around this are explained in the "Working around IP '
         'bans" section of the README (https://github.com/jdepoix/youtube-transcript-api'
-        "?tab=readme-ov-file#work-around-ip-bans).\n"
+        "?tab=readme-ov-file"
+        "#working-around-ip-bans-requestblocked-or-ipblocked-exception).\n"
     )
 
 
@@ -129,13 +155,10 @@ class AgeRestricted(CouldNotRetrieveTranscript):
     CAUSE_MESSAGE = (
         "This video is age-restricted. Therefore, you will have to authenticate to be "
         "able to retrieve transcripts for it. You will have to provide a cookie to "
-        'authenticate yourself, as explained in the "Cookies" section of the README '
-        "(https://github.com/jdepoix/youtube-transcript-api?tab=readme-ov-file#cookies)"
+        'authenticate yourself, as explained in the "Cookie Authentication" section of '
+        "the README (https://github.com/jdepoix/youtube-transcript-api"
+        "?tab=readme-ov-file#cookie-authentication)"
     )
-
-
-class NoTranscriptAvailable(CouldNotRetrieveTranscript):
-    CAUSE_MESSAGE = "No transcripts are available for this video"
 
 
 class NotTranslatable(CouldNotRetrieveTranscript):
@@ -144,14 +167,6 @@ class NotTranslatable(CouldNotRetrieveTranscript):
 
 class TranslationLanguageNotAvailable(CouldNotRetrieveTranscript):
     CAUSE_MESSAGE = "The requested translation language is not available"
-
-
-class CookiePathInvalid(CouldNotRetrieveTranscript):
-    CAUSE_MESSAGE = "The provided cookie file was unable to be loaded"
-
-
-class CookiesInvalid(CouldNotRetrieveTranscript):
-    CAUSE_MESSAGE = "The cookies provided are not valid (may have expired)"
 
 
 class FailedToCreateConsentCookie(CouldNotRetrieveTranscript):
@@ -164,13 +179,18 @@ class NoTranscriptFound(CouldNotRetrieveTranscript):
         "{transcript_data}"
     )
 
-    def __init__(self, video_id, requested_language_codes, transcript_data):
+    def __init__(
+        self,
+        video_id: str,
+        requested_language_codes: Iterable[str],
+        transcript_data: "TranscriptList",  # noqa: F821
+    ):
         self._requested_language_codes = requested_language_codes
         self._transcript_data = transcript_data
-        super(NoTranscriptFound, self).__init__(video_id)
+        super().__init__(video_id)
 
     @property
-    def cause(self):
+    def cause(self) -> str:
         return self.CAUSE_MESSAGE.format(
             requested_language_codes=self._requested_language_codes,
             transcript_data=str(self._transcript_data),

@@ -1,7 +1,16 @@
 # ruff: noqa: F401
 from ._api import YouTubeTranscriptApi
-from ._transcripts import TranscriptList, Transcript
+from ._transcripts import (
+    TranscriptList,
+    Transcript,
+    FetchedTranscript,
+    FetchedTranscriptSnippet,
+)
 from ._errors import (
+    YouTubeTranscriptApiException,
+    CookieError,
+    CookiePathInvalid,
+    CookieInvalid,
     TranscriptsDisabled,
     NoTranscriptFound,
     CouldNotRetrieveTranscript,
@@ -11,9 +20,6 @@ from ._errors import (
     RequestBlocked,
     NotTranslatable,
     TranslationLanguageNotAvailable,
-    NoTranscriptAvailable,
-    CookiePathInvalid,
-    CookiesInvalid,
     FailedToCreateConsentCookie,
     YouTubeRequestFailed,
     InvalidVideoId,

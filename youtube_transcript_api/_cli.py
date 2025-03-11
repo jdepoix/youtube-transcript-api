@@ -1,58 +1,83 @@
 import argparse
+from typing import List
 
-from ._api import YouTubeTranscriptApi
-
+from .proxies import GenericProxyConfig, WebshareProxyConfig
 from .formatters import FormatterLoader
 
+from ._api import YouTubeTranscriptApi, FetchedTranscript, TranscriptList
 
-class YouTubeTranscriptCli(object):
-    def __init__(self, args):
+
+class YouTubeTranscriptCli:
+    def __init__(self, args: List[str]):
         self._args = args
 
-    def run(self):
+    def run(self) -> str:
         parsed_args = self._parse_args()
 
         if parsed_args.exclude_manually_created and parsed_args.exclude_generated:
             return ""
 
-        proxies = None
+        proxy_config = None
         if parsed_args.http_proxy != "" or parsed_args.https_proxy != "":
-            proxies = {"http": parsed_args.http_proxy, "https": parsed_args.https_proxy}
+            proxy_config = GenericProxyConfig(
+                http_url=parsed_args.http_proxy,
+                https_url=parsed_args.https_proxy,
+            )
 
-        cookies = parsed_args.cookies
+        if (
+            parsed_args.webshare_proxy_username is not None
+            or parsed_args.webshare_proxy_password is not None
+        ):
+            proxy_config = WebshareProxyConfig(
+                proxy_username=parsed_args.webshare_proxy_username,
+                proxy_password=parsed_args.webshare_proxy_password,
+            )
+
+        cookie_path = parsed_args.cookies
 
         transcripts = []
         exceptions = []
 
+        ytt_api = YouTubeTranscriptApi(
+            proxy_config=proxy_config,
+            cookie_path=cookie_path,
+        )
+
         for video_id in parsed_args.video_ids:
             try:
-                transcripts.append(
-                    self._fetch_transcript(parsed_args, proxies, cookies, video_id)
-                )
+                transcript_list = ytt_api.list(video_id)
+                if parsed_args.list_transcripts:
+                    transcripts.append(transcript_list)
+                else:
+                    transcripts.append(
+                        self._fetch_transcript(
+                            parsed_args,
+                            transcript_list,
+                        )
+                    )
             except Exception as exception:
                 exceptions.append(exception)
 
-        return "\n\n".join(
-            [str(exception) for exception in exceptions]
-            + (
-                [
+        print_sections = [str(exception) for exception in exceptions]
+        if transcripts:
+            if parsed_args.list_transcripts:
+                print_sections.extend(
+                    str(transcript_list) for transcript_list in transcripts
+                )
+            else:
+                print_sections.append(
                     FormatterLoader()
                     .load(parsed_args.format)
                     .format_transcripts(transcripts)
-                ]
-                if transcripts
-                else []
-            )
-        )
+                )
 
-    def _fetch_transcript(self, parsed_args, proxies, cookies, video_id):
-        transcript_list = YouTubeTranscriptApi.list_transcripts(
-            video_id, proxies=proxies, cookies=cookies
-        )
+        return "\n\n".join(print_sections)
 
-        if parsed_args.list_transcripts:
-            return str(transcript_list)
-
+    def _fetch_transcript(
+        self,
+        parsed_args,
+        transcript_list: TranscriptList,
+    ) -> FetchedTranscript:
         if parsed_args.exclude_manually_created:
             transcript = transcript_list.find_generated_transcript(
                 parsed_args.languages
@@ -129,6 +154,18 @@ class YouTubeTranscriptCli(object):
                 "--list-transcripts feature to find out which languages are translatable and which translation "
                 "languages are available."
             ),
+        )
+        parser.add_argument(
+            "--webshare-proxy-username",
+            default=None,
+            type=str,
+            help='Specify your Webshare "Proxy Username" found at https://dashboard.webshare.io/proxy/settings',
+        )
+        parser.add_argument(
+            "--webshare-proxy-password",
+            default=None,
+            type=str,
+            help='Specify your Webshare "Proxy Password" found at https://dashboard.webshare.io/proxy/settings',
         )
         parser.add_argument(
             "--http-proxy",
