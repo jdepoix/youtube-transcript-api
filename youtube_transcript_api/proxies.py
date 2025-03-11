@@ -12,6 +12,7 @@ class RequestsProxyConfigDict(TypedDict):
     the proxies used. More information on this can be found in the official requests
     documentation: https://requests.readthedocs.io/en/latest/user/advanced/#proxies
     """
+
     http: str
     https: str
 
@@ -21,6 +22,7 @@ class ProxyConfig(ABC):
     The base class for all proxy configs. Anything can be a proxy config, as longs as
     it can be turned into a `RequestsProxyConfigDict` by calling `to_requests_dict`.
     """
+
     @abstractmethod
     def to_requests_dict(self) -> RequestsProxyConfigDict:
         """
@@ -41,6 +43,7 @@ class GenericProxyConfig(ProxyConfig):
     If only an HTTP or an HTTPS proxy is provided, it will be used for both types of
     connections. However, you will have to provide at least one of the two.
     """
+
     def __init__(self, http_url: Optional[str] = None, https_url: Optional[str] = None):
         """
         If only an HTTP or an HTTPS proxy is provided, it will be used for both types of

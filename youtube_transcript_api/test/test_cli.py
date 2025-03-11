@@ -96,6 +96,17 @@ class TestYouTubeTranscriptCli(TestCase):
         self.assertEqual(parsed_args.https_proxy, "https://user:pass@domain:port")
 
         parsed_args = YouTubeTranscriptCli(
+            "v1 v2 --languages de en --format json "
+            "--webshare-proxy-username username "
+            "--webshare-proxy-password password".split()
+        )._parse_args()
+        self.assertEqual(parsed_args.video_ids, ["v1", "v2"])
+        self.assertEqual(parsed_args.format, "json")
+        self.assertEqual(parsed_args.languages, ["de", "en"])
+        self.assertEqual(parsed_args.webshare_proxy_username, "username")
+        self.assertEqual(parsed_args.webshare_proxy_password, "password")
+
+        parsed_args = YouTubeTranscriptCli(
             "v1 v2 --languages de en --format json --http-proxy http://user:pass@domain:port".split()
         )._parse_args()
         self.assertEqual(parsed_args.video_ids, ["v1", "v2"])
@@ -281,7 +292,24 @@ class TestYouTubeTranscriptCli(TestCase):
         # will fail if output is not valid json
         json.loads(output)
 
-    def test_run__proxies(self):
+    def test_run__webshare_proxy_config(self):
+        YouTubeTranscriptCli(
+            (
+                "v1 v2 --languages de en "
+                "--webshare-proxy-username username "
+                "--webshare-proxy-password password"
+            ).split()
+        ).run()
+
+        proxy_config = YouTubeTranscriptApi.__init__.call_args.kwargs.get(
+            "proxy_config"
+        )
+
+        self.assertIsNotNone(proxy_config)
+        self.assertEqual(proxy_config.proxy_username, "username")
+        self.assertEqual(proxy_config.proxy_password, "password")
+
+    def test_run__generic_proxy_config(self):
         YouTubeTranscriptCli(
             (
                 "v1 v2 --languages de en "

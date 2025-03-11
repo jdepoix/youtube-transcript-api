@@ -1,13 +1,11 @@
 import argparse
 from typing import List
 
-from .proxies import GenericProxyConfig
+from .proxies import GenericProxyConfig, WebshareProxyConfig
 from .formatters import FormatterLoader
 
 from ._api import YouTubeTranscriptApi, FetchedTranscript, TranscriptList
 
-
-# TODO webshare integration!
 
 class YouTubeTranscriptCli:
     def __init__(self, args: List[str]):
@@ -24,6 +22,15 @@ class YouTubeTranscriptCli:
             proxy_config = GenericProxyConfig(
                 http_url=parsed_args.http_proxy,
                 https_url=parsed_args.https_proxy,
+            )
+
+        if (
+            parsed_args.webshare_proxy_username is not None
+            or parsed_args.webshare_proxy_password is not None
+        ):
+            proxy_config = WebshareProxyConfig(
+                proxy_username=parsed_args.webshare_proxy_username,
+                proxy_password=parsed_args.webshare_proxy_password,
             )
 
         cookie_path = parsed_args.cookies
@@ -147,6 +154,18 @@ class YouTubeTranscriptCli:
                 "--list-transcripts feature to find out which languages are translatable and which translation "
                 "languages are available."
             ),
+        )
+        parser.add_argument(
+            "--webshare-proxy-username",
+            default=None,
+            type=str,
+            help='Specify your Webshare "Proxy Username" found at https://dashboard.webshare.io/proxy/settings',
+        )
+        parser.add_argument(
+            "--webshare-proxy-password",
+            default=None,
+            type=str,
+            help='Specify your Webshare "Proxy Password" found at https://dashboard.webshare.io/proxy/settings',
         )
         parser.add_argument(
             "--http-proxy",

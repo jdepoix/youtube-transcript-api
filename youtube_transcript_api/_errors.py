@@ -127,7 +127,7 @@ class RequestBlocked(CouldNotRetrieveTranscript):
         "There are two things you can do to work around this:\n"
         '1. Use proxies to hide your IP address, as explained in the "Working around '
         'IP bans" section of the README '
-        '(https://github.com/jdepoix/youtube-transcript-api'
+        "(https://github.com/jdepoix/youtube-transcript-api"
         "?tab=readme-ov-file"
         "#working-around-ip-bans-requestblocked-or-ipblocked-exception).\n"
         "2. (NOT RECOMMENDED) If you authenticate your requests using cookies, you "
@@ -156,8 +156,8 @@ class AgeRestricted(CouldNotRetrieveTranscript):
         "This video is age-restricted. Therefore, you will have to authenticate to be "
         "able to retrieve transcripts for it. You will have to provide a cookie to "
         'authenticate yourself, as explained in the "Cookie Authentication" section of '
-        'the README (https://github.com/jdepoix/youtube-transcript-api'
-        '?tab=readme-ov-file#cookie-authentication)'
+        "the README (https://github.com/jdepoix/youtube-transcript-api"
+        "?tab=readme-ov-file#cookie-authentication)"
     )
 
 

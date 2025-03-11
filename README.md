@@ -270,7 +270,7 @@ transcript = transcript_list.find_generated_transcript(['de', 'en'])
 
 ## Working around IP bans (`RequestBlocked` or `IpBlocked` exception)
 
-Unfortunately, YouTube has started banning most IPs that are known to belong to cloud providers (like AWS, Google Cloud 
+Unfortunately, YouTube has started blocking most IPs that are known to belong to cloud providers (like AWS, Google Cloud 
 Platform, Azure, etc.), which means you will most likely run into `ReuquestBlocked` or `IpBlocked` exceptions when 
 deploying your code to any cloud solutions. Same can happen to the IP of your self-hosted solution, if you are doing 
 too many requests. You can work around these IP bans using proxies. However, since YouTube will ban static proxies 
