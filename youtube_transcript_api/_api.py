@@ -27,7 +27,7 @@ def _load_cookie_jar(cookies: Union[Path, str]) -> MozillaCookieJar:
 class YouTubeTranscriptApi:
     def __init__(
         self,
-        cookie_path: Optional[Path | str] = None,
+        cookie_path: Optional[Union[Path, str]] = None,
         proxy_config: Optional[ProxyConfig] = None,
         http_client: Optional[Session] = None,
     ):
