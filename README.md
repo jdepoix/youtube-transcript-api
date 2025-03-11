@@ -213,7 +213,7 @@ and provide the method, which allows you to fetch the actual transcript data:
 transcript.fetch()
 ```
 
-This returns a `FetchedTranscript` object, just like `YouTubeTranscriptApi().fetch() does.
+This returns a `FetchedTranscript` object, just like `YouTubeTranscriptApi().fetch()` does.
 
 ### Translate transcript
 
@@ -268,7 +268,116 @@ transcript = transcript_list.find_manually_created_transcript(['de', 'en'])
 transcript = transcript_list.find_generated_transcript(['de', 'en'])
 ```
 
-### Using Formatters
+## Working around IP bans (`RequestBlocked` or `IpBlocked` exception)
+
+Unfortunately, YouTube has started banning most IPs that are known to belong to cloud providers (like AWS, Google Cloud 
+Platform, Azure, etc.), which means you will most likely run into `ReuquestBlocked` or `IpBlocked` exceptions when 
+deploying your code to any cloud solutions. Same can happen to the IP of your self-hosted solution, if you are doing 
+too many requests. You can work around these IP bans using proxies. However, since YouTube will ban static proxies 
+after extended use, going for rotating residential proxies provide is the most reliable option.
+
+There are different providers that offer rotating residential proxies, but after testing different 
+offerings I have found [Webshare](https://www.webshare.io/?referral_code=w0xno53eb50g) to be the most reliable and have 
+therefore integrated it into this module, to make setting it up as easy as possible.
+
+### Using [Webshare](https://www.webshare.io/?referral_code=w0xno53eb50g)
+
+Once you have created a [Webshare account](https://www.webshare.io/?referral_code=w0xno53eb50g) and purchased a 
+"Residential Proxy" package that suites your workload, open the 
+[Webshare Proxy Settings](https://dashboard.webshare.io/proxy/settings) to retrieve your "Proxy Username" and 
+"Proxy Password". Using this information you can initialize the `YouTubeTranscriptApi` as follows:
+
+```python
+from youtube_transcript_api import YouTubeTranscriptApi
+from youtube_transcript_api.proxies import WebshareProxyConfig
+
+ytt_api = YouTubeTranscriptApi(
+    proxy_config=WebshareProxyConfig(
+        proxy_username="<proxy-username>",
+        proxy_password="<proxy-password>",
+    )
+)
+
+# all requests done by ytt_api will now be proxied through Webshare
+ytt_api.fetch(video_id)
+```
+
+Using the `WebshareProxyConfig` will default to using rotating residential proxies and requires no further 
+configuration.
+
+Note that referral links are used here and any purchases made through these links will support this Open Source 
+project, which is very much appreciated! 💖😊🙏💖
+
+However, you are of course free to integrate your own proxy solution using the `GenericProxyConfig` class, if you 
+prefer using another provider or want to implement your own solution, as covered by the following section.
+
+### Using other Proxy solutions
+
+Alternatively to using [Webshare](#using-webshare), you can set up any generic HTTP/HTTPS/SOCKS proxy using the 
+`GenericProxyConfig` class:
+
+```python
+from youtube_transcript_api import YouTubeTranscriptApi
+from youtube_transcript_api.proxies import GenericProxyConfig
+
+ytt_api = YouTubeTranscriptApi(
+    proxy_config=GenericProxyConfig(
+        http_url="http://user:pass@my-custom-proxy.org:port",
+        https_url="https://user:pass@my-custom-proxy.org:port",
+    )
+)
+
+# all requests done by ytt_api will now be proxied using the defined proxy URLs
+ytt_api.fetch(video_id)
+```
+
+Be aware that using a proxy doesn't guarantee that you won't be blocked, as YouTube can always block the IP of your 
+proxy! Therefore, you should always choose a solution that rotates through a pool of proxy addresses, if you want to
+maximize reliability.
+
+## Overwriting request defaults
+
+When initializing a `YouTubeTranscriptApi` object, it will create a `requests.Session` which will be used for all
+HTTP(S) request. This allows for caching cookies when retrieving multiple requests. However, you can optionally pass a
+`requests.Session` object into its constructor, if you manually want to share cookies between different instances of
+`YouTubeTranscriptApi`, overwrite defaults, set custom headers, specify SSL certificates, etc.
+
+```python
+from requests import Session
+
+http_client = Session()
+
+# set custom header
+http_client.headers.update({"Accept-Encoding": "gzip, deflate"})
+
+# set path to CA_BUNDLE file
+http_client.verify = "/path/to/certfile"
+
+ytt_api = YouTubeTranscriptApi(http_client=session)
+ytt_api.fetch(video_id)
+
+# share same Session between two instances of YouTubeTranscriptApi
+ytt_api_2 = YouTubeTranscriptApi(http_client=session)
+# now shares cookies with ytt_api
+ytt_api_2.fetch(video_id)
+```
+
+## Cookie Authentication
+
+Some videos are age restricted, so this module won't be able to access those videos without some sort of
+authentication. To do this, you will need to have access to the desired video in a browser. Then, you will need to
+download that pages cookies into a text file. You can use the Chrome extension
+[Cookie-Editor](https://chromewebstore.google.com/detail/cookie-editor/hlkenndednhfkekhgcdicdfddnkalmdm?hl=en) and
+select "Netscape" during export, or the Firefox extension [cookies.txt](https://addons.mozilla.org/en-US/firefox/addon/cookies-txt/).
+
+Once you have that, you can use the following to access age-restricted videos' captions like so.
+
+```python  
+ytt_api = YouTubeTranscriptApi(cookie_path='/path/to/your/cookies.txt')
+ytt_api.fetch(video_id)
+```
+
+## Using Formatters
 Formatters are meant to be an additional layer of processing of the transcript you pass it. The goal is to convert a
 `FetchedTranscript` object into a consistent string of a given "format". Such as a basic text (`.txt`) or even formats 
 that have a defined specification such as JSON (`.json`), WebVTT (`.vtt`), SRT (`.srt`), Comma-separated format 
@@ -392,83 +501,32 @@ a argument name. For example to get the transcript for the video with the ID `-a
 youtube_transcript_api "\-abc123"
 ```
 
-[//]: # (## Proxy  )
+### Working around IP bans using the CLI
 
-[//]: # ()
-[//]: # (You can specify a https proxy, which will be used during the requests to YouTube:)
+If you are running into `ReqestBlocked` or `IpBlocked` errors, because YouTube blocks your IP, you can work around this 
+using residential proxies as explained in 
+[Working around IP bans](#working-around-ip-bans-requestblocked-or-ipblocked-exception). To use
+[Webshare residential proxies](https://www.webshare.io/?referral_code=w0xno53eb50g) through the CLI, you will have to 
+create a [Webshare account](https://www.webshare.io/?referral_code=w0xno53eb50g) and purchase a residential 
+proxy package that suites your workload. Then you can use the "Proxy Username" and "Proxy Password" which you can find 
+in your [Webshare Proxy Settings](https://dashboard.webshare.io/proxy/settings), to run the following command:
 
-[//]: # ()
-[//]: # (```python  )
-
-[//]: # (from youtube_transcript_api import YouTubeTranscriptApi  )
-
-[//]: # ()
-[//]: # (YouTubeTranscriptApi.get_transcript&#40;video_id, proxies={"https": "https://user:pass@domain:port"}&#41;)
-
-[//]: # (```  )
-
-[//]: # ()
-[//]: # (As the `proxies` dict is passed on to the `requests.get&#40;...&#41;` call, it follows the [format used by the requests library]&#40;https://requests.readthedocs.io/en/latest/user/advanced/#proxies&#41;.  )
-
-[//]: # ()
-[//]: # (Using the CLI:  )
-
-[//]: # ()
-[//]: # (```  )
-
-[//]: # (youtube_transcript_api <first_video_id> <second_video_id> --https-proxy https://user:pass@domain:port)
-
-[//]: # (```)
-
-## Working around IP bans
-TODO
-
-## Cookies
-
-Some videos are age restricted, so this module won't be able to access those videos without some sort of 
-authentication. To do this, you will need to have access to the desired video in a browser. Then, you will need to 
-download that pages cookies into a text file. You can use the Chrome extension 
-[Cookie-Editor](https://chromewebstore.google.com/detail/cookie-editor/hlkenndednhfkekhgcdicdfddnkalmdm?hl=en) and 
-select "Netscape" during export, or the Firefox extension [cookies.txt](https://addons.mozilla.org/en-US/firefox/addon/cookies-txt/).
-
-Once you have that, you can use it with the module to access age-restricted videos' captions like so.
-
-```python  
-ytt_api = YouTubeTranscriptApi(cookie_path='/path/to/your/cookies.txt')
-ytt_api.fetch(video_id)
+```
+youtube_transcript_api <first_video_id> <second_video_id> --webshare-proxy-username "username" --webshare-proxy-password "password"
 ```
 
-Using the CLI:
+If you prefer to use another proxy solution, you can set up a generic HTTP/HTTPS proxy using the following command:
+
+```
+youtube_transcript_api <first_video_id> <second_video_id> --http-proxy http://user:pass@domain:port --https-proxy https://user:pass@domain:port
+```
+
+### Cookie Authentication using the CLI
+
+To authenticate using cookies through the CLI as explained in [Cookie Authentication](#cookie-authentication) run:
 
 ```
 youtube_transcript_api <first_video_id> <second_video_id> --cookies /path/to/your/cookies.txt
-```
-
-## Overwriting request defaults
-
-When initializing a `YouTubeTranscriptApi` object, it will create a `requests.Session` which will be used for all 
-HTTP(S) request. This allows for caching cookies when retrieving multiple requests. However, you can optionally pass a
-`requests.Session` object into its constructor, if you manually want to share cookies between different instances of 
-`YouTubeTranscriptApi`, overwrite defaults, set custom headers, specify SSL certificates, etc.
-
-```python
-from requests import Session
-
-http_client = Session()
-
-# set custom header
-http_client.headers.update({"Accept-Encoding": "gzip, deflate"})
-
-# set path to CA_BUNDLE file
-http_client.verify = "/path/to/certfile"
-
-ytt_api = YouTubeTranscriptApi(http_client=session)
-ytt_api.fetch(video_id)
-
-# share same Session between two instances of YouTubeTranscriptApi
-ytt_api_2 = YouTubeTranscriptApi(http_client=session)
-# now shares cookies with ytt_api
-ytt_api_2.fetch(video_id)
 ```
 
 ## Warning  
@@ -479,7 +537,7 @@ working again as soon as possible if that happens. So if it stops working, let m
 
 ## Contributing
 
-To setup the project locally run (requires [poetry](https://python-poetry.org/docs/) to be installed):
+To setup the project locally run the following (requires [poetry](https://python-poetry.org/docs/) to be installed):
 ```shell
 poetry install --with test,dev
 ```

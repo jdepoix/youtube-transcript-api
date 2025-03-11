@@ -81,8 +81,8 @@ class WebshareProxyConfig(GenericProxyConfig):
     will take care of setting up your proxies as needed, by defaulting to rotating
     proxies.
 
-    Note that this is a referral link and using it supports this Open Source
-    project, which is very much appreciated! :)
+    Note that referral links are used here and any purchases made through these links
+    will support this Open Source project, which is very much appreciated! :)
     However, you can of course integrate your own proxy solution by using the
     `GenericProxyConfig` class, if that's what you prefer.
     """
