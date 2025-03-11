@@ -1,9 +1,14 @@
 from unittest import TestCase
-from mock import MagicMock
+from unittest.mock import MagicMock
 
 import json
 
-from youtube_transcript_api import YouTubeTranscriptApi, VideoUnavailable
+from youtube_transcript_api import (
+    YouTubeTranscriptApi,
+    VideoUnavailable,
+    FetchedTranscript,
+    FetchedTranscriptSnippet,
+)
 from youtube_transcript_api._cli import YouTubeTranscriptCli
 
 
@@ -11,19 +16,29 @@ class TestYouTubeTranscriptCli(TestCase):
     def setUp(self):
         self.transcript_mock = MagicMock()
         self.transcript_mock.fetch = MagicMock(
-            return_value=[
-                {"text": "Hey, this is just a test", "start": 0.0, "duration": 1.54},
-                {
-                    "text": "this is <i>not</i> the original transcript",
-                    "start": 1.54,
-                    "duration": 4.16,
-                },
-                {
-                    "text": "just something shorter, I made up for testing",
-                    "start": 5.7,
-                    "duration": 3.239,
-                },
-            ]
+            return_value=FetchedTranscript(
+                snippets=[
+                    FetchedTranscriptSnippet(
+                        text="Hey, this is just a test",
+                        start=0.0,
+                        duration=1.54,
+                    ),
+                    FetchedTranscriptSnippet(
+                        text="this is <i>not</i> the original transcript",
+                        start=1.54,
+                        duration=4.16,
+                    ),
+                    FetchedTranscriptSnippet(
+                        text="just something shorter, I made up for testing",
+                        start=5.7,
+                        duration=3.239,
+                    ),
+                ],
+                language="English",
+                language_code="en",
+                is_generated=True,
+                video_id="GJLlxj_dtq8",
+            )
         )
         self.transcript_mock.translate = MagicMock(return_value=self.transcript_mock)
 
@@ -38,9 +53,8 @@ class TestYouTubeTranscriptCli(TestCase):
             return_value=self.transcript_mock
         )
 
-        YouTubeTranscriptApi.list_transcripts = MagicMock(
-            return_value=self.transcript_list_mock
-        )
+        YouTubeTranscriptApi.__init__ = MagicMock(return_value=None)
+        YouTubeTranscriptApi.list = MagicMock(return_value=self.transcript_list_mock)
 
     def test_argument_parsing(self):
         parsed_args = YouTubeTranscriptCli(
@@ -80,6 +94,17 @@ class TestYouTubeTranscriptCli(TestCase):
         self.assertEqual(parsed_args.languages, ["de", "en"])
         self.assertEqual(parsed_args.http_proxy, "http://user:pass@domain:port")
         self.assertEqual(parsed_args.https_proxy, "https://user:pass@domain:port")
+
+        parsed_args = YouTubeTranscriptCli(
+            "v1 v2 --languages de en --format json "
+            "--webshare-proxy-username username "
+            "--webshare-proxy-password password".split()
+        )._parse_args()
+        self.assertEqual(parsed_args.video_ids, ["v1", "v2"])
+        self.assertEqual(parsed_args.format, "json")
+        self.assertEqual(parsed_args.languages, ["de", "en"])
+        self.assertEqual(parsed_args.webshare_proxy_username, "username")
+        self.assertEqual(parsed_args.webshare_proxy_password, "password")
 
         parsed_args = YouTubeTranscriptCli(
             "v1 v2 --languages de en --format json --http-proxy http://user:pass@domain:port".split()
@@ -210,19 +235,13 @@ class TestYouTubeTranscriptCli(TestCase):
     def test_run(self):
         YouTubeTranscriptCli("v1 v2 --languages de en".split()).run()
 
-        YouTubeTranscriptApi.list_transcripts.assert_any_call(
-            "v1", proxies=None, cookies=None
-        )
-        YouTubeTranscriptApi.list_transcripts.assert_any_call(
-            "v2", proxies=None, cookies=None
-        )
+        YouTubeTranscriptApi.list.assert_any_call("v1")
+        YouTubeTranscriptApi.list.assert_any_call("v2")
 
         self.transcript_list_mock.find_transcript.assert_any_call(["de", "en"])
 
     def test_run__failing_transcripts(self):
-        YouTubeTranscriptApi.list_transcripts = MagicMock(
-            side_effect=VideoUnavailable("video_id")
-        )
+        YouTubeTranscriptApi.list = MagicMock(side_effect=VideoUnavailable("video_id"))
 
         output = YouTubeTranscriptCli("v1 --languages de en".split()).run()
 
@@ -262,12 +281,8 @@ class TestYouTubeTranscriptCli(TestCase):
     def test_run__list_transcripts(self):
         YouTubeTranscriptCli("--list-transcripts v1 v2".split()).run()
 
-        YouTubeTranscriptApi.list_transcripts.assert_any_call(
-            "v1", proxies=None, cookies=None
-        )
-        YouTubeTranscriptApi.list_transcripts.assert_any_call(
-            "v2", proxies=None, cookies=None
-        )
+        YouTubeTranscriptApi.list.assert_any_call("v1")
+        YouTubeTranscriptApi.list.assert_any_call("v2")
 
     def test_run__json_output(self):
         output = YouTubeTranscriptCli(
@@ -277,7 +292,24 @@ class TestYouTubeTranscriptCli(TestCase):
         # will fail if output is not valid json
         json.loads(output)
 
-    def test_run__proxies(self):
+    def test_run__webshare_proxy_config(self):
+        YouTubeTranscriptCli(
+            (
+                "v1 v2 --languages de en "
+                "--webshare-proxy-username username "
+                "--webshare-proxy-password password"
+            ).split()
+        ).run()
+
+        proxy_config = YouTubeTranscriptApi.__init__.call_args.kwargs.get(
+            "proxy_config"
+        )
+
+        self.assertIsNotNone(proxy_config)
+        self.assertEqual(proxy_config.proxy_username, "username")
+        self.assertEqual(proxy_config.proxy_password, "password")
+
+    def test_run__generic_proxy_config(self):
         YouTubeTranscriptCli(
             (
                 "v1 v2 --languages de en "
@@ -286,31 +318,20 @@ class TestYouTubeTranscriptCli(TestCase):
             ).split()
         ).run()
 
-        YouTubeTranscriptApi.list_transcripts.assert_any_call(
-            "v1",
-            proxies={
-                "http": "http://user:pass@domain:port",
-                "https": "https://user:pass@domain:port",
-            },
-            cookies=None,
+        proxy_config = YouTubeTranscriptApi.__init__.call_args.kwargs.get(
+            "proxy_config"
         )
 
-        YouTubeTranscriptApi.list_transcripts.assert_any_call(
-            "v2",
-            proxies={
-                "http": "http://user:pass@domain:port",
-                "https": "https://user:pass@domain:port",
-            },
-            cookies=None,
-        )
+        self.assertIsNotNone(proxy_config)
+        self.assertEqual(proxy_config.http_url, "http://user:pass@domain:port")
+        self.assertEqual(proxy_config.https_url, "https://user:pass@domain:port")
 
     def test_run__cookies(self):
         YouTubeTranscriptCli(
             ("v1 v2 --languages de en " "--cookies blahblah.txt").split()
         ).run()
-        YouTubeTranscriptApi.list_transcripts.assert_any_call(
-            "v1", proxies=None, cookies="blahblah.txt"
-        )
-        YouTubeTranscriptApi.list_transcripts.assert_any_call(
-            "v2", proxies=None, cookies="blahblah.txt"
+
+        YouTubeTranscriptApi.__init__.assert_any_call(
+            proxy_config=None,
+            cookie_path="blahblah.txt",
         )
