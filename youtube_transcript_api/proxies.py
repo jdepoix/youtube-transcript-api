@@ -32,6 +32,14 @@ class ProxyConfig(ABC):
         """
         pass
 
+    def prevent_keeping_connections_alive(self) -> bool:
+        """
+        If you are using rotating proxies, it can be useful to prevent the HTTP
+        client from keeping TCP connections alive, as your IP won't be rotated on
+        every request, if your connection stays open.
+        """
+        return False
+
 
 class GenericProxyConfig(ProxyConfig):
     """
@@ -91,6 +99,7 @@ class WebshareProxyConfig(GenericProxyConfig):
     """
 
     DEFAULT_DOMAIN_NAME = "p.webshare.io"
+
     DEFAULT_PORT = 80
 
     def __init__(
@@ -130,3 +139,6 @@ class WebshareProxyConfig(GenericProxyConfig):
     @property
     def https_url(self) -> str:
         return self.url
+
+    def prevent_keeping_connections_alive(self) -> bool:
+        return True

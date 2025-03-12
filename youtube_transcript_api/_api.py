@@ -48,6 +48,8 @@ class YouTubeTranscriptApi:
             http_client.cookies = _load_cookie_jar(cookie_path)
         if proxy_config is not None:
             http_client.proxies = proxy_config.to_requests_dict()
+            if proxy_config.prevent_keeping_connections_alive():
+                http_client.headers.update({"Connection": "close"})
         self._fetcher = TranscriptListFetcher(http_client)
 
     def fetch(
@@ -59,7 +61,7 @@ class YouTubeTranscriptApi:
         """
         Retrieves the transcript for a single video. This is just a shortcut for
         calling:
-        `YouTubeTranscriptApi.list_transcripts(video_id, proxies).find_transcript(languages).fetch()`
+        `YouTubeTranscriptApi().list(video_id).find_transcript(languages).fetch(preserve_formatting=preserve_formatting)`
 
         :param video_id: the ID of the video you want to retrieve the transcript for.
             Make sure that this is the actual ID, NOT the full URL to the video!

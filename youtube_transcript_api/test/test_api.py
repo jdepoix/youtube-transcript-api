@@ -26,7 +26,7 @@ from youtube_transcript_api import (
     RequestBlocked,
     VideoUnplayable,
 )
-from youtube_transcript_api.proxies import GenericProxyConfig
+from youtube_transcript_api.proxies import GenericProxyConfig, WebshareProxyConfig
 
 
 def get_asset_path(filename: str) -> Path:
@@ -329,6 +329,21 @@ class TestYouTubeTranscriptApi(TestCase):
             self.ref_transcript,
         )
         to_requests_dict.assert_any_call()
+
+
+    @patch("youtube_transcript_api.proxies.GenericProxyConfig.to_requests_dict")
+    def test_fetch__with_proxy_prevent_alive_connections(self, to_requests_dict):
+        proxy_config = WebshareProxyConfig(
+            proxy_username="username",
+            proxy_password="password"
+        )
+
+        YouTubeTranscriptApi(proxy_config=proxy_config).fetch(
+            "GJLlxj_dtq8"
+        )
+
+        request = httpretty.last_request()
+        self.assertEqual(request.headers.get("Connection"), "close")
 
     def test_fetch__with_cookies(self):
         cookie_path = get_asset_path("example_cookies.txt")
