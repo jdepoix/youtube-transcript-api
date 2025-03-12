@@ -76,7 +76,7 @@ class WebshareProxyConfig(GenericProxyConfig):
 
     If you don't have a Webshare account yet, you will have to create one
     at https://www.webshare.io/?referral_code=w0xno53eb50g and purchase a residential
-    proxy package that suites your workload, to be able to use this proxy config.
+    proxy package that suits your workload, to be able to use this proxy config.
 
     Once you have created an account you only need the "Proxy Username" and
     "Proxy Password" that you can find in your Webshare settings
