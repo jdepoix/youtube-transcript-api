@@ -99,7 +99,6 @@ class WebshareProxyConfig(GenericProxyConfig):
     """
 
     DEFAULT_DOMAIN_NAME = "p.webshare.io"
-
     DEFAULT_PORT = 80
 
     def __init__(

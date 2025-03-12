@@ -330,17 +330,13 @@ class TestYouTubeTranscriptApi(TestCase):
         )
         to_requests_dict.assert_any_call()
 
-
     @patch("youtube_transcript_api.proxies.GenericProxyConfig.to_requests_dict")
     def test_fetch__with_proxy_prevent_alive_connections(self, to_requests_dict):
         proxy_config = WebshareProxyConfig(
-            proxy_username="username",
-            proxy_password="password"
+            proxy_username="username", proxy_password="password"
         )
 
-        YouTubeTranscriptApi(proxy_config=proxy_config).fetch(
-            "GJLlxj_dtq8"
-        )
+        YouTubeTranscriptApi(proxy_config=proxy_config).fetch("GJLlxj_dtq8")
 
         request = httpretty.last_request()
         self.assertEqual(request.headers.get("Connection"), "close")
