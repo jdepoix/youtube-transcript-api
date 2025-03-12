@@ -32,6 +32,14 @@ class ProxyConfig(ABC):
         """
         pass
 
+    def prevent_keeping_connections_alive(self) -> bool:
+        """
+        If you are using rotating proxies, it can be useful to prevent the HTTP
+        client from keeping TCP connections alive, as your IP won't be rotated on
+        every request, if your connection stays open.
+        """
+        return False
+
 
 class GenericProxyConfig(ProxyConfig):
     """
@@ -76,7 +84,7 @@ class WebshareProxyConfig(GenericProxyConfig):
 
     If you don't have a Webshare account yet, you will have to create one
     at https://www.webshare.io/?referral_code=w0xno53eb50g and purchase a residential
-    proxy package that suites your workload, to be able to use this proxy config.
+    proxy package that suits your workload, to be able to use this proxy config.
 
     Once you have created an account you only need the "Proxy Username" and
     "Proxy Password" that you can find in your Webshare settings
@@ -130,3 +138,6 @@ class WebshareProxyConfig(GenericProxyConfig):
     @property
     def https_url(self) -> str:
         return self.url
+
+    def prevent_keeping_connections_alive(self) -> bool:
+        return True

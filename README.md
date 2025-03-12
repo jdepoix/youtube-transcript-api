@@ -283,7 +283,7 @@ therefore integrated it into this module, to make setting it up as easy as possi
 ### Using [Webshare](https://www.webshare.io/?referral_code=w0xno53eb50g)
 
 Once you have created a [Webshare account](https://www.webshare.io/?referral_code=w0xno53eb50g) and purchased a 
-"Residential Proxy" package that suites your workload, open the 
+"Residential Proxy" package that suits your workload, open the 
 [Webshare Proxy Settings](https://dashboard.webshare.io/proxy/settings) to retrieve your "Proxy Username" and 
 "Proxy Password". Using this information you can initialize the `YouTubeTranscriptApi` as follows:
 
@@ -508,7 +508,7 @@ using residential proxies as explained in
 [Working around IP bans](#working-around-ip-bans-requestblocked-or-ipblocked-exception). To use
 [Webshare residential proxies](https://www.webshare.io/?referral_code=w0xno53eb50g) through the CLI, you will have to 
 create a [Webshare account](https://www.webshare.io/?referral_code=w0xno53eb50g) and purchase a residential 
-proxy package that suites your workload. Then you can use the "Proxy Username" and "Proxy Password" which you can find 
+proxy package that suits your workload. Then you can use the "Proxy Username" and "Proxy Password" which you can find 
 in your [Webshare Proxy Settings](https://dashboard.webshare.io/proxy/settings), to run the following command:
 
 ```
