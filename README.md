@@ -145,7 +145,7 @@ YouTubeTranscriptApi().fetch(video_id, languages=['de', 'en'])
 
 It's a list of language codes in a descending priority. In this example it will first try to fetch the german 
 transcript (`'de'`) and then fetch the english transcript (`'en'`) if it fails to do so. If you want to find out 
-which languages are available first, [have a look at `list_transcripts()`](#list-available-transcripts).
+which languages are available first, [have a look at `list()`](#list-available-transcripts).
 
 If you only want one language, you still need to format the `languages` argument as a list
 
@@ -168,7 +168,7 @@ If you want to list all transcripts which are available for a given video you ca
 
 ```python
 ytt_api = YouTubeTranscriptApi()
-transcript_list = ytt_api.list_transcripts(video_id)
+transcript_list = ytt_api.list(video_id)
 ```
 
 This will return a `TranscriptList` object which is iterable and provides methods to filter the list of transcripts for 
@@ -283,9 +283,10 @@ therefore integrated it into this module, to make setting it up as easy as possi
 ### Using [Webshare](https://www.webshare.io/?referral_code=w0xno53eb50g)
 
 Once you have created a [Webshare account](https://www.webshare.io/?referral_code=w0xno53eb50g) and purchased a 
-"Residential Proxy" package that suits your workload, open the 
-[Webshare Proxy Settings](https://dashboard.webshare.io/proxy/settings) to retrieve your "Proxy Username" and 
-"Proxy Password". Using this information you can initialize the `YouTubeTranscriptApi` as follows:
+"Residential" proxy package that suits your workload (make sure NOT to purchase "Proxy Server" or 
+"Static Residential"!), open the [Webshare Proxy Settings](https://dashboard.webshare.io/proxy/settings) to retrieve 
+your "Proxy Username" and "Proxy Password". Using this information you can initialize the `YouTubeTranscriptApi` as 
+follows:
 
 ```python
 from youtube_transcript_api import YouTubeTranscriptApi
@@ -506,10 +507,11 @@ youtube_transcript_api "\-abc123"
 If you are running into `ReqestBlocked` or `IpBlocked` errors, because YouTube blocks your IP, you can work around this 
 using residential proxies as explained in 
 [Working around IP bans](#working-around-ip-bans-requestblocked-or-ipblocked-exception). To use
-[Webshare residential proxies](https://www.webshare.io/?referral_code=w0xno53eb50g) through the CLI, you will have to 
-create a [Webshare account](https://www.webshare.io/?referral_code=w0xno53eb50g) and purchase a residential 
-proxy package that suits your workload. Then you can use the "Proxy Username" and "Proxy Password" which you can find 
-in your [Webshare Proxy Settings](https://dashboard.webshare.io/proxy/settings), to run the following command:
+[Webshare "Residential" proxies](https://www.webshare.io/?referral_code=w0xno53eb50g) through the CLI, you will have to 
+create a [Webshare account](https://www.webshare.io/?referral_code=w0xno53eb50g) and purchase a "Residential" proxy 
+package that suits your workload (make sure NOT to purchase "Proxy Server" or "Static Residential"!). Then you can use 
+the "Proxy Username" and "Proxy Password" which you can find in your 
+[Webshare Proxy Settings](https://dashboard.webshare.io/proxy/settings), to run the following command:
 
 ```
 youtube_transcript_api <first_video_id> <second_video_id> --webshare-proxy-username "username" --webshare-proxy-password "password"
