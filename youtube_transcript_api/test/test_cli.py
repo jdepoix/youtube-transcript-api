@@ -131,7 +131,7 @@ class TestYouTubeTranscriptCli(TestCase):
         self.assertEqual(parsed_args.languages, ["en"])
 
     def test_argument_parsing__video_ids_starting_with_dash(self):
-        parsed_args = YouTubeTranscriptCli("\-v1 \-\-v2 \--v3".split())._parse_args()
+        parsed_args = YouTubeTranscriptCli(r"\-v1 \-\-v2 \--v3".split())._parse_args()
         self.assertEqual(parsed_args.video_ids, ["-v1", "--v2", "--v3"])
         self.assertEqual(parsed_args.format, "pretty")
         self.assertEqual(parsed_args.languages, ["en"])
