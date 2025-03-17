@@ -364,7 +364,7 @@ class TranscriptListFetcher:
             )
             if try_number + 1 < retries:
                 return self._fetch_captions_json(video_id, try_number=try_number + 1)
-            raise exception
+            raise exception.with_proxy_config(self._proxy_config)
 
     def _extract_captions_json(self, html: str, video_id: str) -> Dict:
         splitted_html = html.split("var ytInitialPlayerResponse = ")

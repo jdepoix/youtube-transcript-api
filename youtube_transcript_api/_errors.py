@@ -4,6 +4,7 @@ from typing import Iterable, Optional, List
 from requests import HTTPError
 
 from ._settings import WATCH_URL
+from .proxies import ProxyConfig, GenericProxyConfig, WebshareProxyConfig
 
 
 class YouTubeTranscriptApiException(Exception):
@@ -45,7 +46,7 @@ class CouldNotRetrieveTranscript(YouTubeTranscriptApiException):
 
     def __init__(self, video_id: str):
         self.video_id = video_id
-        super().__init__(self._build_error_message())
+        super().__init__()
 
     def _build_error_message(self) -> str:
         error_message = self.ERROR_MESSAGE.format(
@@ -63,6 +64,9 @@ class CouldNotRetrieveTranscript(YouTubeTranscriptApiException):
     @property
     def cause(self) -> str:
         return self.CAUSE_MESSAGE
+
+    def __str__(self) -> str:
+        return self._build_error_message()
 
 
 class YouTubeRequestFailed(CouldNotRetrieveTranscript):
@@ -135,6 +139,51 @@ class RequestBlocked(CouldNotRetrieveTranscript):
         "eventually permanently ban the account that you have used to authenticate "
         "with! So only do this if you don't mind your account being banned!"
     )
+    WITH_GENERIC_PROXY_CAUSE_MESSAGE = (
+        "YouTube is blocking your requests, despite you using proxies. Keep in mind "
+        "a proxy is just a way to hide your real IP behind the IP of that proxy, but "
+        "there is no guarantee that the IP of that proxy won't be blocked as well.\n\n"
+        "The only truly reliable way to prevent IP blocks is rotating through a large "
+        "pool of residential IPs, by using a provider like Webshare "
+        "(https://www.webshare.io/?referral_code=w0xno53eb50g), which provides you "
+        "with a pool of >30M residential IPs (make sure to purchase "
+        '"Residential" proxies, NOT "Proxy Server" or "Static Residential"!).\n\n'
+        "You will find more information on how to easily integrate Webshare here: "
+        "https://github.com/jdepoix/youtube-transcript-api"
+        "?tab=readme-ov-file#using-webshare"
+    )
+    WITH_WEBSHARE_PROXY_CAUSE_MESSAGE = (
+        "YouTube is blocking your requests, despite you using Webshare proxies. "
+        'Please make sure that you have purchased "Residential" proxies and '
+        'NOT "Proxy Server" or "Static Residential", as those won\'t work as '
+        'reliably! The free tier also uses "Proxy Server" and will NOT work!\n\n'
+        'The only reliable option is using "Residential" proxies (not "Static '
+        'Residential"), as this allows you to rotate through a pool of over 30M IPs, '
+        "which means you will always find an IP that hasn't been blocked by YouTube "
+        "yet!\n\n"
+        "You can support the development of this open source project by making your "
+        "Webshare purchases through this affiliate link: "
+        "https://www.webshare.io/?referral_code=w0xno53eb50g \n\n"
+        "Thank you for your support! <3"
+    )
+
+    def __init__(self, video_id: str):
+        self._proxy_config = None
+        super().__init__(video_id)
+
+    def with_proxy_config(
+        self, proxy_config: Optional[ProxyConfig]
+    ) -> "RequestBlocked":
+        self._proxy_config = proxy_config
+        return self
+
+    @property
+    def cause(self) -> str:
+        if isinstance(self._proxy_config, WebshareProxyConfig):
+            return self.WITH_WEBSHARE_PROXY_CAUSE_MESSAGE
+        if isinstance(self._proxy_config, GenericProxyConfig):
+            return self.WITH_GENERIC_PROXY_CAUSE_MESSAGE
+        return super().cause
 
 
 class IpBlocked(RequestBlocked):

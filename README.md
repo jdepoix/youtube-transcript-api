@@ -284,7 +284,8 @@ therefore integrated it into this module, to make setting it up as easy as possi
 
 Once you have created a [Webshare account](https://www.webshare.io/?referral_code=w0xno53eb50g) and purchased a 
 "Residential" proxy package that suits your workload (make sure NOT to purchase "Proxy Server" or 
-"Static Residential"!), open the [Webshare Proxy Settings](https://dashboard.webshare.io/proxy/settings) to retrieve 
+"Static Residential"!), open the 
+[Webshare Proxy Settings](https://dashboard.webshare.io/proxy/settings?referral_code=w0xno53eb50g) to retrieve 
 your "Proxy Username" and "Proxy Password". Using this information you can initialize the `YouTubeTranscriptApi` as 
 follows:
 
@@ -306,8 +307,8 @@ ytt_api.fetch(video_id)
 Using the `WebshareProxyConfig` will default to using rotating residential proxies and requires no further 
 configuration.
 
-Note that referral links are used here and any purchases made through these links will support this Open Source 
-project, which is very much appreciated! 💖😊🙏💖
+Note that [referral links are used here](https://www.webshare.io/?referral_code=w0xno53eb50g) and any purchases 
+made through these links will support this Open Source project, which is very much appreciated! 💖😊🙏💖
 
 However, you are of course free to integrate your own proxy solution using the `GenericProxyConfig` class, if you 
 prefer using another provider or want to implement your own solution, as covered by the following section.
@@ -511,7 +512,7 @@ using residential proxies as explained in
 create a [Webshare account](https://www.webshare.io/?referral_code=w0xno53eb50g) and purchase a "Residential" proxy 
 package that suits your workload (make sure NOT to purchase "Proxy Server" or "Static Residential"!). Then you can use 
 the "Proxy Username" and "Proxy Password" which you can find in your 
-[Webshare Proxy Settings](https://dashboard.webshare.io/proxy/settings), to run the following command:
+[Webshare Proxy Settings](https://dashboard.webshare.io/proxy/settings?referral_code=w0xno53eb50g), to run the following command:
 
 ```
 youtube_transcript_api <first_video_id> <second_video_id> --webshare-proxy-username "username" --webshare-proxy-password "password"
