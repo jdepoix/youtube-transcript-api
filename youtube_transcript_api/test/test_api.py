@@ -247,8 +247,10 @@ class TestYouTubeTranscriptApi(TestCase):
             httpretty.GET, "https://www.youtube.com/watch", status=500
         )
 
-        with self.assertRaises(YouTubeRequestFailed):
+        with self.assertRaises(YouTubeRequestFailed) as cm:
             YouTubeTranscriptApi().fetch("abc")
+
+        self.assertIn("Request to YouTube failed: ", str(cm.exception))
 
     def test_fetch__exception_if_age_restricted(self):
         httpretty.register_uri(
@@ -277,8 +279,10 @@ class TestYouTubeTranscriptApi(TestCase):
             body=load_asset("youtube_request_blocked.html.static"),
         )
 
-        with self.assertRaises(RequestBlocked):
+        with self.assertRaises(RequestBlocked) as cm:
             YouTubeTranscriptApi().fetch("Njp5uhTorCo")
+
+        self.assertIn("YouTube is blocking requests from your IP", str(cm.exception))
 
     def test_fetch__exception_unplayable(self):
         httpretty.register_uri(
@@ -287,11 +291,12 @@ class TestYouTubeTranscriptApi(TestCase):
             body=load_asset("youtube_unplayable.html.static"),
         )
 
-        with self.assertRaises(VideoUnplayable) as error:
+        with self.assertRaises(VideoUnplayable) as cm:
             YouTubeTranscriptApi().fetch("Njp5uhTorCo")
-        error = error.exception
-        self.assertEqual(error.reason, "Custom Reason")
-        self.assertEqual(error.sub_reasons, ["Sub Reason 1", "Sub Reason 2"])
+        exception = cm.exception
+        self.assertEqual(exception.reason, "Custom Reason")
+        self.assertEqual(exception.sub_reasons, ["Sub Reason 1", "Sub Reason 2"])
+        self.assertIn("Custom Reason", str(exception))
 
     def test_fetch__exception_if_transcripts_disabled(self):
         httpretty.register_uri(
@@ -312,8 +317,10 @@ class TestYouTubeTranscriptApi(TestCase):
             YouTubeTranscriptApi().fetch("Fjg5lYqvzUs")
 
     def test_fetch__exception_if_language_unavailable(self):
-        with self.assertRaises(NoTranscriptFound):
+        with self.assertRaises(NoTranscriptFound) as cm:
             YouTubeTranscriptApi().fetch("GJLlxj_dtq8", languages=["cz"])
+
+        self.assertIn("No transcripts were found for", str(cm.exception))
 
     @patch("youtube_transcript_api.proxies.GenericProxyConfig.to_requests_dict")
     def test_fetch__with_proxy(self, to_requests_dict):
@@ -340,6 +347,64 @@ class TestYouTubeTranscriptApi(TestCase):
 
         request = httpretty.last_request()
         self.assertEqual(request.headers.get("Connection"), "close")
+
+    @patch("youtube_transcript_api.proxies.GenericProxyConfig.to_requests_dict")
+    def test_fetch__with_proxy_retry_when_blocked(self, to_requests_dict):
+        for _ in range(3):
+            httpretty.register_uri(
+                httpretty.GET,
+                "https://www.youtube.com/watch",
+                body=load_asset("youtube_request_blocked.html.static"),
+            )
+        proxy_config = WebshareProxyConfig(
+            proxy_username="username",
+            proxy_password="password",
+        )
+
+        YouTubeTranscriptApi(proxy_config=proxy_config).fetch("Njp5uhTorCo")
+
+        self.assertEqual(len(httpretty.latest_requests()), 3 + 2)
+
+    @patch("youtube_transcript_api.proxies.GenericProxyConfig.to_requests_dict")
+    def test_fetch__with_webshare_proxy_reraise_when_blocked(self, to_requests_dict):
+        retries = 5
+        for _ in range(retries):
+            httpretty.register_uri(
+                httpretty.GET,
+                "https://www.youtube.com/watch",
+                body=load_asset("youtube_request_blocked.html.static"),
+            )
+        proxy_config = WebshareProxyConfig(
+            proxy_username="username",
+            proxy_password="password",
+            retries_when_blocked=retries,
+        )
+
+        with self.assertRaises(RequestBlocked) as cm:
+            YouTubeTranscriptApi(proxy_config=proxy_config).fetch("Njp5uhTorCo")
+
+        self.assertEqual(len(httpretty.latest_requests()), retries)
+        self.assertEqual(cm.exception._proxy_config, proxy_config)
+        self.assertIn("Webshare", str(cm.exception))
+
+    @patch("youtube_transcript_api.proxies.GenericProxyConfig.to_requests_dict")
+    def test_fetch__with_generic_proxy_reraise_when_blocked(self, to_requests_dict):
+        httpretty.register_uri(
+            httpretty.GET,
+            "https://www.youtube.com/watch",
+            body=load_asset("youtube_request_blocked.html.static"),
+        )
+        proxy_config = GenericProxyConfig(
+            http_url="http://localhost:8080",
+            https_url="http://localhost:8080",
+        )
+
+        with self.assertRaises(RequestBlocked) as cm:
+            YouTubeTranscriptApi(proxy_config=proxy_config).fetch("Njp5uhTorCo")
+
+        self.assertEqual(len(httpretty.latest_requests()), 1)
+        self.assertEqual(cm.exception._proxy_config, proxy_config)
+        self.assertIn("YouTube is blocking your requests", str(cm.exception))
 
     def test_fetch__with_cookies(self):
         cookie_path = get_asset_path("example_cookies.txt")
