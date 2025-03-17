@@ -48,9 +48,9 @@ class YouTubeTranscriptApi:
             http_client.cookies = _load_cookie_jar(cookie_path)
         if proxy_config is not None:
             http_client.proxies = proxy_config.to_requests_dict()
-            if proxy_config.prevent_keeping_connections_alive():
+            if proxy_config.prevent_keeping_connections_alive:
                 http_client.headers.update({"Connection": "close"})
-        self._fetcher = TranscriptListFetcher(http_client)
+        self._fetcher = TranscriptListFetcher(http_client, proxy_config=proxy_config)
 
     def fetch(
         self,

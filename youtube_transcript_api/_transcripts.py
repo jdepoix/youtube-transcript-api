@@ -4,7 +4,7 @@ from enum import Enum
 from itertools import chain
 
 from html import unescape
-from typing import List, Dict, Iterator, Iterable, Pattern
+from typing import List, Dict, Iterator, Iterable, Pattern, Optional
 
 from defusedxml import ElementTree
 
@@ -12,6 +12,7 @@ import re
 
 from requests import HTTPError, Session, Response
 
+from .proxies import ProxyConfig
 from ._errors import (
     VideoUnavailable,
     YouTubeRequestFailed,
@@ -339,15 +340,31 @@ class TranscriptList:
 
 
 class TranscriptListFetcher:
-    def __init__(self, http_client: Session):
+    def __init__(self, http_client: Session, proxy_config: Optional[ProxyConfig]):
         self._http_client = http_client
+        self._proxy_config = proxy_config
 
     def fetch(self, video_id: str) -> TranscriptList:
         return TranscriptList.build(
             self._http_client,
             video_id,
-            self._extract_captions_json(self._fetch_video_html(video_id), video_id),
+            self._fetch_captions_json(video_id),
         )
+
+    def _fetch_captions_json(self, video_id: str, try_number: int = 0) -> Dict:
+        try:
+            return self._extract_captions_json(
+                self._fetch_video_html(video_id), video_id
+            )
+        except RequestBlocked as exception:
+            retries = (
+                0
+                if self._proxy_config is None
+                else self._proxy_config.retries_when_blocked
+            )
+            if try_number + 1 < retries:
+                return self._fetch_captions_json(video_id, try_number=try_number + 1)
+            raise exception
 
     def _extract_captions_json(self, html: str, video_id: str) -> Dict:
         splitted_html = html.split("var ytInitialPlayerResponse = ")

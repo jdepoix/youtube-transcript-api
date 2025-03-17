@@ -341,6 +341,43 @@ class TestYouTubeTranscriptApi(TestCase):
         request = httpretty.last_request()
         self.assertEqual(request.headers.get("Connection"), "close")
 
+    @patch("youtube_transcript_api.proxies.GenericProxyConfig.to_requests_dict")
+    def test_fetch__with_proxy_retry_when_blocked(self, to_requests_dict):
+        for _ in range(3):
+            httpretty.register_uri(
+                httpretty.GET,
+                "https://www.youtube.com/watch",
+                body=load_asset("youtube_request_blocked.html.static"),
+            )
+        proxy_config = WebshareProxyConfig(
+            proxy_username="username",
+            proxy_password="password",
+        )
+
+        YouTubeTranscriptApi(proxy_config=proxy_config).fetch("Njp5uhTorCo")
+
+        self.assertEqual(len(httpretty.latest_requests()), 3 + 2)
+
+    @patch("youtube_transcript_api.proxies.GenericProxyConfig.to_requests_dict")
+    def test_fetch__with_proxy_reraise_when_blocked(self, to_requests_dict):
+        retries = 5
+        for _ in range(retries):
+            httpretty.register_uri(
+                httpretty.GET,
+                "https://www.youtube.com/watch",
+                body=load_asset("youtube_request_blocked.html.static"),
+            )
+        proxy_config = WebshareProxyConfig(
+            proxy_username="username",
+            proxy_password="password",
+            retries_when_blocked=retries,
+        )
+
+        with self.assertRaises(RequestBlocked):
+            YouTubeTranscriptApi(proxy_config=proxy_config).fetch("Njp5uhTorCo")
+
+        self.assertEqual(len(httpretty.latest_requests()), retries)
+
     def test_fetch__with_cookies(self):
         cookie_path = get_asset_path("example_cookies.txt")
         transcript = YouTubeTranscriptApi(cookie_path=cookie_path).fetch("GJLlxj_dtq8")
