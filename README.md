@@ -355,11 +355,11 @@ http_client.headers.update({"Accept-Encoding": "gzip, deflate"})
 # set path to CA_BUNDLE file
 http_client.verify = "/path/to/certfile"
 
-ytt_api = YouTubeTranscriptApi(http_client=session)
+ytt_api = YouTubeTranscriptApi(http_client=http_client)
 ytt_api.fetch(video_id)
 
 # share same Session between two instances of YouTubeTranscriptApi
-ytt_api_2 = YouTubeTranscriptApi(http_client=session)
+ytt_api_2 = YouTubeTranscriptApi(http_client=http_client)
 # now shares cookies with ytt_api
 ytt_api_2.fetch(video_id)
 ```
