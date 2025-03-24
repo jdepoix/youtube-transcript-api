@@ -31,6 +31,14 @@
 </p>
 
 <p align="center">
+  <a href="https://www.dumplingai.com">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://www.dumplingai.com/logos/logo-dark.svg">
+      <source media="(prefers-color-scheme: light)" srcset="https://www.dumplingai.com/logos/logo-light.svg">
+      <img alt="Dumpling AI" src="https://www.dumplingai.com/logos/logo-light.svg" height="40px" style="vertical-align: middle;">
+    </picture>
+  </a>
+  &nbsp;&nbsp;&nbsp;&nbsp;
   <a href="https://www.searchapi.io">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://www.searchapi.io/press/v1/svg/searchapi_logo_white_h.svg">
