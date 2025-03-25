@@ -26,6 +26,7 @@ from ._errors import (
     RequestBlocked,
     AgeRestricted,
     VideoUnplayable,
+    YouTubeDataUnparsable,
 )
 from ._settings import WATCH_URL
 
@@ -367,15 +368,14 @@ class TranscriptListFetcher:
             raise exception.with_proxy_config(self._proxy_config)
 
     def _extract_captions_json(self, html: str, video_id: str) -> Dict:
-        splitted_html = html.split("var ytInitialPlayerResponse = ")
-
-        if len(splitted_html) <= 1:
+        var_parser = _JsVarParser("ytInitialPlayerResponse")
+        try:
+            video_data = var_parser.parse(html, video_id)
+        except YouTubeDataUnparsable as e:
             if 'class="g-recaptcha"' in html:
                 raise IpBlocked(video_id)
-
-        video_data = json.loads(
-            splitted_html[1].split("</script>")[0].strip().rstrip(";")
-        )
+            # This should never happen!
+            raise e  # pragma: no cover
 
         self._assert_playability(video_data.get("playabilityStatus"), video_id)
 
@@ -474,3 +474,47 @@ class _TranscriptParser:
             for xml_element in ElementTree.fromstring(raw_data)
             if xml_element.text is not None
         ]
+
+
+class _JsVarParser:
+    def __init__(self, var_name: str):
+        self._var_name = var_name
+
+    def parse(self, raw_html: str, video_id: str) -> Dict:
+        char_iterator = self._create_var_char_iterator(raw_html, video_id)
+        var_string = self._find_var_substring(char_iterator, video_id)
+        return json.loads(var_string)
+
+    def _create_var_char_iterator(self, raw_html: str, video_id: str) -> Iterator[str]:
+        splitted_html = raw_html.split(f"var {self._var_name}")
+        if len(splitted_html) <= 1:
+            raise YouTubeDataUnparsable(video_id)
+        char_iterator = iter(splitted_html[1])
+        while next(char_iterator) != "{":
+            pass
+        return char_iterator
+
+    def _find_var_substring(self, char_iterator: Iterator[str], video_id: str) -> str:
+        escaped = False
+        in_quotes = False
+        depth = 1
+        chars = ["{"]
+
+        for char in char_iterator:
+            chars.append(char)
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == '"':
+                in_quotes = not in_quotes
+            elif not in_quotes:
+                if char == "{":
+                    depth += 1
+                elif char == "}":
+                    depth -= 1
+            if depth == 0:
+                return "".join(chars)
+
+        # This should never happen!
+        raise YouTubeDataUnparsable(video_id)  # pragma: no cover

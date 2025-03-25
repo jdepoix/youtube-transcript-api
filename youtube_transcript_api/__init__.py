@@ -24,4 +24,5 @@ from ._errors import (
     YouTubeRequestFailed,
     InvalidVideoId,
     AgeRestricted,
+    YouTubeDataUnparsable,
 )
