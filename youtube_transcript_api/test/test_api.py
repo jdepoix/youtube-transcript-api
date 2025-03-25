@@ -104,6 +104,20 @@ class TestYouTubeTranscriptApi(TestCase):
             self.ref_transcript,
         )
 
+    def test_fetch__with_altered_user_agent(self):
+        httpretty.register_uri(
+            httpretty.GET,
+            "https://www.youtube.com/watch",
+            body=load_asset("youtube_altered_user_agent.html.static"),
+        )
+
+        transcript = YouTubeTranscriptApi().fetch("GJLlxj_dtq8")
+
+        self.assertEqual(
+            transcript,
+            self.ref_transcript,
+        )
+
     def test_list(self):
         transcript_list = YouTubeTranscriptApi().list("GJLlxj_dtq8")
 

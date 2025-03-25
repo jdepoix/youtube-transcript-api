@@ -69,6 +69,13 @@ class CouldNotRetrieveTranscript(YouTubeTranscriptApiException):
         return self._build_error_message()
 
 
+class YouTubeDataUnparsable(CouldNotRetrieveTranscript):
+    CAUSE_MESSAGE = (
+        "The data required to fetch the transcript is not parsable. This should "
+        "not happen, please open an issue (make sure to include the video ID)!"
+    )
+
+
 class YouTubeRequestFailed(CouldNotRetrieveTranscript):
     CAUSE_MESSAGE = "Request to YouTube failed: {reason}"
 

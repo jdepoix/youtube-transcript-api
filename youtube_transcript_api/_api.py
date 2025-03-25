@@ -32,6 +32,10 @@ class YouTubeTranscriptApi:
         http_client: Optional[Session] = None,
     ):
         """
+        Note on thread-safety: As this class will initialize a `requests.Session`
+        object, it is not thread-safe. Make sure to initialize an instance of
+        `YouTubeTranscriptApi` per thread, if used in a multi-threading scenario!
+
         :param cookie_path: Path to a text file containing YouTube authorization cookies
         :param proxy_config: an optional ProxyConfig object, defining proxies used for
             all network requests. This can be used to work around your IP being blocked
