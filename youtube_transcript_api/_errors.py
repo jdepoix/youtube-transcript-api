@@ -76,6 +76,14 @@ class YouTubeDataUnparsable(CouldNotRetrieveTranscript):
     )
 
 
+class YouTubeResponseIsEmpty(CouldNotRetrieveTranscript):
+    CAUSE_MESSAGE = (
+        "Request to YouTube was successful, but the response's content is empty, "
+        "so the transcript parsing cannot be performed. "
+        "Retry later."
+    )
+
+
 class YouTubeRequestFailed(CouldNotRetrieveTranscript):
     CAUSE_MESSAGE = "Request to YouTube failed: {reason}"
 

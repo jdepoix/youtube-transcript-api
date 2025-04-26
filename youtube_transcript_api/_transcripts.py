@@ -15,6 +15,7 @@ from requests import HTTPError, Session, Response
 from .proxies import ProxyConfig
 from ._errors import (
     VideoUnavailable,
+    YouTubeResponseIsEmpty,
     YouTubeRequestFailed,
     NoTranscriptFound,
     TranscriptsDisabled,
@@ -131,8 +132,12 @@ class Transcript:
         :param preserve_formatting: whether to keep select HTML text formatting
         """
         response = self._http_client.get(self._url)
+        response_text = _raise_http_errors(response, self.video_id).text
+        if not response_text:
+            raise YouTubeResponseIsEmpty(self.video_id)
+
         snippets = _TranscriptParser(preserve_formatting=preserve_formatting).parse(
-            _raise_http_errors(response, self.video_id).text,
+            response_text
         )
         return FetchedTranscript(
             snippets=snippets,
