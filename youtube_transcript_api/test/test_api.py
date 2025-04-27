@@ -26,6 +26,7 @@ from youtube_transcript_api import (
     RequestBlocked,
     VideoUnplayable,
 )
+from youtube_transcript_api._errors import YouTubeResponseIsEmpty
 from youtube_transcript_api.proxies import GenericProxyConfig, WebshareProxyConfig
 
 
@@ -335,6 +336,22 @@ class TestYouTubeTranscriptApi(TestCase):
             YouTubeTranscriptApi().fetch("GJLlxj_dtq8", languages=["cz"])
 
         self.assertIn("No transcripts were found for", str(cm.exception))
+
+    def test_fetch__exception_if_response_is_empty(self):
+        httpretty.register_uri(
+            httpretty.GET,
+            "https://www.youtube.com/watch",
+            body=load_asset("youtube.html.static"),
+        )
+        transcript = YouTubeTranscriptApi().list("dsMFmonKDD4").find_transcript(("en",))
+
+        httpretty.register_uri(
+            httpretty.GET,
+            "https://www.youtube.com/api/timedtext",
+            body=load_asset("transcript_empty.xml.static"),
+        )
+        with self.assertRaises(YouTubeResponseIsEmpty):
+            transcript.fetch()
 
     @patch("youtube_transcript_api.proxies.GenericProxyConfig.to_requests_dict")
     def test_fetch__with_proxy(self, to_requests_dict):
