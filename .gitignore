@@ -9,3 +9,4 @@ upload_new_version.sh
 .coverage
 coverage.xml
 .DS_STORE
+.vscode/
