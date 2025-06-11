@@ -1,0 +1,195 @@
+{
+  "responseContext": {
+    "visitorData": "Cgs3NmJkd2VWU1N2USj4uaLCBjIKCgJTQRIEGgAgJzoMCAEgkoPMhYCfp6RoWJfwuc_yqZ2rVQ%3D%3D",
+    "serviceTrackingParams": [
+      {
+        "service": "GFEEDBACK",
+        "params": [
+          {
+            "key": "is_viewed_live",
+            "value": "False"
+          },
+          {
+            "key": "ipcc",
+            "value": "0"
+          },
+          {
+            "key": "is_alc_surface",
+            "value": "false"
+          },
+          {
+            "key": "logged_in",
+            "value": "0"
+          },
+          {
+            "key": "e",
+            "value": "24004644,24077241,24078649,24104894,24143331,24166867,24181174,24230811,24232551,24241378,24290153,24397985,24513381,24522874,24556101,24585737,39325413,39328442,39328647,51010008,51020570,51025415,51037346,51037353,51054999,51067700,51068313,51080128,51086511,51095478,51115184,51129105,51132535,51137671,51141472,51152050,51175149,51178320,51178333,51178342,51178355,51179435,51179748,51183909,51217334,51227037,51237842,51242448,51248777,51256074,51272458,51295372,51303432,51306453,51311031,51311036,51313109,51313767,51314496,51324733,51326139,51330753,51341228,51346985,51349914,51353393,51354083,51354114,51354567,51356621,51359177,51361830,51362071,51366123,51366423,51366620,51367487,51372971,51375205,51375719,51386541,51388661,51394776,51394779,51397332,51402689,51404808,51404810,51405647,51407634,51417450,51417473,51417480,51417497,51417508,51417523,51420458,51421832,51427573,51428417,51428624,51429106,51430311,51432294,51432529,51432560,51433499,51435249,51435805,51435845,51435875,51435884,51435893,51435905,51435912,51435918,51436950,51437205,51439763,51439874,51440725,51441100,51441710,51442501,51443707,51444218,51447191,51448332,51452420,51452479,51452495,51453239,51456413,51456421,51456628,51458927,51459425,51461268,51462839,51463532,51463930,51465523,51465804,51465955,51466698,51466900,51467076,51467525,51468320,51469820,51471138,51471685,51471785,51472877,51473079,51473810,51475247,51475592,51475686,51475960,51476590,51477496,51477506,51477582,51477845,51478690,51478931,51479232,51479706,51479906,51480511,51481240,51483631,51483888,51484222,51484412,51484746,51484750,51485249,51485417,51485661,51486018,51486232,51486471,51488577,51489047,51489149,51489197,51490157,51490995,51491436,51492251,51492548,51495585,51495706,51495859,51496968,51497133,51498591,51499562,51500337,51500785,51503024,51504828,51505739,51506681,51507237,51508242,51508738,51508979,51509314,51509613,51509678,51510317,51510817,51511950,51512707,51512805,51512852,51514264"
+          },
+          {
+            "key": "visitor_data",
+            "value": "Cgs3NmJkd2VWU1N2USj4uaLCBjIKCgJTQRIEGgAgJzoMCAEgkoPMhYCfp6Ro"
+          }
+        ]
+      },
+      {
+        "service": "CSI",
+        "params": [
+          {
+            "key": "c",
+            "value": "ANDROID"
+          },
+          {
+            "key": "cver",
+            "value": "20.10.38"
+          },
+          {
+            "key": "yt_li",
+            "value": "0"
+          },
+          {
+            "key": "GetPlayer_rid",
+            "value": "0xbc62793ea45e2d9b"
+          }
+        ]
+      },
+      {
+        "service": "GUIDED_HELP",
+        "params": [
+          {
+            "key": "logged_in",
+            "value": "0"
+          }
+        ]
+      },
+      {
+        "service": "ECATCHER",
+        "params": [
+          {
+            "key": "client.version",
+            "value": "20.10"
+          },
+          {
+            "key": "client.name",
+            "value": "ANDROID"
+          }
+        ]
+      },
+      {
+        "service": "LISTNR",
+        "params": [
+          {
+            "key": "e",
+            "value": "51237842,51484222,51010008,51459425,51490157,51469820,51507237,51428417,51272458,51435249,51484746,51500337,51491436,51485417,51067700,51295372,51461795,51256074,24195012,51314496,51420458,51453239,51510365,51192010,24250570,24232551,51475592,51485249,51132535,51324733,51179435,51465955,51508738,51354083,24286257,51432294,51432560,51428624,51512707,24181174,51509314,51500785,51447191,51080128,51443707,51458927,51025415,51492251,51463930,51486232,51495859,51095478,51372971,51497133,51270362,24024517,24181216,39328442,51313109,51248777,51366620,51495706,51508979,51152050,51129105,51402689,51404810,51141472,51436950,24522874,51366423,51509613,51397332,51510817,51462839,51498591,24220751,51486471,51456628,51189308,51489047,24104894,24166867,51504828,24585737,51388661,51478931,51442501,51466900,51472877,51488577,51137671,51461268,51217334,51353393,24513381,51020570,51086511,51439874,51306453,51456413,51349914,51387900,51430311,39328647,51202133,51242448,51441100,51375205,51495585,51421832,24143331,51354114,51469823,51439763,51477845,51313767,24230811,51429106,51179748,51467525,39325413,51054999,51471138,51461791,51303432,51466698,24290153,51475960,51404808,51483631,24397985,51489197,51484412,51375719,24033252,51452420,51486018,24556101,51175149,51467076,51506681,24254870,51483888"
+          }
+        ]
+      }
+    ],
+    "maxAgeSeconds": 0,
+    "rolloutToken": "CNrZvdmasunZkgEQ3K6o6d_njQMY3a6o6d_njQM%3D"
+  },
+  "playabilityStatus": {
+    "status": "LOGIN_REQUIRED",
+    "reason": "Sign in to confirm you’re not a bot",
+    "errorScreen": {
+      "playerErrorMessageRenderer": {
+        "subreason": {
+          "runs": [
+            {
+              "text": "This helps protect our community. "
+            },
+            {
+              "text": "Learn more",
+              "navigationEndpoint": {
+                "clickTrackingParams": "CAAQu2kiEwiZrKjp3-eNAxXimsIBHTHfKdc=",
+                "urlEndpoint": {
+                  "url": "https://support.google.com/youtube/answer/3037019#zippy=%2Ccheck-that-youre-signed-into-youtube"
+                }
+              }
+            }
+          ]
+        },
+        "reason": {
+          "runs": [
+            {
+              "text": "Sign in to confirm you’re not a bot"
+            }
+          ]
+        },
+        "proceedButton": {
+          "buttonRenderer": {
+            "style": "STYLE_PRIMARY",
+            "size": "SIZE_DEFAULT",
+            "isDisabled": false,
+            "text": {
+              "simpleText": "Sign in"
+            },
+            "navigationEndpoint": {
+              "clickTrackingParams": "CAIQptEGIhMImayo6d_njQMV4prCAR0x3ynX",
+              "signInEndpoint": {
+                "nextEndpoint": {
+                  "clickTrackingParams": "CAIQptEGIhMImayo6d_njQMV4prCAR0x3ynX",
+                  "urlEndpoint": {
+                    "url": ""
+                  }
+                }
+              }
+            },
+            "trackingParams": "CAIQptEGIhMImayo6d_njQMV4prCAR0x3ynX"
+          }
+        },
+        "thumbnail": {
+          "thumbnails": [
+            {
+              "url": "//s.ytimg.com/yts/img/meh7-vflGevej7.png",
+              "width": 140,
+              "height": 100
+            }
+          ]
+        },
+        "icon": {
+          "iconType": "ERROR_OUTLINE"
+        }
+      }
+    },
+    "skip": {
+      "playabilityErrorSkipConfig": {
+        "skipOnPlayabilityError": false
+      }
+    },
+    "contextParams": "Q0FFU0FnZ0M="
+  },
+  "trackingParams": "CAAQu2kiEwiZrKjp3-eNAxXimsIBHTHfKdc=",
+  "playerSettingsMenuData": {
+    "loggingDirectives": {
+      "trackingParams": "CAEQtc4GIhMImayo6d_njQMV4prCAR0x3ynX",
+      "visibility": {
+        "types": "12"
+      }
+    }
+  },
+  "adBreakHeartbeatParams": "Q0FBJTNE",
+  "frameworkUpdates": {
+    "entityBatchUpdate": {
+      "mutations": [
+        {
+          "entityKey": "Eihjb21wb3NpdGUtbGl2ZS1zdHJlYW0tb2ZmbGluZS1lbnRpdHkta2V5IIUEKAE%3D",
+          "type": "ENTITY_MUTATION_TYPE_DELETE"
+        },
+        {
+          "entityKey": "Eg0KC3d1dnd6SkY0eTdvIPYBKAE%3D",
+          "type": "ENTITY_MUTATION_TYPE_REPLACE",
+          "payload": {
+            "offlineabilityEntity": {
+              "key": "Eg0KC3d1dnd6SkY0eTdvIPYBKAE%3D",
+              "addToOfflineButtonState": "ADD_TO_OFFLINE_BUTTON_STATE_UNKNOWN"
+            }
+          }
+        }
+      ],
+      "timestamp": {
+        "seconds": "1749589240",
+        "nanos": 287157676
+      }
+    }
+  }
+}

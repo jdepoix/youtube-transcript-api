@@ -1,8 +1,6 @@
 import warnings
 from pathlib import Path
-from typing import Optional, Iterable, Union
-
-from http.cookiejar import MozillaCookieJar, LoadError
+from typing import Optional, Iterable
 
 from requests import Session
 
@@ -10,24 +8,10 @@ from .proxies import ProxyConfig, GenericProxyConfig
 
 from ._transcripts import TranscriptListFetcher, FetchedTranscript, TranscriptList
 
-from ._errors import CookiePathInvalid, CookieInvalid
-
-
-def _load_cookie_jar(cookies: Union[Path, str]) -> MozillaCookieJar:
-    try:
-        cookie_jar = MozillaCookieJar()
-        cookie_jar.load(str(cookies))
-        if not cookie_jar:
-            raise CookieInvalid(cookies)
-        return cookie_jar
-    except (FileNotFoundError, LoadError):
-        raise CookiePathInvalid(cookies)
-
 
 class YouTubeTranscriptApi:
     def __init__(
         self,
-        cookie_path: Optional[Union[Path, str]] = None,
         proxy_config: Optional[ProxyConfig] = None,
         http_client: Optional[Session] = None,
     ):
@@ -36,7 +20,6 @@ class YouTubeTranscriptApi:
         object, it is not thread-safe. Make sure to initialize an instance of
         `YouTubeTranscriptApi` per thread, if used in a multi-threading scenario!
 
-        :param cookie_path: Path to a text file containing YouTube authorization cookies
         :param proxy_config: an optional ProxyConfig object, defining proxies used for
             all network requests. This can be used to work around your IP being blocked
             by YouTube, as described in the "Working around IP bans" section of the
@@ -48,8 +31,10 @@ class YouTubeTranscriptApi:
         """
         http_client = Session() if http_client is None else http_client
         http_client.headers.update({"Accept-Language": "en-US"})
-        if cookie_path is not None:
-            http_client.cookies = _load_cookie_jar(cookie_path)
+        # Cookie auth has been temporarily disabled, as it is not working properly with
+        # YouTube's most recent changes.
+        # if cookie_path is not None:
+        #     http_client.cookies = _load_cookie_jar(cookie_path)
         if proxy_config is not None:
             http_client.proxies = proxy_config.to_requests_dict()
             if proxy_config.prevent_keeping_connections_alive:
@@ -135,7 +120,7 @@ class YouTubeTranscriptApi:
         return self._fetcher.fetch(video_id)
 
     @classmethod
-    def list_transcripts(cls, video_id, proxies=None, cookies=None):
+    def list_transcripts(cls, video_id, proxies=None):
         """
         DEPRECATED: use the `list` method instead!
 
@@ -180,8 +165,6 @@ class YouTubeTranscriptApi:
         :type video_id: str
         :param proxies: a dictionary mapping of http and https proxies to be used for the network requests
         :type proxies: {'http': str, 'https': str} - http://docs.python-requests.org/en/master/user/advanced/#proxies
-        :param cookies: a string of the path to a text file containing youtube authorization cookies
-        :type cookies: str
         :return: the list of available transcripts
         :rtype TranscriptList:
         """
@@ -202,7 +185,6 @@ class YouTubeTranscriptApi:
 
         ytt_api = YouTubeTranscriptApi(
             proxy_config=proxy_config,
-            cookie_path=Path(cookies) if cookies else None,
         )
         return ytt_api.list(video_id)
 
@@ -213,7 +195,6 @@ class YouTubeTranscriptApi:
         languages=("en",),
         continue_after_error=False,
         proxies=None,
-        cookies=None,
         preserve_formatting=False,
     ):
         """
@@ -232,8 +213,6 @@ class YouTubeTranscriptApi:
         :type continue_after_error: bool
         :param proxies: a dictionary mapping of http and https proxies to be used for the network requests
         :type proxies: {'http': str, 'https': str} - http://docs.python-requests.org/en/master/user/advanced/#proxies
-        :param cookies: a string of the path to a text file containing youtube authorization cookies
-        :type cookies: str
         :param preserve_formatting: whether to keep select HTML text formatting
         :type preserve_formatting: bool
         :return: a tuple containing a dictionary mapping video ids onto their corresponding transcripts, and a list of
@@ -254,7 +233,7 @@ class YouTubeTranscriptApi:
         for video_id in video_ids:
             try:
                 data[video_id] = cls.get_transcript(
-                    video_id, languages, proxies, cookies, preserve_formatting
+                    video_id, languages, proxies, preserve_formatting
                 )
             except Exception as exception:
                 if not continue_after_error:
@@ -270,7 +249,6 @@ class YouTubeTranscriptApi:
         video_id,
         languages=("en",),
         proxies=None,
-        cookies=None,
         preserve_formatting=False,
     ):
         """
@@ -288,8 +266,6 @@ class YouTubeTranscriptApi:
         :type languages: list[str]
         :param proxies: a dictionary mapping of http and https proxies to be used for the network requests
         :type proxies: {'http': str, 'https': str} - http://docs.python-requests.org/en/master/user/advanced/#proxies
-        :param cookies: a string of the path to a text file containing youtube authorization cookies
-        :type cookies: str
         :param preserve_formatting: whether to keep select HTML text formatting
         :type preserve_formatting: bool
         :return: a list of dictionaries containing the 'text', 'start' and 'duration' keys
@@ -303,7 +279,7 @@ class YouTubeTranscriptApi:
 
         assert isinstance(video_id, str), "`video_id` must be a string"
         return (
-            cls.list_transcripts(video_id, proxies, cookies)
+            cls.list_transcripts(video_id, proxies)
             .find_transcript(languages)
             .fetch(preserve_formatting=preserve_formatting)
             .to_raw_data()

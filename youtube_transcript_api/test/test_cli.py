@@ -1,3 +1,4 @@
+import pytest
 from unittest import TestCase
 from unittest.mock import MagicMock
 
@@ -326,6 +327,10 @@ class TestYouTubeTranscriptCli(TestCase):
         self.assertEqual(proxy_config.http_url, "http://user:pass@domain:port")
         self.assertEqual(proxy_config.https_url, "https://user:pass@domain:port")
 
+    @pytest.mark.skip(
+        reason="This test is temporarily disabled because cookie auth is currently not "
+               "working due to YouTube changes."
+    )
     def test_run__cookies(self):
         YouTubeTranscriptCli(
             ("v1 v2 --languages de en " "--cookies blahblah.txt").split()

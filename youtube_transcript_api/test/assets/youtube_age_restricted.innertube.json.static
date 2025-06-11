@@ -1,0 +1,288 @@
+{
+  "responseContext": {
+    "visitorData": "CgtsM0ROUWd2dG5HayjHu6bCBjIKCgJERRIEEgAgYjoMCAEg1-KZt_C456RoWPrW4uqYgNyukgE%3D",
+    "serviceTrackingParams": [
+      {
+        "service": "GFEEDBACK",
+        "params": [
+          {
+            "key": "is_viewed_live",
+            "value": "False"
+          },
+          {
+            "key": "ipcc",
+            "value": "0"
+          },
+          {
+            "key": "is_alc_surface",
+            "value": "false"
+          },
+          {
+            "key": "logged_in",
+            "value": "0"
+          },
+          {
+            "key": "e",
+            "value": "9405982,23888717,24004644,24077241,24078649,24104894,24108447,24132305,24143331,24166867,24181174,24230811,24232551,24241378,24290153,24397985,24522874,24556101,24585737,39325413,39328442,39328646,51010008,51020570,51025415,51028056,51054999,51067700,51068313,51080128,51086511,51095478,51115184,51129105,51132535,51137671,51141472,51152050,51175149,51179435,51179748,51183910,51217334,51220160,51227037,51237842,51242448,51248777,51256074,51272458,51295372,51303432,51306453,51313109,51313767,51314496,51324733,51326139,51349914,51350816,51353393,51354083,51354114,51356621,51366123,51366423,51366620,51372971,51374199,51375205,51375719,51386540,51388660,51397095,51397332,51402689,51403603,51404808,51404810,51412775,51420457,51421832,51428417,51428624,51429106,51430311,51432294,51432529,51432560,51433499,51436953,51437206,51439763,51439874,51441100,51442501,51443707,51447191,51452420,51453239,51455371,51456413,51456628,51458927,51459425,51461268,51462839,51463930,51466900,51467076,51467524,51469820,51471138,51471685,51473771,51475246,51475592,51475961,51477846,51478931,51479906,51481239,51483631,51483888,51484221,51484412,51484746,51485249,51485417,51485662,51486018,51486232,51486471,51487681,51488801,51489047,51489568,51490158,51490842,51490994,51491436,51492252,51494026,51495585,51495706,51495859,51496968,51497133,51498591,51498917,51503024,51503027,51504828,51506682,51507237,51508738,51508979,51509214,51509314,51509614,51510189,51510638,51512708,51513113,51513245,51513543"
+          },
+          {
+            "key": "visitor_data",
+            "value": "CgtsM0ROUWd2dG5HayjHu6bCBjIKCgJERRIEEgAgYjoMCAEg1-KZt_C456Ro"
+          }
+        ]
+      },
+      {
+        "service": "CSI",
+        "params": [
+          {
+            "key": "c",
+            "value": "ANDROID"
+          },
+          {
+            "key": "cver",
+            "value": "20.10.38"
+          },
+          {
+            "key": "yt_li",
+            "value": "0"
+          },
+          {
+            "key": "GetPlayer_rid",
+            "value": "0x8e32eb06afe4ec8c"
+          }
+        ]
+      },
+      {
+        "service": "GUIDED_HELP",
+        "params": [
+          {
+            "key": "logged_in",
+            "value": "0"
+          }
+        ]
+      },
+      {
+        "service": "ECATCHER",
+        "params": [
+          {
+            "key": "client.version",
+            "value": "20.10"
+          },
+          {
+            "key": "client.name",
+            "value": "ANDROID"
+          }
+        ]
+      },
+      {
+        "service": "LISTNR",
+        "params": [
+          {
+            "key": "e",
+            "value": "51513113,51456413,51020570,51504828,51466900,51217334,24232551,24250570,51488801,51397332,51442501,51477846,51478931,51498591,51366423,51456628,51486471,24195012,51486018,51175149,51237842,51469820,51483888,51010008,51459425,24522874,51484412,51498917,51375719,51483631,51404808,51452420,51467076,24181216,51179748,51054999,51354114,51461791,51489568,51490158,51469823,51471138,51473771,24024517,51429106,51303432,51388660,39328646,51313767,51494026,51354083,51508738,51432560,39325413,24181174,51503027,51432294,51436953,51132535,51192010,51453239,51484221,51485249,51509214,51295372,24143331,51324733,51179435,51485417,51461795,51475592,51512708,51314496,51067700,51256074,51491436,51510638,51507237,51492252,51028056,51467524,51428417,51272458,24585737,51484746,51141472,51129105,51404810,24104894,51402689,51495706,51462839,24556101,24166867,24220751,51420457,51313109,51508979,24254870,51248777,51366620,51152050,24290153,51095478,51486232,51495859,51463930,24397985,51372971,51497133,51270362,51025415,24033252,51509614,51509314,51387900,39328442,51080128,51428624,51443707,51447191,51458927,51506682,51439763,51475961,51202133,51242448,24230811,51349914,51421832,51439874,51375205,51495585,51353393,51137671,51441100,51461268,51489047,51189308,51430311,51306453,24286257,51086511"
+          }
+        ]
+      }
+    ],
+    "maxAgeSeconds": 0,
+    "rolloutToken": "CNeAy8fdkLO_IBDgx4Te1OmNAxjgx4Te1OmNAw%3D%3D"
+  },
+  "playabilityStatus": {
+    "status": "LOGIN_REQUIRED",
+    "reason": "This video may be inappropriate for some users.",
+    "errorScreen": {
+      "confirmDialogRenderer": {
+        "title": {
+          "runs": [
+            {
+              "text": "You must sign in to view this video"
+            }
+          ]
+        },
+        "trackingParams": "CAMQxjgiEwj-xITe1OmNAxXK60IFHf00F5c=",
+        "dialogMessages": [
+          {
+            "runs": [
+              {
+                "text": "This video may be inappropriate for some users."
+              }
+            ]
+          }
+        ],
+        "confirmButton": {
+          "buttonRenderer": {
+            "style": "STYLE_BLUE_TEXT",
+            "size": "SIZE_DEFAULT",
+            "isDisabled": false,
+            "text": {
+              "runs": [
+                {
+                  "text": "Sign in"
+                }
+              ]
+            },
+            "trackingParams": "CAUQ8FsiEwj-xITe1OmNAxXK60IFHf00F5c="
+          }
+        },
+        "cancelButton": {
+          "buttonRenderer": {
+            "style": "STYLE_BLUE_TEXT",
+            "size": "SIZE_DEFAULT",
+            "isDisabled": false,
+            "text": {
+              "runs": [
+                {
+                  "text": "Go back"
+                }
+              ]
+            },
+            "trackingParams": "CAQQ8FsiEwj-xITe1OmNAxXK60IFHf00F5c="
+          }
+        }
+      }
+    },
+    "desktopLegacyAgeGateReason": 1,
+    "reasonTitle": "You must sign in to view this video",
+    "contextParams": "Q0FFU0FnZ0I="
+  },
+  "videoDetails": {
+    "videoId": "Njp5uhTorCo",
+    "title": "Laura Branigan - Self Control (Moreno J Remix) Age-restricted",
+    "lengthSeconds": "452",
+    "keywords": [
+      "Moreno J Remix",
+      "Moreno J",
+      "Remix",
+      "Laura Branigan",
+      "Self Control",
+      "80s",
+      "80s Music",
+      "EDM",
+      "Pop",
+      "Poprock",
+      "Italo Disco"
+    ],
+    "channelId": "UCJqyF-E8VW75fQz61ftchzg",
+    "isOwnerViewing": false,
+    "shortDescription": "Remixer: Moreno J\nVocal edit: Moreno J\nVocals: Laura Branigan\nSound mixing: Moreno J\nMastering: Moreno J\nVideo Edit: Moreno J\nVideo Scenes taken from movies:\nBe Cool (2005)\nBurlesque (2010) \nCinderella (2015) \nCoyote Ugly (2000)\nLove Actually (2003) \nShowgirls (1995)\nTropic Thunder (2008)\n\nInfo about the original artist (group members)\nhttps://en.wikipedia.org/wiki/Laura_Branigan\n\nThank You for Watching!\nRemember to Like, Share, and Subscribe to keep up to date with new remixes! \nLove, Moreno Remixes.\n\nFree download wav file.\nTo download the file go to the top right corner next to the login button of googledrive window after you clicket on the link. \nGoogledrive download link:\nhttps://drive.google.com/file/d/1pvcpcFjlGEOmuPR_NXSCNWRW8OQS6_1C/view?usp=sharing",
+    "isCrawlable": true,
+    "thumbnail": {
+      "thumbnails": [
+        {
+          "url": "https://i.ytimg.com/vi/Njp5uhTorCo/default.jpg?sqp=-oaymwEkCHgQWvKriqkDGvABAfgB_gmAAtAFigIMCAAQARhgIGAoYDAP&rs=AOn4CLBYdFfYcFUurCUG8z6f1N3UI3SWQQ",
+          "width": 120,
+          "height": 90
+        },
+        {
+          "url": "https://i.ytimg.com/vi/Njp5uhTorCo/mqdefault.jpg?sqp=-oaymwEmCMACELQB8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGGAgYChgMA8=&rs=AOn4CLCS9KIwuVd7VVqbYzgfychekGW95Q",
+          "width": 320,
+          "height": 180
+        },
+        {
+          "url": "https://i.ytimg.com/vi/Njp5uhTorCo/hqdefault.jpg?sqp=-oaymwEmCOADEOgC8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGGAgYChgMA8=&rs=AOn4CLCV_dNcDpHUYFXSmg6vHMevIGyadA",
+          "width": 480,
+          "height": 360
+        },
+        {
+          "url": "https://i.ytimg.com/vi/Njp5uhTorCo/sddefault.jpg?sqp=-oaymwEmCIAFEOAD8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGGAgYChgMA8=&rs=AOn4CLB7IPqDokitsf0O1xRE9SZcN5qUVw",
+          "width": 640,
+          "height": 480
+        }
+      ]
+    },
+    "allowRatings": true,
+    "viewCount": "179579",
+    "author": "Moreno J Remixes",
+    "isPrivate": false,
+    "isUnpluggedCorpus": false,
+    "isLiveContent": false
+  },
+  "trackingParams": "CAAQu2kiEwj-xITe1OmNAxXK60IFHf00F5c=",
+  "onResponseReceivedActions": [
+    {
+      "clickTrackingParams": "CAAQu2kiEwj-xITe1OmNAxXK60IFHf00F5c=",
+      "startEomFlowCommand": {
+        "eomFlowRenderer": {
+          "webViewRenderer": {
+            "url": {
+              "privateDoNotAccessOrElseTrustedResourceUrlWrappedValue": "https://consent.youtube.com/yt-app-main?gl=DE&m=1&pc=yt&cm=2&hl=en&src=1&app=1&vd=CgtsM0ROUWd2dG5HayjHu6bCBjIKCgJERRIEEgAgYjoMCAEg1-KZt_C456Ro&utm_source=YT_ANDROID&dt=0&av=20.10.38"
+            },
+            "onFailureCommand": {
+              "clickTrackingParams": "CAIQmawJIhMI_sSE3tTpjQMVyutCBR39NBeX",
+              "updateEomStateCommand": {
+                "mobileEomFlowState": {
+                  "updatedVisitorData": "CgtsM0ROUWd2dG5HayjHu6bCBjIKCgJERRIEEgAgYjoZCAEaCwjHu6bCBhDV4cZ5INfimbfwuOekaA%3D%3D",
+                  "isError": true
+                }
+              }
+            },
+            "trackingParams": "CAIQmawJIhMI_sSE3tTpjQMVyutCBR39NBeX",
+            "webViewEntityKey": "Eg5Fb21GbG93V2VidmlldyD4AigB",
+            "webToNativeMessageMap": [
+              {
+                "key": "update_eom_state_command",
+                "value": {
+                  "clickTrackingParams": "CAIQmawJIhMI_sSE3tTpjQMVyutCBR39NBeX",
+                  "updateEomStateCommand": {
+                    "hack": true
+                  }
+                }
+              },
+              {
+                "key": "sign_in_endpoint",
+                "value": {
+                  "clickTrackingParams": "CAIQmawJIhMI_sSE3tTpjQMVyutCBR39NBeX",
+                  "signInEndpoint": {
+                    "hack": true
+                  }
+                }
+              }
+            ],
+            "webViewUseCase": "WEB_VIEW_USE_CASE_EOM_CONSENT",
+            "openInBrowserUrls": [
+              "https://policies.google.com",
+              "https://support.google.com"
+            ],
+            "firstPartyHostNameAllowList": [
+              "consent.youtube.com"
+            ]
+          }
+        },
+        "consentMoment": "CONSENT_MOMENT_INITIAL"
+      }
+    }
+  ],
+  "playerSettingsMenuData": {
+    "loggingDirectives": {
+      "trackingParams": "CAEQtc4GIhMI_sSE3tTpjQMVyutCBR39NBeX",
+      "visibility": {
+        "types": "12"
+      }
+    }
+  },
+  "adBreakHeartbeatParams": "Q0FBJTNE",
+  "frameworkUpdates": {
+    "entityBatchUpdate": {
+      "mutations": [
+        {
+          "entityKey": "Eihjb21wb3NpdGUtbGl2ZS1zdHJlYW0tb2ZmbGluZS1lbnRpdHkta2V5IIUEKAE%3D",
+          "type": "ENTITY_MUTATION_TYPE_DELETE"
+        },
+        {
+          "entityKey": "Eg0KC05qcDV1aFRvckNvIPYBKAE%3D",
+          "type": "ENTITY_MUTATION_TYPE_REPLACE",
+          "payload": {
+            "offlineabilityEntity": {
+              "key": "Eg0KC05qcDV1aFRvckNvIPYBKAE%3D",
+              "addToOfflineButtonState": "ADD_TO_OFFLINE_BUTTON_STATE_UNKNOWN"
+            }
+          }
+        }
+      ],
+      "timestamp": {
+        "seconds": "1749654983",
+        "nanos": 254943213
+      }
+    }
+  }
+}
