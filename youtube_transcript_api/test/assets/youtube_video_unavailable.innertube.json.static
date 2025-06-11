@@ -1,0 +1,197 @@
+{
+  "responseContext": {
+    "visitorData": "CgtkVnYwR1MzN3pQTSjGu6bCBjIKCgJERRIEEgAgLjoMCAEgzKLJvOe456RoWJff7Nfpi977SA%3D%3D",
+    "serviceTrackingParams": [
+      {
+        "service": "GFEEDBACK",
+        "params": [
+          {
+            "key": "is_viewed_live",
+            "value": "False"
+          },
+          {
+            "key": "logged_in",
+            "value": "0"
+          },
+          {
+            "key": "e",
+            "value": "9406121,23888716,24004644,24077241,24078649,24104894,24132305,24143331,24166867,24181174,24230811,24232551,24241378,24290153,24397985,24484132,24522874,24556101,24585737,39325413,39328442,39328646,51010008,51020570,51025415,51054999,51067700,51068313,51080128,51086511,51095478,51115184,51129105,51132535,51137671,51141472,51152050,51175149,51179435,51179748,51183208,51183910,51217334,51224491,51227037,51237842,51242448,51248777,51256074,51272458,51295372,51303432,51306453,51313109,51313767,51314496,51324733,51326139,51349914,51353393,51354083,51354114,51356621,51366423,51366620,51372971,51375205,51375719,51386541,51388661,51397332,51398647,51402689,51404808,51404810,51420457,51421832,51428417,51428624,51429106,51430311,51432294,51432529,51432560,51436956,51437205,51439763,51439874,51441100,51442501,51443707,51447191,51452420,51453239,51456413,51456629,51458927,51459424,51460559,51461268,51462839,51463930,51466698,51466900,51467076,51467525,51469820,51471138,51471685,51475592,51475960,51478931,51479781,51483631,51483888,51484221,51484412,51484746,51485249,51485417,51486018,51486471,51487681,51489047,51490158,51491436,51492252,51495585,51495706,51495859,51497133,51498591,51503024,51503027,51504828,51506681,51506715,51507237,51508739,51508979,51509214,51509314,51509614,51512708"
+          },
+          {
+            "key": "visitor_data",
+            "value": "CgtkVnYwR1MzN3pQTSjGu6bCBjIKCgJERRIEEgAgLjoMCAEgzKLJvOe456Ro"
+          }
+        ]
+      },
+      {
+        "service": "CSI",
+        "params": [
+          {
+            "key": "c",
+            "value": "ANDROID"
+          },
+          {
+            "key": "cver",
+            "value": "20.10.38"
+          },
+          {
+            "key": "yt_li",
+            "value": "0"
+          },
+          {
+            "key": "GetPlayer_rid",
+            "value": "0xfa514d3157e18a41"
+          }
+        ]
+      },
+      {
+        "service": "GUIDED_HELP",
+        "params": [
+          {
+            "key": "logged_in",
+            "value": "0"
+          }
+        ]
+      },
+      {
+        "service": "ECATCHER",
+        "params": [
+          {
+            "key": "client.version",
+            "value": "20.10"
+          },
+          {
+            "key": "client.name",
+            "value": "ANDROID"
+          }
+        ]
+      },
+      {
+        "service": "LISTNR",
+        "params": [
+          {
+            "key": "e",
+            "value": "51498591,51183208,24181216,51366423,51248777,51397332,51478931,24522874,51442501,51175149,51388661,24024517,51508739,51466900,51479781,51486471,51461268,51495585,51421832,51375205,24195012,51439763,51504828,51441100,51489047,51189308,51020570,51086511,51456413,51306453,51353393,51137671,51313767,51430311,51354114,51217334,51469823,51471138,51490158,51303432,51054999,51461791,51467525,51429106,24104894,51466698,39328646,51237842,51506715,24181174,51475960,51469820,51483888,51010008,51486018,51506681,39325413,51179748,51483631,51404808,51375719,51484412,51452420,24143331,51467076,24290153,51492252,51507237,51314496,51491436,51436956,51512708,51256074,51461795,51067700,51485417,51495706,51402689,24033252,51295372,51428417,24397985,51272458,51484746,51453239,51192010,51459424,51432294,51484221,51503027,24585737,51432560,51354083,24556101,24166867,51509214,51475592,24254870,51485249,51132535,51324733,51509314,51179435,51428624,51447191,24220751,51270362,24250570,51372971,51509614,51456629,51497133,51202133,51242448,51349914,51387900,51439874,51080128,51443707,24232551,51025415,51458927,51462839,24230811,51129105,51141472,51404810,51095478,51463930,51495859,51152050,51508979,51420457,51313109,24286257,51366620,39328442"
+          }
+        ]
+      }
+    ],
+    "maxAgeSeconds": 0,
+    "rolloutToken": "CMimoJKC4PuILBDn0eTd1OmNAxjn0eTd1OmNAw%3D%3D"
+  },
+  "playabilityStatus": {
+    "status": "ERROR",
+    "reason": "This video is unavailable",
+    "errorScreen": {
+      "playerErrorMessageRenderer": {
+        "reason": {
+          "runs": [
+            {
+              "text": "This video is unavailable"
+            }
+          ]
+        },
+        "thumbnail": {
+          "thumbnails": [
+            {
+              "url": "//s.ytimg.com/yts/img/meh7-vflGevej7.png",
+              "width": 140,
+              "height": 100
+            }
+          ]
+        },
+        "icon": {
+          "iconType": "ERROR_OUTLINE"
+        }
+      }
+    },
+    "contextParams": "Q0FBU0FnZ0E="
+  },
+  "trackingParams": "CAAQu2kiEwi20OTd1OmNAxUY-UIFHVxGIYo=",
+  "onResponseReceivedActions": [
+    {
+      "clickTrackingParams": "CAAQu2kiEwi20OTd1OmNAxUY-UIFHVxGIYo=",
+      "startEomFlowCommand": {
+        "eomFlowRenderer": {
+          "webViewRenderer": {
+            "url": {
+              "privateDoNotAccessOrElseTrustedResourceUrlWrappedValue": "https://consent.youtube.com/yt-app-main?gl=DE&m=1&pc=yt&cm=2&hl=en&src=1&app=1&vd=CgtkVnYwR1MzN3pQTSjGu6bCBjIKCgJERRIEEgAgLjoMCAEgzKLJvOe456Ro&utm_source=YT_ANDROID&dt=0&av=20.10.38"
+            },
+            "onFailureCommand": {
+              "clickTrackingParams": "CAIQmawJIhMIttDk3dTpjQMVGPlCBR1cRiGK",
+              "updateEomStateCommand": {
+                "mobileEomFlowState": {
+                  "updatedVisitorData": "CgtkVnYwR1MzN3pQTSjGu6bCBjIKCgJERRIEEgAgLjoaCAEaDAjGu6bCBhDA5v3UAiDMosm857jnpGg%3D",
+                  "isError": true
+                }
+              }
+            },
+            "trackingParams": "CAIQmawJIhMIttDk3dTpjQMVGPlCBR1cRiGK",
+            "webViewEntityKey": "Eg5Fb21GbG93V2VidmlldyD4AigB",
+            "webToNativeMessageMap": [
+              {
+                "key": "sign_in_endpoint",
+                "value": {
+                  "clickTrackingParams": "CAIQmawJIhMIttDk3dTpjQMVGPlCBR1cRiGK",
+                  "signInEndpoint": {
+                    "hack": true
+                  }
+                }
+              },
+              {
+                "key": "update_eom_state_command",
+                "value": {
+                  "clickTrackingParams": "CAIQmawJIhMIttDk3dTpjQMVGPlCBR1cRiGK",
+                  "updateEomStateCommand": {
+                    "hack": true
+                  }
+                }
+              }
+            ],
+            "webViewUseCase": "WEB_VIEW_USE_CASE_EOM_CONSENT",
+            "openInBrowserUrls": [
+              "https://policies.google.com",
+              "https://support.google.com"
+            ],
+            "firstPartyHostNameAllowList": [
+              "consent.youtube.com"
+            ]
+          }
+        },
+        "consentMoment": "CONSENT_MOMENT_INITIAL"
+      }
+    }
+  ],
+  "playerSettingsMenuData": {
+    "loggingDirectives": {
+      "trackingParams": "CAEQtc4GIhMIttDk3dTpjQMVGPlCBR1cRiGK",
+      "visibility": {
+        "types": "12"
+      }
+    }
+  },
+  "frameworkUpdates": {
+    "entityBatchUpdate": {
+      "mutations": [
+        {
+          "entityKey": "Eihjb21wb3NpdGUtbGl2ZS1zdHJlYW0tb2ZmbGluZS1lbnRpdHkta2V5IIUEKAE%3D",
+          "type": "ENTITY_MUTATION_TYPE_DELETE"
+        },
+        {
+          "entityKey": "EgUKA2FiYyD2ASgB",
+          "type": "ENTITY_MUTATION_TYPE_REPLACE",
+          "payload": {
+            "offlineabilityEntity": {
+              "key": "EgUKA2FiYyD2ASgB",
+              "addToOfflineButtonState": "ADD_TO_OFFLINE_BUTTON_STATE_UNKNOWN"
+            }
+          }
+        }
+      ],
+      "timestamp": {
+        "seconds": "1749654982",
+        "nanos": 715113710
+      }
+    }
+  }
+}

@@ -1,4 +1,3 @@
-import json
 from dataclasses import dataclass, asdict
 from enum import Enum
 from itertools import chain
@@ -13,6 +12,7 @@ import re
 from requests import HTTPError, Session, Response
 
 from .proxies import ProxyConfig
+from ._settings import WATCH_URL, INNERTUBE_CONTEXT, INNERTUBE_API_URL
 from ._errors import (
     VideoUnavailable,
     YouTubeRequestFailed,
@@ -27,8 +27,8 @@ from ._errors import (
     AgeRestricted,
     VideoUnplayable,
     YouTubeDataUnparsable,
+    PoTokenRequired,
 )
-from ._settings import WATCH_URL
 
 
 @dataclass
@@ -86,8 +86,8 @@ class _PlayabilityStatus(str, Enum):
 
 class _PlayabilityFailedReason(str, Enum):
     BOT_DETECTED = "Sign in to confirm you’re not a bot"
-    AGE_RESTRICTED = "Sign in to confirm your age"
-    VIDEO_UNAVAILABLE = "Video unavailable"
+    AGE_RESTRICTED = "This video may be inappropriate for some users."
+    VIDEO_UNAVAILABLE = "This video is unavailable"
 
 
 def _raise_http_errors(response: Response, video_id: str) -> Response:
@@ -130,6 +130,8 @@ class Transcript:
         Loads the actual transcript data.
         :param preserve_formatting: whether to keep select HTML text formatting
         """
+        if "&exp=xpe" in self._url:
+            raise PoTokenRequired(self.video_id)
         response = self._http_client.get(self._url)
         snippets = _TranscriptParser(preserve_formatting=preserve_formatting).parse(
             _raise_http_errors(response, self.video_id).text,
@@ -176,7 +178,7 @@ class Transcript:
 class TranscriptList:
     """
     This object represents a list of transcripts. It can be iterated over to list all transcripts which are available
-    for a given YouTube video. Also it provides functionality to search for a transcript in a given language.
+    for a given YouTube video. Also, it provides functionality to search for a transcript in a given language.
     """
 
     def __init__(
@@ -213,7 +215,7 @@ class TranscriptList:
         """
         translation_languages = [
             _TranslationLanguage(
-                language=translation_language["languageName"]["simpleText"],
+                language=translation_language["languageName"]["runs"][0]["text"],
                 language_code=translation_language["languageCode"],
             )
             for translation_language in captions_json.get("translationLanguages", [])
@@ -231,8 +233,8 @@ class TranscriptList:
             transcript_dict[caption["languageCode"]] = Transcript(
                 http_client,
                 video_id,
-                caption["baseUrl"],
-                caption["name"]["simpleText"],
+                caption["baseUrl"].replace("&fmt=srv3", ""),
+                caption["name"]["runs"][0]["text"],
                 caption["languageCode"],
                 caption.get("kind", "") == "asr",
                 translation_languages if caption.get("isTranslatable", False) else [],
@@ -354,9 +356,10 @@ class TranscriptListFetcher:
 
     def _fetch_captions_json(self, video_id: str, try_number: int = 0) -> Dict:
         try:
-            return self._extract_captions_json(
-                self._fetch_video_html(video_id), video_id
-            )
+            html = self._fetch_video_html(video_id)
+            api_key = self._extract_innertube_api_key(html, video_id)
+            innertube_data = self._fetch_innertube_data(video_id, api_key)
+            return self._extract_captions_json(innertube_data, video_id)
         except RequestBlocked as exception:
             retries = (
                 0
@@ -367,19 +370,19 @@ class TranscriptListFetcher:
                 return self._fetch_captions_json(video_id, try_number=try_number + 1)
             raise exception.with_proxy_config(self._proxy_config)
 
-    def _extract_captions_json(self, html: str, video_id: str) -> Dict:
-        var_parser = _JsVarParser("ytInitialPlayerResponse")
-        try:
-            video_data = var_parser.parse(html, video_id)
-        except YouTubeDataUnparsable as e:
-            if 'class="g-recaptcha"' in html:
-                raise IpBlocked(video_id)
-            # This should never happen!
-            raise e  # pragma: no cover
+    def _extract_innertube_api_key(self, html: str, video_id: str) -> str:
+        pattern = r'"INNERTUBE_API_KEY":\s*"([a-zA-Z0-9_-]+)"'
+        match = re.search(pattern, html)
+        if match and len(match.groups()) == 1:
+            return match.group(1)
+        if 'class="g-recaptcha"' in html:
+            raise IpBlocked(video_id)
+        raise YouTubeDataUnparsable(video_id)  # pragma: no cover
 
-        self._assert_playability(video_data.get("playabilityStatus"), video_id)
+    def _extract_captions_json(self, innertube_data: Dict, video_id: str) -> Dict:
+        self._assert_playability(innertube_data.get("playabilityStatus"), video_id)
 
-        captions_json = video_data.get("captions", {}).get(
+        captions_json = innertube_data.get("captions", {}).get(
             "playerCaptionsTracklistRenderer"
         )
         if captions_json is None or "captionTracks" not in captions_json:
@@ -437,6 +440,17 @@ class TranscriptListFetcher:
         response = self._http_client.get(WATCH_URL.format(video_id=video_id))
         return unescape(_raise_http_errors(response, video_id).text)
 
+    def _fetch_innertube_data(self, video_id: str, api_key: str) -> Dict:
+        response = self._http_client.post(
+            INNERTUBE_API_URL.format(api_key=api_key),
+            json={
+                "context": INNERTUBE_CONTEXT,
+                "videoId": video_id,
+            },
+        )
+        data = _raise_http_errors(response, video_id).json()
+        return data
+
 
 class _TranscriptParser:
     _FORMATTING_TAGS = [
@@ -474,47 +488,3 @@ class _TranscriptParser:
             for xml_element in ElementTree.fromstring(raw_data)
             if xml_element.text is not None
         ]
-
-
-class _JsVarParser:
-    def __init__(self, var_name: str):
-        self._var_name = var_name
-
-    def parse(self, raw_html: str, video_id: str) -> Dict:
-        char_iterator = self._create_var_char_iterator(raw_html, video_id)
-        var_string = self._find_var_substring(char_iterator, video_id)
-        return json.loads(var_string)
-
-    def _create_var_char_iterator(self, raw_html: str, video_id: str) -> Iterator[str]:
-        splitted_html = raw_html.split(f"var {self._var_name}")
-        if len(splitted_html) <= 1:
-            raise YouTubeDataUnparsable(video_id)
-        char_iterator = iter(splitted_html[1])
-        while next(char_iterator) != "{":
-            pass
-        return char_iterator
-
-    def _find_var_substring(self, char_iterator: Iterator[str], video_id: str) -> str:
-        escaped = False
-        in_quotes = False
-        depth = 1
-        chars = ["{"]
-
-        for char in char_iterator:
-            chars.append(char)
-            if escaped:
-                escaped = False
-            elif char == "\\":
-                escaped = True
-            elif char == '"':
-                in_quotes = not in_quotes
-            elif not in_quotes:
-                if char == "{":
-                    depth += 1
-                elif char == "}":
-                    depth -= 1
-            if depth == 0:
-                return "".join(chars)
-
-        # This should never happen!
-        raise YouTubeDataUnparsable(video_id)  # pragma: no cover
