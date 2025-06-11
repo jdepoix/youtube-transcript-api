@@ -375,17 +375,8 @@ ytt_api_2.fetch(video_id)
 ## Cookie Authentication
 
 Some videos are age restricted, so this module won't be able to access those videos without some sort of
-authentication. To do this, you will need to have access to the desired video in a browser. Then, you will need to
-download that pages cookies into a text file. You can use the Chrome extension
-[Cookie-Editor](https://chromewebstore.google.com/detail/cookie-editor/hlkenndednhfkekhgcdicdfddnkalmdm?hl=en) and
-select "Netscape" during export, or the Firefox extension [cookies.txt](https://addons.mozilla.org/en-US/firefox/addon/cookies-txt/).
-
-Once you have that, you can use the following to access age-restricted videos' captions like so.
-
-```python  
-ytt_api = YouTubeTranscriptApi(cookie_path='/path/to/your/cookies.txt')
-ytt_api.fetch(video_id)
-```
+authentication. Unfortunately, some recent changes to the YouTube API have broken the current implementation of cookie 
+based authentication, so this feature is currently not available.
 
 ## Using Formatters
 Formatters are meant to be an additional layer of processing of the transcript you pass it. The goal is to convert a
