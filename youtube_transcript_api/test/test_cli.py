@@ -329,7 +329,7 @@ class TestYouTubeTranscriptCli(TestCase):
 
     @pytest.mark.skip(
         reason="This test is temporarily disabled because cookie auth is currently not "
-               "working due to YouTube changes."
+        "working due to YouTube changes."
     )
     def test_run__cookies(self):
         YouTubeTranscriptCli(

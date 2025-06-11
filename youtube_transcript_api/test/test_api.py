@@ -26,6 +26,7 @@ from youtube_transcript_api import (
     AgeRestricted,
     RequestBlocked,
     VideoUnplayable,
+    PoTokenRequired,
 )
 from youtube_transcript_api.proxies import GenericProxyConfig, WebshareProxyConfig
 
@@ -157,7 +158,9 @@ class TestYouTubeTranscriptApi(TestCase):
         )
 
         with self.assertRaises(InvalidVideoId):
-            YouTubeTranscriptApi().list("https://www.youtube.com/youtubei/v1/player?v=GJLlxj_dtq8")
+            YouTubeTranscriptApi().list(
+                "https://www.youtube.com/youtubei/v1/player?v=GJLlxj_dtq8"
+            )
 
     def test_translate_transcript(self):
         transcript = YouTubeTranscriptApi().list("GJLlxj_dtq8").find_transcript(["en"])
@@ -257,7 +260,6 @@ class TestYouTubeTranscriptApi(TestCase):
 
         self.assertIn("Request to YouTube failed: ", str(cm.exception))
 
-
     def test_get_transcript__exception_if_youtube_request_limit_reached(
         self,
     ):
@@ -289,6 +291,16 @@ class TestYouTubeTranscriptApi(TestCase):
 
         with self.assertRaises(IpBlocked):
             YouTubeTranscriptApi().fetch("abc")
+
+    def test_fetch__exception_if_po_token_required(self):
+        httpretty.register_uri(
+            httpretty.POST,
+            "https://www.youtube.com/youtubei/v1/player",
+            body=load_asset("youtube_po_token_required.innertube.json.static"),
+        )
+
+        with self.assertRaises(PoTokenRequired):
+            YouTubeTranscriptApi().fetch("GJLlxj_dtq8")
 
     def test_fetch__exception_request_blocked(self):
         httpretty.register_uri(
@@ -426,7 +438,7 @@ class TestYouTubeTranscriptApi(TestCase):
 
     @pytest.mark.skip(
         reason="This test is temporarily disabled because cookie auth is currently not "
-               "working due to YouTube changes."
+        "working due to YouTube changes."
     )
     def test_fetch__with_cookies(self):
         cookie_path = get_asset_path("example_cookies.txt")
@@ -439,7 +451,7 @@ class TestYouTubeTranscriptApi(TestCase):
 
     @pytest.mark.skip(
         reason="This test is temporarily disabled because cookie auth is currently not "
-               "working due to YouTube changes."
+        "working due to YouTube changes."
     )
     def test_load_cookies(self):
         cookie_path = get_asset_path("example_cookies.txt")
@@ -454,7 +466,7 @@ class TestYouTubeTranscriptApi(TestCase):
 
     @pytest.mark.skip(
         reason="This test is temporarily disabled because cookie auth is currently not "
-               "working due to YouTube changes."
+        "working due to YouTube changes."
     )
     def test_load_cookies__bad_file_path(self):
         cookie_path = get_asset_path("nonexistent_cookies.txt")
@@ -463,7 +475,7 @@ class TestYouTubeTranscriptApi(TestCase):
 
     @pytest.mark.skip(
         reason="This test is temporarily disabled because cookie auth is currently not "
-               "working due to YouTube changes."
+        "working due to YouTube changes."
     )
     def test_load_cookies__no_valid_cookies(self):
         cookie_path = get_asset_path("expired_example_cookies.txt")
@@ -743,7 +755,7 @@ class TestYouTubeTranscriptApi(TestCase):
 
     @pytest.mark.skip(
         reason="This test is temporarily disabled because cookie auth is currently not "
-               "working due to YouTube changes."
+        "working due to YouTube changes."
     )
     def test_get_transcript__with_cookies__deprecated(self):
         cookies_path = get_asset_path("example_cookies.txt")
@@ -815,7 +827,7 @@ class TestYouTubeTranscriptApi(TestCase):
 
     @pytest.mark.skip(
         reason="This test is temporarily disabled because cookie auth is currently not "
-               "working due to YouTube changes."
+        "working due to YouTube changes."
     )
     @patch("youtube_transcript_api.YouTubeTranscriptApi.get_transcript")
     def test_get_transcripts__with_cookies__deprecated(self, mock_get_transcript):
@@ -832,6 +844,4 @@ class TestYouTubeTranscriptApi(TestCase):
             "https": "http://localhost:8080",
         }
         YouTubeTranscriptApi.get_transcripts(["GJLlxj_dtq8"], proxies=proxies)
-        mock_get_transcript.assert_any_call(
-            "GJLlxj_dtq8", ("en",), proxies, False
-        )
+        mock_get_transcript.assert_any_call("GJLlxj_dtq8", ("en",), proxies, False)

@@ -25,4 +25,5 @@ from ._errors import (
     InvalidVideoId,
     AgeRestricted,
     YouTubeDataUnparsable,
+    PoTokenRequired,
 )

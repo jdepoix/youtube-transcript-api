@@ -33,7 +33,6 @@ class YouTubeTranscriptCli:
                 proxy_password=parsed_args.webshare_proxy_password,
             )
 
-
         transcripts = []
         exceptions = []
 

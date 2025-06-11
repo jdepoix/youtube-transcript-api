@@ -27,6 +27,7 @@ from ._errors import (
     AgeRestricted,
     VideoUnplayable,
     YouTubeDataUnparsable,
+    PoTokenRequired,
 )
 
 
@@ -129,6 +130,8 @@ class Transcript:
         Loads the actual transcript data.
         :param preserve_formatting: whether to keep select HTML text formatting
         """
+        if "&exp=xpe" in self._url:
+            raise PoTokenRequired(self.video_id)
         response = self._http_client.get(self._url)
         snippets = _TranscriptParser(preserve_formatting=preserve_formatting).parse(
             _raise_http_errors(response, self.video_id).text,
@@ -367,7 +370,6 @@ class TranscriptListFetcher:
                 return self._fetch_captions_json(video_id, try_number=try_number + 1)
             raise exception.with_proxy_config(self._proxy_config)
 
-
     def _extract_innertube_api_key(self, html: str, video_id: str) -> str:
         pattern = r'"INNERTUBE_API_KEY":\s*"([a-zA-Z0-9_-]+)"'
         match = re.search(pattern, html)
@@ -375,7 +377,7 @@ class TranscriptListFetcher:
             return match.group(1)
         if 'class="g-recaptcha"' in html:
             raise IpBlocked(video_id)
-        raise YouTubeDataUnparsable(video_id) # pragma: no cover
+        raise YouTubeDataUnparsable(video_id)  # pragma: no cover
 
     def _extract_captions_json(self, innertube_data: Dict, video_id: str) -> Dict:
         self._assert_playability(innertube_data.get("playabilityStatus"), video_id)

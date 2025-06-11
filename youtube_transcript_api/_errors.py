@@ -16,12 +16,16 @@ class CookieError(YouTubeTranscriptApiException):
 
 
 class CookiePathInvalid(CookieError):
-    def __init__(self, cookie_path: Path):  # pragma: no cover until cookie authentication is re-implemented
+    def __init__(
+        self, cookie_path: Path
+    ):  # pragma: no cover until cookie authentication is re-implemented
         super().__init__(f"Can't load the provided cookie file: {cookie_path}")
 
 
 class CookieInvalid(CookieError):
-    def __init__(self, cookie_path: Path):  # pragma: no cover until cookie authentication is re-implemented
+    def __init__(
+        self, cookie_path: Path
+    ):  # pragma: no cover until cookie authentication is re-implemented
         super().__init__(
             f"The cookies provided are not valid (may have expired): {cookie_path}"
         )
@@ -258,3 +262,10 @@ class NoTranscriptFound(CouldNotRetrieveTranscript):
             requested_language_codes=self._requested_language_codes,
             transcript_data=str(self._transcript_data),
         )
+
+
+class PoTokenRequired(CouldNotRetrieveTranscript):
+    CAUSE_MESSAGE = (
+        "The requested video cannot be retrieved without a PO Token. If this happens, "
+        "please open a GitHub issue!"
+    )
