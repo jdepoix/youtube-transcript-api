@@ -1,0 +1,40 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "<h1 align=\"center\">\r   ✨ YouTube Transcript API ✨\r </h1>",
+  "main": "dist/index.js",
+  "bin": {
+    "youtube-transcript-ts": "dist/cli.js"
+  },
+  "scripts": {
+    "test": "jest",
+    "build": "tsc",
+    "start": "node dist/cli.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrtnrocks/youtube-transcript-api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mrtnrocks/youtube-transcript-api/issues"
+  },
+  "homepage": "https://github.com/mrtnrocks/youtube-transcript-api#readme",
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "@types/node": "^24.0.1",
+    "@types/yargs": "^17.0.33",
+    "jest": "^30.0.0",
+    "ts-jest": "^29.4.0",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "axios": "^1.9.0",
+    "fast-xml-parser": "^5.2.5",
+    "html-entities": "^2.5.2",
+    "node-html-parser": "^7.0.1",
+    "yargs": "^18.0.0"
+  }
+}

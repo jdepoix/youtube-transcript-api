@@ -1,566 +1,315 @@
-<h1 align="center">
-  ✨ YouTube Transcript API ✨
-</h1>
+# YouTube Transcript API (TypeScript)
 
-<p align="center">
-  <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BAENLEW8VUJ6G&source=url">
-    <img src="https://img.shields.io/badge/Donate-PayPal-green.svg" alt="Donate">
-  </a>
-  <a href="https://github.com/jdepoix/youtube-transcript-api/actions">
-    <img src="https://github.com/jdepoix/youtube-transcript-api/actions/workflows/ci.yml/badge.svg?branch=master" alt="Build Status">
-  </a>
-  <a href="https://coveralls.io/github/jdepoix/youtube-transcript-api?branch=master">
-    <img src="https://coveralls.io/repos/github/jdepoix/youtube-transcript-api/badge.svg?branch=master" alt="Coverage Status">
-  </a>
-  <a href="http://opensource.org/licenses/MIT">
-    <img src="http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat" alt="MIT license">
-  </a>
-  <a href="https://pypi.org/project/youtube-transcript-api/">
-    <img src="https://img.shields.io/pypi/v/youtube-transcript-api.svg" alt="Current Version">
-  </a>
-  <a href="https://pypi.org/project/youtube-transcript-api/">
-    <img src="https://img.shields.io/pypi/pyversions/youtube-transcript-api.svg" alt="Supported Python Versions">
-  </a>
-</p>
+[![npm version](https://badge.fury.io/js/youtube-transcript-api-ts.svg)](https://badge.fury.io/js/youtube-transcript-api-ts)
+<!-- Add other badges like build status, license, etc. once CI/npm publishing is set up -->
+<!-- e.g. ![Build Status](https://travis-ci.org/user/repo.svg?branch=master) -->
+<!-- e.g. ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg) -->
 
-<p align="center">
-  <b>This is a python API which allows you to retrieve the transcript/subtitles for a given YouTube video. It also works for automatically generated subtitles, supports translating subtitles and it does not require a headless browser, like other selenium based solutions do!</b>
-</p>
-<p align="center">
- Maintenance of this project is made possible by all the <a href="https://github.com/jdepoix/youtube-transcript-api/graphs/contributors">contributors</a> and <a href="https://github.com/sponsors/jdepoix">sponsors</a>. If you'd like to sponsor this project and have your avatar or company logo appear below <a href="https://github.com/sponsors/jdepoix">click here</a>. 💖
-</p>
+This is a TypeScript version of the popular Python library `youtube-transcript-api`, providing an easy way to fetch transcripts (subtitles) for YouTube videos. It works with both manually created and automatically generated transcripts, and does not require headless browsers or complex authentication schemes.
 
-<p align="center">
-  <a href="https://www.searchapi.io">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://www.searchapi.io/press/v1/svg/searchapi_logo_white_h.svg">
-      <source media="(prefers-color-scheme: light)" srcset="https://www.searchapi.io/press/v1/svg/searchapi_logo_black_h.svg">
-      <img alt="SearchAPI" src="https://www.searchapi.io/press/v1/svg/searchapi_logo_black_h.svg" height="40px" style="vertical-align: middle;">
-    </picture>
-  </a>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <a href="https://supadata.ai">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://supadata.ai/logo-dark.svg">
-      <source media="(prefers-color-scheme: light)" srcset="https://supadata.ai/logo-light.svg">
-      <img alt="supadata" src="https://supadata.ai/logo-light.svg" height="40px">
-    </picture>
-  </a>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <a href="https://www.dumplingai.com">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://www.dumplingai.com/logos/logo-dark.svg">
-      <source media="(prefers-color-scheme: light)" srcset="https://www.dumplingai.com/logos/logo-light.svg">
-      <img alt="Dumpling AI" src="https://www.dumplingai.com/logos/logo-light.svg" height="40px" style="vertical-align: middle;">
-    </picture>
-  </a>
-</p>
+## Features
 
-## Install
+-   Fetch video transcripts by video ID.
+-   List available transcripts for a video, including language codes and whether they are generated or manual.
+-   Support for multiple languages and language fallback.
+-   Format transcript data into various formats (JSON, pretty JSON, plain text, SRT, WebVTT).
+-   Support for fetching transcripts through HTTP/HTTPS proxies.
+-   Command-Line Interface (CLI) for easy usage from the terminal.
+-   Typed with TypeScript for better developer experience and safety.
+-   Specific error types for robust error handling.
 
-It is recommended to [install this module by using pip](https://pypi.org/project/youtube-transcript-api/):
+## Installation
 
+To install the library, use npm or yarn:
+
+```bash
+npm install youtube-transcript-api-ts
+# or
+yarn add youtube-transcript-api-ts
 ```
-pip install youtube-transcript-api
+*(Note: The package name `youtube-transcript-api-ts` is a placeholder. The actual name will be determined upon publishing to npm.)*
+
+## Usage (Library)
+
+### Basic Example: Fetching a Transcript
+
+```typescript
+import { YouTubeTranscriptApi } from 'youtube-transcript-api-ts';
+
+async function getTranscript(videoId: string) {
+  try {
+    const api = new YouTubeTranscriptApi(); // Instance for non-static methods
+    const transcript = await api.fetch(videoId);
+    // By default, fetches the first available transcript (manual preferred, then generated)
+    // The result is an array of FetchedTranscriptSnippet objects
+    console.log(`Transcript for ${videoId}:`);
+    transcript.snippets.forEach(snippet => {
+      console.log(`[${snippet.start.toFixed(2)}s - ${(snippet.start + snippet.duration).toFixed(2)}s]: ${snippet.text}`);
+    });
+  } catch (error) {
+    console.error(`Error fetching transcript for ${videoId}:`, error);
+  }
+}
+
+getTranscript('dQw4w9WgXcQ'); // Example video ID
 ```
 
-You can either integrate this module [into an existing application](#api) or just use it via a [CLI](#cli).
+### Listing Available Transcripts
 
-## API
+```typescript
+import { YouTubeTranscriptApi, TranscriptList } from 'youtube-transcript-api-ts';
 
-The easiest way to get a transcript for a given video is to execute:
+async function listAvailableTranscripts(videoId: string) {
+  try {
+    const api = new YouTubeTranscriptApi();
+    const transcriptList: TranscriptList = await api.list(videoId);
 
-```python
-from youtube_transcript_api import YouTubeTranscriptApi
+    console.log(`Available transcripts for ${videoId}:`);
+    for (const transcript of transcriptList) { // TranscriptList is iterable
+      console.log(
+        `- Language: ${transcript.language} (${transcript.languageCode})`,
+        `- Generated: ${transcript.isGenerated}`,
+        `- Translatable to: ${transcript.translationLanguages.map(tl => tl.languageCode).join(', ') || 'None'}`
+      );
+    }
+  } catch (error) {
+    console.error(`Error listing transcripts for ${videoId}:`, error);
+  }
+}
 
-ytt_api = YouTubeTranscriptApi()
-ytt_api.fetch(video_id)
+listAvailableTranscripts('oHg5SJYRHA0');
 ```
 
-> **Note:** By default, this will try to access the English transcript of the video. If your video has a different 
-> language, or you are interested in fetching a transcript in a different language, please read the section below.
+### Using Different Languages and Fallbacks
 
-> **Note:** Pass in the video ID, NOT the video URL. For a video with the URL `https://www.youtube.com/watch?v=12345` 
-> the ID is `12345`.
+```typescript
+import { YouTubeTranscriptApi } from 'youtube-transcript-api-ts';
 
-This will return a `FetchedTranscript` object looking somewhat like this:
-
-```python
-FetchedTranscript(
-    snippets=[
-        FetchedTranscriptSnippet(
-            text="Hey there",
-            start=0.0,
-            duration=1.54,
-        ),
-        FetchedTranscriptSnippet(
-            text="how are you",
-            start=1.54,
-            duration=4.16,
-        ),
-        # ...
-    ],
-    video_id="12345",
-    language="English",
-    language_code="en",
-    is_generated=False,
-)
+async function getSpecificTranscript(videoId: string) {
+  try {
+    const api = new YouTubeTranscriptApi();
+    // Try to fetch German, if not available, fall back to English
+    const transcript = await api.fetch(videoId, ['de', 'en']);
+    console.log(`Fetched transcript in ${transcript.languageCode}:`);
+    console.log(transcript.snippets.slice(0, 5));
+  } catch (error) {
+    console.error(error);
+  }
+}
+getSpecificTranscript('oHg5SJYRHA0');
 ```
 
-This object implements most interfaces of a `List`:
+### Translating a Transcript
 
-```python
-ytt_api = YouTubeTranscriptApi()
-fetched_transcript = ytt_api.fetch(video_id)
+```typescript
+import { YouTubeTranscriptApi } from 'youtube-transcript-api-ts';
 
-# is iterable
-for snippet in fetched_transcript:
-    print(snippet.text)
+async function getTranslatedTranscript(videoId: string) {
+  try {
+    const api = new YouTubeTranscriptApi();
+    const transcriptList = await api.list(videoId);
+    const englishTranscript = transcriptList.findTranscript(['en']); // Find an English transcript
 
-# indexable
-last_snippet = fetched_transcript[-1]
-
-# provides a length
-snippet_count = len(fetched_transcript)
+    if (englishTranscript && englishTranscript.isTranslatable) {
+      const germanTranslationMeta = englishTranscript.translationLanguages.find(t => t.languageCode === 'de');
+      if (germanTranslationMeta) {
+        const translatedTranscript = englishTranscript.translate('de');
+        const fetchedTranslated = await translatedTranscript.fetch(); // Fetches the actual translated content
+        console.log('German translation:', fetchedTranslated.snippets.slice(0, 3));
+      } else {
+        console.log('German translation not available for this English transcript.');
+      }
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+getTranslatedTranscript('oHg5SJYRHA0');
 ```
 
-If you prefer to handle the raw transcript data you can call `fetched_transcript.to_raw_data()`, which will return 
-a list of dictionaries:
+### Using Proxies
 
-```python
-[
-    {
-        'text': 'Hey there',
-        'start': 0.0,
-        'duration': 1.54
-    },
-    {
-        'text': 'how are you',
-        'start': 1.54
-        'duration': 4.16
-    },
-    # ...
-]
-```
-### Retrieve different languages
+```typescript
+import { YouTubeTranscriptApi, ProxyConfig } from 'youtube-transcript-api-ts';
 
-You can add the `languages` param if you want to make sure the transcripts are retrieved in your desired language 
-(it defaults to english).
+async function getTranscriptWithProxy(videoId: string) {
+  const proxy: ProxyConfig = {
+    host: 'your-proxy-host.com',
+    port: 8080,
+    // auth: { username: 'user', password: 'password' } // Optional
+    // protocol: 'http' // Optional, defaults to http by axios if not specified based on URL
+  };
 
-```python
-YouTubeTranscriptApi().fetch(video_id, languages=['de', 'en'])
+  try {
+    const api = new YouTubeTranscriptApi(proxy);
+    const transcript = await api.fetch(videoId);
+    console.log(transcript.snippets.slice(0, 3));
+  } catch (error) {
+    console.error(error);
+  }
+}
+// getTranscriptWithProxy('oHg5SJYRHA0');
 ```
 
-It's a list of language codes in a descending priority. In this example it will first try to fetch the german 
-transcript (`'de'`) and then fetch the english transcript (`'en'`) if it fails to do so. If you want to find out 
-which languages are available first, [have a look at `list()`](#list-available-transcripts).
+### Using Formatters (Directly)
 
-If you only want one language, you still need to format the `languages` argument as a list
+While the CLI uses formatters to produce string output, you can also use them in your code if needed. The API's `fetch` method returns `FetchedTranscript` which contains an array of `FetchedTranscriptSnippet` objects.
 
-```python
-YouTubeTranscriptApi().fetch(video_id, languages=['de'])
+```typescript
+import { YouTubeTranscriptApi } from 'youtube-transcript-api-ts';
+import { SRTFormatter, FetchedTranscript } from 'youtube-transcript-api-ts';
+// Assuming types/classes are exported from the main entry point or specific paths
+
+async function getSRTFormattedTranscript(videoId: string) {
+  try {
+    const api = new YouTubeTranscriptApi();
+    const transcriptData: FetchedTranscript = await api.fetch(videoId, ['en']);
+
+    const formatter = new SRTFormatter();
+    const srtOutput = formatter.formatTranscript(transcriptData);
+    console.log(srtOutput);
+  } catch (error) {
+    console.error(error);
+  }
+}
+// getSRTFormattedTranscript('oHg5SJYRHA0');
 ```
 
-### Preserve formatting
+## Usage (CLI)
 
-You can also add `preserve_formatting=True` if you'd like to keep HTML formatting elements such as `<i>` (italics) 
-and `<b>` (bold).
+The library provides a command-line interface (CLI) for easy use. After global installation (or using `npx`), you can use it as follows. (The command `youtube-transcript-ts` is configured in `package.json`'s `bin` field).
 
-```python
-YouTubeTranscriptApi().fetch(video_ids, languages=['de', 'en'], preserve_formatting=True)
+To run the CLI from the project root after building: `node dist/cli.js <video_id> [options]`
+
+### Basic Examples:
+
+*   **Fetch transcript (default: English, pretty JSON format):**
+    ```bash
+    youtube-transcript-ts dQw4w9WgXcQ
+    ```
+
+*   **Fetch specific languages (e.g., German then English):**
+    ```bash
+    youtube-transcript-ts dQw4w9WgXcQ --languages de en
+    ```
+
+*   **List available transcripts for a video:**
+    ```bash
+    youtube-transcript-ts dQw4w9WgXcQ --list-transcripts
+    ```
+
+*   **Output in SRT format:**
+    ```bash
+    youtube-transcript-ts dQw4w9WgXcQ --format srt
+    ```
+
+*   **Translate to a specific language (e.g., German) and output as text:**
+    ```bash
+    youtube-transcript-ts oHg5SJYRHA0 --languages en --translate de --format text
+    ```
+
+*   **Save output to a file:**
+    ```bash
+    youtube-transcript-ts dQw4w9WgXcQ --format srt --output-file transcript.srt
+    ```
+
+### Key CLI Options:
+
+*   `video-ids...`: One or more YouTube video IDs.
+*   `--list-transcripts`, `-l`: List available transcripts.
+*   `--languages <lang...>`, `--lang <lang...>`: Preferred languages in order (e.g., `en de`).
+*   `--format <format>`: Output format (e.g., `json`, `pretty`, `text`, `srt`, `webvtt`). Default: `pretty`.
+*   `--translate <lang_code>`, `-t <lang_code>`: Language code to translate the transcript to.
+*   `--output-file <filepath>`, `-o <filepath>`: File to save the output.
+*   `--http-proxy <url>`: HTTP proxy URL (e.g., `http://host:port` or `http://user:pass@host:port`).
+*   `--https-proxy <url>`: HTTPS proxy URL. (Note: Axios typically uses one proxy; `http-proxy` might cover HTTPS URLs too).
+*   `--exclude-generated`: Exclude automatically generated transcripts.
+*   `--exclude-manually-created`: Exclude manually created transcripts.
+*   `--help`, `-h`: Show help message.
+
+## API Documentation (Brief)
+
+### Main Class: `YouTubeTranscriptApi`
+
+*   **`constructor(proxyConfig?: ProxyConfig, customHttpClient?: AxiosInstance)`**
+    *   Creates a new API client instance.
+    *   `proxyConfig` (optional): Configuration for an HTTP/HTTPS proxy.
+    *   `customHttpClient` (optional): A custom `axios` instance to use for requests.
+*   **`async list(videoId: string): Promise<TranscriptList>`**
+    *   Fetches and returns a `TranscriptList` object, which contains all available transcripts (manual and generated) for the given video ID.
+*   **`async fetch(videoId: string, languages?: string[], preserveFormatting?: boolean): Promise<FetchedTranscript>`**
+    *   Fetches the actual transcript content.
+    *   `languages` (optional): An array of language codes to try in order of preference. If not provided, it attempts to fetch a transcript based on general availability (manual first).
+    *   `preserveFormatting` (optional, default: `false`): If true, attempts to preserve some HTML formatting tags within the transcript text.
+
+### Key Interfaces/Types (exported from `youtube-transcript-api-ts`):
+
+*   **`FetchedTranscript`**:
+    *   `videoId: string`
+    *   `language: string` (e.g., "English")
+    *   `languageCode: string` (e.g., "en")
+    *   `isGenerated: boolean`
+    *   `snippets: FetchedTranscriptSnippet[]`
+*   **`FetchedTranscriptSnippet`**:
+    *   `text: string` (The actual transcript text line)
+    *   `start: number` (Start time in seconds)
+    *   `duration: number` (Duration in seconds)
+*   **`TranscriptList`**: (Returned by `api.list()`)
+    *   Contains `manuallyCreatedTranscripts: Readonly<Record<string, Transcript>>`
+    *   Contains `generatedTranscripts: Readonly<Record<string, Transcript>>`
+    *   Contains `translationLanguages: ReadonlyArray<TranslationLanguage>`
+    *   Methods like `findTranscript(langs: string[]): Transcript`, etc.
+    *   Is iterable, yielding `Transcript` objects.
+*   **`Transcript`**: (Represents metadata of a single available transcript)
+    *   Properties like `languageCode`, `isGenerated`, `url`, `translationLanguages`.
+    *   `async fetch(preserveFormatting?: boolean): Promise<FetchedTranscript>`: Fetches the actual content.
+    *   `translate(targetLanguageCode: string): Transcript`: Returns a new `Transcript` object representing the translation metadata.
+*   **`ProxyConfig`**: Interface for proxy configuration.
+*   **Formatter Classes**: `JSONFormatter`, `PrettyPrintFormatter`, `TextFormatter`, `SRTFormatter`, `WebVTTFormatter`.
+*   **Custom Error Classes**: `YouTubeTranscriptApiException` and its subclasses (e.g., `NoTranscriptFound`, `TranscriptsDisabled`).
+
+*(For more detailed API documentation, consider using [TypeDoc](https://typedoc.org/) to generate HTML documentation from the TypeScript source code and comments.)*
+
+## Error Handling
+
+The library throws specific custom errors for various situations, all inheriting from `YouTubeTranscriptApiException`. This allows for fine-grained error handling:
+
+*   `TranscriptsDisabled`: Subtitles are disabled for the video.
+*   `NoTranscriptFound`: No transcript could be found for the requested languages.
+*   `VideoUnavailable`: The video is unavailable (e.g., private, deleted).
+*   `VideoUnplayable`: The video is unplayable for other reasons.
+*   `AgeRestricted`: The video is age-restricted.
+*   `RequestBlocked` / `IpBlocked`: Request blocked by YouTube.
+*   `YouTubeRequestFailed`: A generic error for failed HTTP requests to YouTube.
+*   ... and others found in `src/errors.ts`.
+
+Example:
+```typescript
+import { YouTubeTranscriptApi, NoTranscriptFound, TranscriptsDisabled } from 'youtube-transcript-api-ts';
+
+async function safeGetTranscript(videoId: string) {
+  const api = new YouTubeTranscriptApi();
+  try {
+    const transcript = await api.fetch(videoId, ['nonExistentLang']);
+    // ...
+  } catch (error) {
+    if (error instanceof NoTranscriptFound) {
+      console.error('No transcript found for the specified languages:', error.message);
+    } else if (error instanceof TranscriptsDisabled) {
+      console.error('Transcripts are disabled for this video:', error.message);
+    } else {
+      console.error('An unexpected error occurred:', error);
+    }
+  }
+}
 ```
-
-### List available transcripts
-
-If you want to list all transcripts which are available for a given video you can call:
-
-```python
-ytt_api = YouTubeTranscriptApi()
-transcript_list = ytt_api.list(video_id)
-```
-
-This will return a `TranscriptList` object which is iterable and provides methods to filter the list of transcripts for 
-specific languages and types, like:
-
-```python
-transcript = transcript_list.find_transcript(['de', 'en'])
-```
-
-By default this module always chooses manually created transcripts over automatically created ones, if a transcript in 
-the requested language is available both manually created and generated. The `TranscriptList` allows you to bypass this 
-default behaviour by searching for specific transcript types:
-
-```python
-# filter for manually created transcripts
-transcript = transcript_list.find_manually_created_transcript(['de', 'en'])
-
-# or automatically generated ones
-transcript = transcript_list.find_generated_transcript(['de', 'en'])
-```
-
-The methods `find_generated_transcript`, `find_manually_created_transcript`, `find_transcript` return `Transcript` 
-objects. They contain metadata regarding the transcript:
-
-```python
-print(
-    transcript.video_id,
-    transcript.language,
-    transcript.language_code,
-    # whether it has been manually created or generated by YouTube
-    transcript.is_generated,
-    # whether this transcript can be translated or not
-    transcript.is_translatable,
-    # a list of languages the transcript can be translated to
-    transcript.translation_languages,
-)
-```
-
-and provide the method, which allows you to fetch the actual transcript data:
-
-```python
-transcript.fetch()
-```
-
-This returns a `FetchedTranscript` object, just like `YouTubeTranscriptApi().fetch()` does.
-
-### Translate transcript
-
-YouTube has a feature which allows you to automatically translate subtitles. This module also makes it possible to 
-access this feature. To do so `Transcript` objects provide a `translate()` method, which returns a new translated 
-`Transcript` object:
-
-```python
-transcript = transcript_list.find_transcript(['en'])
-translated_transcript = transcript.translate('de')
-print(translated_transcript.fetch())
-```
-
-### By example
-```python
-from youtube_transcript_api import YouTubeTranscriptApi
-
-ytt_api = YouTubeTranscriptApi()
-
-# retrieve the available transcripts
-transcript_list = ytt_api.list('video_id')
-
-# iterate over all available transcripts
-for transcript in transcript_list:
-
-    # the Transcript object provides metadata properties
-    print(
-        transcript.video_id,
-        transcript.language,
-        transcript.language_code,
-        # whether it has been manually created or generated by YouTube
-        transcript.is_generated,
-        # whether this transcript can be translated or not
-        transcript.is_translatable,
-        # a list of languages the transcript can be translated to
-        transcript.translation_languages,
-    )
-
-    # fetch the actual transcript data
-    print(transcript.fetch())
-
-    # translating the transcript will return another transcript object
-    print(transcript.translate('en').fetch())
-
-# you can also directly filter for the language you are looking for, using the transcript list
-transcript = transcript_list.find_transcript(['de', 'en'])  
-
-# or just filter for manually created transcripts  
-transcript = transcript_list.find_manually_created_transcript(['de', 'en'])  
-
-# or automatically generated ones  
-transcript = transcript_list.find_generated_transcript(['de', 'en'])
-```
-
-## Working around IP bans (`RequestBlocked` or `IpBlocked` exception)
-
-Unfortunately, YouTube has started blocking most IPs that are known to belong to cloud providers (like AWS, Google Cloud 
-Platform, Azure, etc.), which means you will most likely run into `ReuquestBlocked` or `IpBlocked` exceptions when 
-deploying your code to any cloud solutions. Same can happen to the IP of your self-hosted solution, if you are doing 
-too many requests. You can work around these IP bans using proxies. However, since YouTube will ban static proxies 
-after extended use, going for rotating residential proxies provide is the most reliable option.
-
-There are different providers that offer rotating residential proxies, but after testing different 
-offerings I have found [Webshare](https://www.webshare.io/?referral_code=w0xno53eb50g) to be the most reliable and have 
-therefore integrated it into this module, to make setting it up as easy as possible.
-
-### Using [Webshare](https://www.webshare.io/?referral_code=w0xno53eb50g)
-
-Once you have created a [Webshare account](https://www.webshare.io/?referral_code=w0xno53eb50g) and purchased a 
-"Residential" proxy package that suits your workload (make sure NOT to purchase "Proxy Server" or 
-"Static Residential"!), open the 
-[Webshare Proxy Settings](https://dashboard.webshare.io/proxy/settings?referral_code=w0xno53eb50g) to retrieve 
-your "Proxy Username" and "Proxy Password". Using this information you can initialize the `YouTubeTranscriptApi` as 
-follows:
-
-```python
-from youtube_transcript_api import YouTubeTranscriptApi
-from youtube_transcript_api.proxies import WebshareProxyConfig
-
-ytt_api = YouTubeTranscriptApi(
-    proxy_config=WebshareProxyConfig(
-        proxy_username="<proxy-username>",
-        proxy_password="<proxy-password>",
-    )
-)
-
-# all requests done by ytt_api will now be proxied through Webshare
-ytt_api.fetch(video_id)
-```
-
-Using the `WebshareProxyConfig` will default to using rotating residential proxies and requires no further 
-configuration.
-
-Note that [referral links are used here](https://www.webshare.io/?referral_code=w0xno53eb50g) and any purchases 
-made through these links will support this Open Source project, which is very much appreciated! 💖😊🙏💖
-
-However, you are of course free to integrate your own proxy solution using the `GenericProxyConfig` class, if you 
-prefer using another provider or want to implement your own solution, as covered by the following section.
-
-### Using other Proxy solutions
-
-Alternatively to using [Webshare](#using-webshare), you can set up any generic HTTP/HTTPS/SOCKS proxy using the 
-`GenericProxyConfig` class:
-
-```python
-from youtube_transcript_api import YouTubeTranscriptApi
-from youtube_transcript_api.proxies import GenericProxyConfig
-
-ytt_api = YouTubeTranscriptApi(
-    proxy_config=GenericProxyConfig(
-        http_url="http://user:pass@my-custom-proxy.org:port",
-        https_url="https://user:pass@my-custom-proxy.org:port",
-    )
-)
-
-# all requests done by ytt_api will now be proxied using the defined proxy URLs
-ytt_api.fetch(video_id)
-```
-
-Be aware that using a proxy doesn't guarantee that you won't be blocked, as YouTube can always block the IP of your 
-proxy! Therefore, you should always choose a solution that rotates through a pool of proxy addresses, if you want to
-maximize reliability.
-
-## Overwriting request defaults
-
-When initializing a `YouTubeTranscriptApi` object, it will create a `requests.Session` which will be used for all
-HTTP(S) request. This allows for caching cookies when retrieving multiple requests. However, you can optionally pass a
-`requests.Session` object into its constructor, if you manually want to share cookies between different instances of
-`YouTubeTranscriptApi`, overwrite defaults, set custom headers, specify SSL certificates, etc.
-
-```python
-from requests import Session
-
-http_client = Session()
-
-# set custom header
-http_client.headers.update({"Accept-Encoding": "gzip, deflate"})
-
-# set path to CA_BUNDLE file
-http_client.verify = "/path/to/certfile"
-
-ytt_api = YouTubeTranscriptApi(http_client=http_client)
-ytt_api.fetch(video_id)
-
-# share same Session between two instances of YouTubeTranscriptApi
-ytt_api_2 = YouTubeTranscriptApi(http_client=http_client)
-# now shares cookies with ytt_api
-ytt_api_2.fetch(video_id)
-```
-
-## Cookie Authentication
-
-Some videos are age restricted, so this module won't be able to access those videos without some sort of
-authentication. Unfortunately, some recent changes to the YouTube API have broken the current implementation of cookie 
-based authentication, so this feature is currently not available.
-
-## Using Formatters
-Formatters are meant to be an additional layer of processing of the transcript you pass it. The goal is to convert a
-`FetchedTranscript` object into a consistent string of a given "format". Such as a basic text (`.txt`) or even formats 
-that have a defined specification such as JSON (`.json`), WebVTT (`.vtt`), SRT (`.srt`), Comma-separated format 
-(`.csv`), etc...
-
-The `formatters` submodule provides a few basic formatters, which can be used as is, or extended to your needs:
-
-- JSONFormatter
-- PrettyPrintFormatter
-- TextFormatter
-- WebVTTFormatter
-- SRTFormatter
-
-Here is how to import from the `formatters` module.
-
-```python
-# the base class to inherit from when creating your own formatter.
-from youtube_transcript_api.formatters import Formatter
-
-# some provided subclasses, each outputs a different string format.
-from youtube_transcript_api.formatters import JSONFormatter
-from youtube_transcript_api.formatters import TextFormatter
-from youtube_transcript_api.formatters import WebVTTFormatter
-from youtube_transcript_api.formatters import SRTFormatter
-```
-
-### Formatter Example
-Let's say we wanted to retrieve a transcript and store it to a JSON file. That would look something like this:
-
-```python
-# your_custom_script.py
-
-from youtube_transcript_api import YouTubeTranscriptApi
-from youtube_transcript_api.formatters import JSONFormatter
-
-ytt_api = YouTubeTranscriptApi()
-transcript = ytt_api.fetch(video_id)
-
-formatter = JSONFormatter()
-
-# .format_transcript(transcript) turns the transcript into a JSON string.
-json_formatted = formatter.format_transcript(transcript)
-
-# Now we can write it out to a file.
-with open('your_filename.json', 'w', encoding='utf-8') as json_file:
-    json_file.write(json_formatted)
-
-# Now should have a new JSON file that you can easily read back into Python.
-```
-
-**Passing extra keyword arguments**
-
-Since JSONFormatter leverages `json.dumps()` you can also forward keyword arguments into 
-`.format_transcript(transcript)` such as making your file output prettier by forwarding the `indent=2` keyword argument.
-
-```python
-json_formatted = JSONFormatter().format_transcript(transcript, indent=2)
-```
-
-### Custom Formatter Example
-You can implement your own formatter class. Just inherit from the `Formatter` base class and ensure you implement the 
-`format_transcript(self, transcript: FetchedTranscript, **kwargs) -> str` and 
-`format_transcripts(self, transcripts: List[FetchedTranscript], **kwargs) -> str` methods which should ultimately 
-return a string when called on your formatter instance.
-
-```python
-class MyCustomFormatter(Formatter):
-    def format_transcript(self, transcript: FetchedTranscript, **kwargs) -> str:
-        # Do your custom work in here, but return a string.
-        return 'your processed output data as a string.'
-
-    def format_transcripts(self, transcripts: List[FetchedTranscript], **kwargs) -> str:
-        # Do your custom work in here to format a list of transcripts, but return a string.
-        return 'your processed output data as a string.'
-```
-
-## CLI
-
-Execute the CLI script using the video ids as parameters and the results will be printed out to the command line:  
-
-```  
-youtube_transcript_api <first_video_id> <second_video_id> ...  
-```  
-
-The CLI also gives you the option to provide a list of preferred languages:  
-
-```  
-youtube_transcript_api <first_video_id> <second_video_id> ... --languages de en  
-```
-
-You can also specify if you want to exclude automatically generated or manually created subtitles:
-
-```  
-youtube_transcript_api <first_video_id> <second_video_id> ... --languages de en --exclude-generated
-youtube_transcript_api <first_video_id> <second_video_id> ... --languages de en --exclude-manually-created
-```
-
-If you would prefer to write it into a file or pipe it into another application, you can also output the results as 
-json using the following line:  
-
-```  
-youtube_transcript_api <first_video_id> <second_video_id> ... --languages de en --format json > transcripts.json
-```  
-
-Translating transcripts using the CLI is also possible:
-
-```  
-youtube_transcript_api <first_video_id> <second_video_id> ... --languages en --translate de
-```  
-
-If you are not sure which languages are available for a given video you can call, to list all available transcripts:
-
-```  
-youtube_transcript_api --list-transcripts <first_video_id>
-```
-
-If a video's ID starts with a hyphen you'll have to mask the hyphen using `\` to prevent the CLI from mistaking it for 
-a argument name. For example to get the transcript for the video with the ID `-abc123` run:
-
-```
-youtube_transcript_api "\-abc123"
-```
-
-### Working around IP bans using the CLI
-
-If you are running into `ReqestBlocked` or `IpBlocked` errors, because YouTube blocks your IP, you can work around this 
-using residential proxies as explained in 
-[Working around IP bans](#working-around-ip-bans-requestblocked-or-ipblocked-exception). To use
-[Webshare "Residential" proxies](https://www.webshare.io/?referral_code=w0xno53eb50g) through the CLI, you will have to 
-create a [Webshare account](https://www.webshare.io/?referral_code=w0xno53eb50g) and purchase a "Residential" proxy 
-package that suits your workload (make sure NOT to purchase "Proxy Server" or "Static Residential"!). Then you can use 
-the "Proxy Username" and "Proxy Password" which you can find in your 
-[Webshare Proxy Settings](https://dashboard.webshare.io/proxy/settings?referral_code=w0xno53eb50g), to run the following command:
-
-```
-youtube_transcript_api <first_video_id> <second_video_id> --webshare-proxy-username "username" --webshare-proxy-password "password"
-```
-
-If you prefer to use another proxy solution, you can set up a generic HTTP/HTTPS proxy using the following command:
-
-```
-youtube_transcript_api <first_video_id> <second_video_id> --http-proxy http://user:pass@domain:port --https-proxy https://user:pass@domain:port
-```
-
-### Cookie Authentication using the CLI
-
-To authenticate using cookies through the CLI as explained in [Cookie Authentication](#cookie-authentication) run:
-
-```
-youtube_transcript_api <first_video_id> <second_video_id> --cookies /path/to/your/cookies.txt
-```
-
-## Warning  
-
-This code uses an undocumented part of the YouTube API, which is called by the YouTube web-client. So there is no 
-guarantee that it won't stop working tomorrow, if they change how things work. I will however do my best to make things 
-working again as soon as possible if that happens. So if it stops working, let me know!  
 
 ## Contributing
 
-To setup the project locally run the following (requires [poetry](https://python-poetry.org/docs/) to be installed):
-```shell
-poetry install --with test,dev
-```
+Contributions are welcome! Please feel free to submit pull requests or open issues.
+(Further details can be added here, e.g., regarding development setup, coding standards, running tests.)
 
-There's [poe](https://github.com/nat-n/poethepoet?tab=readme-ov-file#quick-start) tasks to run tests, coverage, the 
-linter and formatter (you'll need to pass all of those for the build to pass):
-```shell
-poe test
-poe coverage
-poe format
-poe lint
-```
+## License
 
-If you just want to make sure that your code passes all the necessary checks to get a green build, you can simply run:
-```shell
-poe precommit
-```
-
-## Donations
-
-If this project makes you happy by reducing your development time, you can make me happy by treating me to a cup of 
-coffee, or become a [Sponsor of this project](https://github.com/sponsors/jdepoix) :)  
-
-[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BAENLEW8VUJ6G&source=url)
+This project is licensed under the MIT License.
+<!-- Create a LICENSE file with MIT license text if one doesn't exist -->
