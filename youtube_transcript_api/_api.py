@@ -42,7 +42,8 @@ class YouTubeTranscriptApi:
                 http_client.headers.update({"Connection": "close"})
             if proxy_config.retries_when_blocked > 0:
                 retry_config = Retry(
-                    total=proxy_config.retries_when_blocked, status_forcelist=[429]
+                    total=proxy_config.retries_when_blocked,
+                    status_forcelist=[429],
                 )
                 http_client.mount("http://", HTTPAdapter(max_retries=retry_config))
                 http_client.mount("https://", HTTPAdapter(max_retries=retry_config))
