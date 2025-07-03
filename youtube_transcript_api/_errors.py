@@ -152,8 +152,9 @@ class RequestBlocked(CouldNotRetrieveTranscript):
     )
     WITH_GENERIC_PROXY_CAUSE_MESSAGE = (
         "YouTube is blocking your requests, despite you using proxies. Keep in mind "
-        "a proxy is just a way to hide your real IP behind the IP of that proxy, but "
-        "there is no guarantee that the IP of that proxy won't be blocked as well.\n\n"
+        "that a proxy is just a way to hide your real IP behind the IP of that proxy, "
+        "but there is no guarantee that the IP of that proxy won't be blocked as "
+        "well.\n\n"
         "The only truly reliable way to prevent IP blocks is rotating through a large "
         "pool of residential IPs, by using a provider like Webshare "
         "(https://www.webshare.io/?referral_code=w0xno53eb50g), which provides you "

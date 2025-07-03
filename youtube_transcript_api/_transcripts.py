@@ -92,6 +92,8 @@ class _PlayabilityFailedReason(str, Enum):
 
 def _raise_http_errors(response: Response, video_id: str) -> Response:
     try:
+        if response.status_code == 429:
+            raise IpBlocked(video_id)
         response.raise_for_status()
         return response
     except HTTPError as error:

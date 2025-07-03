@@ -272,6 +272,18 @@ class TestYouTubeTranscriptApi(TestCase):
         with self.assertRaises(IpBlocked):
             YouTubeTranscriptApi().fetch("abc")
 
+    def test_get_transcript__exception_if_timedtext_request_limit_reached(
+        self,
+    ):
+        httpretty.register_uri(
+            httpretty.GET,
+            "https://www.youtube.com/api/timedtext",
+            status=429,
+        )
+
+        with self.assertRaises(IpBlocked):
+            YouTubeTranscriptApi().fetch("abc")
+
     def test_fetch__exception_if_age_restricted(self):
         httpretty.register_uri(
             httpretty.POST,
