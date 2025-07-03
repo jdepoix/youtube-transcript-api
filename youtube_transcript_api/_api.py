@@ -2,6 +2,8 @@ import warnings
 from typing import Optional, Iterable
 
 from requests import Session
+from requests.adapters import HTTPAdapter
+from urllib3 import Retry
 
 from .proxies import ProxyConfig, GenericProxyConfig
 
@@ -38,6 +40,13 @@ class YouTubeTranscriptApi:
             http_client.proxies = proxy_config.to_requests_dict()
             if proxy_config.prevent_keeping_connections_alive:
                 http_client.headers.update({"Connection": "close"})
+            if proxy_config.retries_when_blocked > 0:
+                retry_config = Retry(
+                    total=proxy_config.retries_when_blocked,
+                    status_forcelist=[429],
+                )
+                http_client.mount("http://", HTTPAdapter(max_retries=retry_config))
+                http_client.mount("https://", HTTPAdapter(max_retries=retry_config))
         self._fetcher = TranscriptListFetcher(http_client, proxy_config=proxy_config)
 
     def fetch(
