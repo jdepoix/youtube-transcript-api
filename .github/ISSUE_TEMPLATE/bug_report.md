@@ -15,7 +15,7 @@ Steps to reproduce the behavior:
 ### What code / cli command are you executing?
 For example: I am running
 ```
-YouTubeTranscriptApi.get_transcript ...
+YouTubeTranscriptApi().fetch() ...
 ```
 
 ### Which Python version are you using?

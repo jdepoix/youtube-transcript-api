@@ -123,8 +123,8 @@ class VideoUnavailable(CouldNotRetrieveTranscript):
 class InvalidVideoId(CouldNotRetrieveTranscript):
     CAUSE_MESSAGE = (
         "You provided an invalid video id. Make sure you are using the video id and NOT the url!\n\n"
-        'Do NOT run: `YouTubeTranscriptApi.get_transcript("https://www.youtube.com/watch?v=1234")`\n'
-        'Instead run: `YouTubeTranscriptApi.get_transcript("1234")`'
+        'Do NOT run: `YouTubeTranscriptApi().fetch("https://www.youtube.com/watch?v=1234")`\n'
+        'Instead run: `YouTubeTranscriptApi().fetch("1234")`'
     )
 
 
