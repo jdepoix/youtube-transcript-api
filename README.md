@@ -315,8 +315,30 @@ ytt_api.fetch(video_id)
 Using the `WebshareProxyConfig` will default to using rotating residential proxies and requires no further 
 configuration.
 
+You can also limit the pool of IPs that you will be rotating through to those located in specific countries. By 
+choosing locations that are close to the machine that is running your code, you can reduce latency. Also, this 
+can be used to work around location-based restrictions. 
+
+```python
+ytt_api = YouTubeTranscriptApi(
+    proxy_config=WebshareProxyConfig(
+        proxy_username="<proxy-username>",
+        proxy_password="<proxy-password>",
+        filter_ip_locations=["de", "us"],
+    )
+)
+
+# Webshare will now only rotate through IPs located in Germany or the United States!
+ytt_api.fetch(video_id)
+```
+
+You can find the 
+full list of available locations (and how many IPs are available in each location) 
+[here](https://www.webshare.io/features/proxy-locations?referral_code=w0xno53eb50g).
+
 Note that [referral links are used here](https://www.webshare.io/?referral_code=w0xno53eb50g) and any purchases 
-made through these links will support this Open Source project, which is very much appreciated! 💖😊🙏💖
+made through these links will support this Open Source project (at no additional cost of course!), which is very much 
+appreciated! 💖😊🙏💖
 
 However, you are of course free to integrate your own proxy solution using the `GenericProxyConfig` class, if you 
 prefer using another provider or want to implement your own solution, as covered by the following section.
