@@ -64,7 +64,6 @@ class TestWebshareProxyConfig:
             "https": "http://user-rotate:password@p.webshare.io:80/",
         }
 
-
     def test_to_requests_dict__with_location_filter(self):
         proxy_config = WebshareProxyConfig(
             proxy_username="user",
@@ -78,7 +77,6 @@ class TestWebshareProxyConfig:
             "http": "http://user-US-rotate:password@p.webshare.io:80/",
             "https": "http://user-US-rotate:password@p.webshare.io:80/",
         }
-
 
     def test_to_requests_dict__with_multiple_location_filters(self):
         proxy_config = WebshareProxyConfig(
