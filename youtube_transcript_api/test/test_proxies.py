@@ -63,3 +63,33 @@ class TestWebshareProxyConfig:
             "http": "http://user-rotate:password@p.webshare.io:80/",
             "https": "http://user-rotate:password@p.webshare.io:80/",
         }
+
+
+    def test_to_requests_dict__with_location_filter(self):
+        proxy_config = WebshareProxyConfig(
+            proxy_username="user",
+            proxy_password="password",
+            filter_ip_locations=["us"],
+        )
+
+        request_dict = proxy_config.to_requests_dict()
+
+        assert request_dict == {
+            "http": "http://user-US-rotate:password@p.webshare.io:80/",
+            "https": "http://user-US-rotate:password@p.webshare.io:80/",
+        }
+
+
+    def test_to_requests_dict__with_multiple_location_filters(self):
+        proxy_config = WebshareProxyConfig(
+            proxy_username="user",
+            proxy_password="password",
+            filter_ip_locations=["de", "us"],
+        )
+
+        request_dict = proxy_config.to_requests_dict()
+
+        assert request_dict == {
+            "http": "http://user-DE-US-rotate:password@p.webshare.io:80/",
+            "https": "http://user-DE-US-rotate:password@p.webshare.io:80/",
+        }

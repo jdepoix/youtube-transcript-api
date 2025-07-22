@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import TypedDict, Optional
+from typing import TypedDict, Optional, List
 
 
 class InvalidProxyConfig(Exception):
@@ -117,6 +117,7 @@ class WebshareProxyConfig(GenericProxyConfig):
         self,
         proxy_username: str,
         proxy_password: str,
+        filter_ip_locations: Optional[List[str]] = None,
         retries_when_blocked: int = 10,
         domain_name: str = DEFAULT_DOMAIN_NAME,
         proxy_port: int = DEFAULT_PORT,
@@ -133,6 +134,14 @@ class WebshareProxyConfig(GenericProxyConfig):
             https://dashboard.webshare.io/proxy/settings
         :param proxy_password: "Proxy Password" found at
             https://dashboard.webshare.io/proxy/settings
+        :param filter_ip_locations: If you want to limit the pool of IPs that you will
+            be rotating through to those located in specific countries, you can provide
+            a list of location codes here. By choosing locations that are close to the
+            machine that is running this code, you can reduce latency. Also, this can
+            be used to work around location-based restrictions.
+            You can find the full list of available locations (and how many IPs are
+            available in each location) at
+            https://www.webshare.io/features/proxy-locations?referral_code=w0xno53eb50g
         :param retries_when_blocked: Define how many times we should retry if a request
             is blocked. When using rotating residential proxies with a large IP pool it
             makes sense to retry a couple of times when a blocked IP is encountered,
@@ -143,12 +152,16 @@ class WebshareProxyConfig(GenericProxyConfig):
         self.proxy_password = proxy_password
         self.domain_name = domain_name
         self.proxy_port = proxy_port
+        self._filter_ip_locations = filter_ip_locations or []
         self._retries_when_blocked = retries_when_blocked
 
     @property
     def url(self) -> str:
+        location_codes = "".join(
+            f"-{location_code.upper()}" for location_code in self._filter_ip_locations
+        )
         return (
-            f"http://{self.proxy_username}-rotate:{self.proxy_password}"
+            f"http://{self.proxy_username}{location_codes}-rotate:{self.proxy_password}"
             f"@{self.domain_name}:{self.proxy_port}/"
         )
 
