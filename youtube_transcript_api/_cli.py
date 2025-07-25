@@ -1,4 +1,5 @@
 import argparse
+from importlib.metadata import PackageNotFoundError, version
 from typing import List
 
 from .proxies import GenericProxyConfig, WebshareProxyConfig
@@ -91,6 +92,12 @@ class YouTubeTranscriptCli:
 
         return transcript.fetch()
 
+    def _get_version(self):
+        try:
+            return version("youtube-transcript-api")
+        except PackageNotFoundError:
+            return "unknown"
+
     def _parse_args(self):
         parser = argparse.ArgumentParser(
             description=(
@@ -98,6 +105,11 @@ class YouTubeTranscriptCli:
                 "It also works for automatically generated subtitles and it does not require a headless browser, like "
                 "other selenium based solutions do!"
             )
+        )
+        parser.add_argument(
+            "--version",
+            action="version",
+            version=f"%(prog)s, version {self._get_version()}",
         )
         parser.add_argument(
             "--list-transcripts",

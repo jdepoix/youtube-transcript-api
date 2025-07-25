@@ -1,8 +1,10 @@
 import pytest
+from importlib.metadata import PackageNotFoundError, version
 from unittest import TestCase
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import json
+import subprocess
 
 from youtube_transcript_api import (
     YouTubeTranscriptApi,
@@ -340,3 +342,29 @@ class TestYouTubeTranscriptCli(TestCase):
             proxy_config=None,
             cookie_path="blahblah.txt",
         )
+
+    def test_version_matches_metadata(self):
+        """
+        `youtube_transcript_api --version` should return the same version as in the package metadata.
+        """
+        expected_version_msg = (
+            f"youtube_transcript_api, version {version('youtube-transcript-api')}"
+        )
+
+        cli_version_msg = subprocess.run(
+            ["youtube_transcript_api", "--version"],
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.strip()
+
+        assert (
+            cli_version_msg == expected_version_msg
+        ), f"Expected version '{expected_version_msg}', but got '{cli_version_msg}'"
+
+    def test_get_version_package_not_found(self):
+        with patch(
+            "youtube_transcript_api._cli.version", side_effect=PackageNotFoundError
+        ):
+            cli = YouTubeTranscriptCli([])
+            assert cli._get_version() == "unknown"
