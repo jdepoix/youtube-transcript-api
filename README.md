@@ -392,6 +392,14 @@ ytt_api.fetch(video_id)
 ytt_api_2 = YouTubeTranscriptApi(http_client=http_client)
 # now shares cookies with ytt_api
 ytt_api_2.fetch(video_id)
+
+# browser impersonation (you'll need Python package "browserforge[all]" installed):
+
+from browserforge.headers import HeaderGenerator
+
+http_client = Session()
+http_client.headers = HeaderGenerator().generate()
+ytt_api = YouTubeTranscriptApi(http_client=http_client)
 ```
 
 ## Cookie Authentication
