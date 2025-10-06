@@ -594,5 +594,3 @@ If this project makes you happy by reducing your development time, you can make 
 coffee, or become a [Sponsor of this project](https://github.com/sponsors/jdepoix) :)  
 
 [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BAENLEW8VUJ6G&source=url)
-
-
