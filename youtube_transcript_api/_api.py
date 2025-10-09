@@ -1,19 +1,20 @@
-from typing import Optional, Iterable
-
-from requests import Session
-from requests.adapters import HTTPAdapter
-from urllib3 import Retry
-
+from typing import Optional, Iterable, List
 from .proxies import ProxyConfig
 
 from ._transcripts import TranscriptListFetcher, FetchedTranscript, TranscriptList
+from ._transcripts_async import (
+    AsyncTranscriptHandler,
+    BulkFetchResults,
+)
+
+from httpx import AsyncClient, AsyncHTTPTransport
 
 
 class YouTubeTranscriptApi:
     def __init__(
         self,
         proxy_config: Optional[ProxyConfig] = None,
-        http_client: Optional[Session] = None,
+        http_client: Optional[AsyncClient] = None,
     ):
         """
         Note on thread-safety: As this class will initialize a `requests.Session`
@@ -29,7 +30,7 @@ class YouTubeTranscriptApi:
             manually want to share cookies between different instances of
             `YouTubeTranscriptApi`, overwrite defaults, specify SSL certificates, etc.
         """
-        http_client = Session() if http_client is None else http_client
+        http_client = AsyncClient(timeout=20) if http_client is None else http_client
         http_client.headers.update({"Accept-Language": "en-US"})
         # Cookie auth has been temporarily disabled, as it is not working properly with
         # YouTube's most recent changes.
@@ -40,12 +41,10 @@ class YouTubeTranscriptApi:
             if proxy_config.prevent_keeping_connections_alive:
                 http_client.headers.update({"Connection": "close"})
             if proxy_config.retries_when_blocked > 0:
-                retry_config = Retry(
-                    total=proxy_config.retries_when_blocked,
-                    status_forcelist=[429],
+                transport = AsyncHTTPTransport(
+                    retries=proxy_config.retries_when_blocked
                 )
-                http_client.mount("http://", HTTPAdapter(max_retries=retry_config))
-                http_client.mount("https://", HTTPAdapter(max_retries=retry_config))
+                http_client._transport = transport
         self._fetcher = TranscriptListFetcher(http_client, proxy_config=proxy_config)
 
     def fetch(
@@ -70,7 +69,7 @@ class YouTubeTranscriptApi:
         return (
             self.list(video_id)
             .find_transcript(languages)
-            .fetch(preserve_formatting=preserve_formatting)
+            .fetch_sync(preserve_formatting=preserve_formatting)
         )
 
     def list(
@@ -124,4 +123,127 @@ class YouTubeTranscriptApi:
         :param video_id: the ID of the video you want to retrieve the transcript for.
             Make sure that this is the actual ID, NOT the full URL to the video!
         """
-        return self._fetcher.fetch(video_id)
+        return self._fetcher.fetch_sync(video_id)
+
+
+class YoutubeTranscriptAsyncApi:
+    def __init__(
+        self,
+        proxy_config: Optional[ProxyConfig] = None,
+        async_client: Optional[AsyncClient] = None,
+    ):
+        async_client = AsyncClient(timeout=20) if async_client is None else async_client
+        async_client.headers.update({"Accept-Language": "en-US"})
+
+        if proxy_config is not None:
+            async_client.proxies = proxy_config.to_requests_dict()
+            if proxy_config.prevent_keeping_connections_alive:
+                async_client.headers.update({"Connection": "close"})
+            if proxy_config.retries_when_blocked > 0:
+                transport = AsyncHTTPTransport(
+                    retries=proxy_config.retries_when_blocked
+                )
+                async_client._transport = transport
+
+        self._fetcher = TranscriptListFetcher(
+            async_client, proxy_config=proxy_config
+        )
+        self._handler = AsyncTranscriptHandler(self._fetcher, proxy_config)
+
+    async def fetch_single(
+        self,
+        video_id: str,
+        languages: Iterable[str] = ("en",),
+        preserve_formatting: bool = False,
+    ) -> FetchedTranscript:
+        """
+        Retrieves the transcript for a single video. This is just a shortcut for
+        calling:
+        `YouTubeTranscriptApi().list(video_id).find_transcript(languages).fetch(preserve_formatting=preserve_formatting)`
+
+        :param video_id: the ID of the video you want to retrieve the transcript for.
+            Make sure that this is the actual ID, NOT the full URL to the video!
+        :param languages: A list of language codes in a descending priority. For
+            example, if this is set to ["de", "en"] it will first try to fetch the
+            german transcript (de) and then fetch the english transcript (en) if
+            it fails to do so. This defaults to ["en"].
+        :param preserve_formatting: whether to keep select HTML text formatting
+        """
+
+        return await self._handler.fetch_single(
+            video_id, languages, preserve_formatting
+        )
+
+    async def fetch_all(
+        self,
+        video_ids: List[str],
+        languages: Iterable[str] = ("en",),
+        preserve_formatting: bool = False,
+    ) -> list[BulkFetchResults]:
+        """
+        Asynchronously retrieves transcripts for a list of video IDs concurrently.
+
+        :param video_ids: List of video IDs.
+        :param languages: List of language codes in descending priority (default: ["en"]).
+        :param preserve_formatting: Whether to keep HTML formatting.
+        :param continue_after_error: If True, skip failed video IDs and return partial results; else raise the first error.
+        :param log_errors: If True, collected errors will logged in console for more information.
+        :return: Dict of {video_id: FetchedTranscript}.
+        """
+        transcripts = await self._handler.fetch_bulk(
+            video_ids, languages, preserve_formatting
+        )
+        return transcripts
+
+    async def list(
+        self,
+        video_id: str,
+    ) -> TranscriptList:
+        """
+        Retrieves the list of transcripts which are available for a given video. It
+        returns a `TranscriptList` object which is iterable and provides methods to
+        filter the list of transcripts for specific languages. While iterating over
+        the `TranscriptList` the individual transcripts are represented by
+        `Transcript` objects, which provide metadata and can either be fetched by
+        calling `transcript.fetch()` or translated by calling `transcript.translate(
+        'en')`. Example:
+
+        ```
+        ytt_api = YouTubeTranscriptApi()
+
+        # retrieve the available transcripts
+        transcript_list = ytt_api.list('video_id')
+
+        # iterate over all available transcripts
+        for transcript in transcript_list:
+            # the Transcript object provides metadata properties
+            print(
+                transcript.video_id,
+                transcript.language,
+                transcript.language_code,
+                # whether it has been manually created or generated by YouTube
+                transcript.is_generated,
+                # a list of languages the transcript can be translated to
+                transcript.translation_languages,
+            )
+
+            # fetch the actual transcript data
+            print(transcript.fetch())
+
+            # translating the transcript will return another transcript object
+            print(transcript.translate('en').fetch())
+
+        # you can also directly filter for the language you are looking for, using the transcript list
+        transcript = transcript_list.find_transcript(['de', 'en'])
+
+        # or just filter for manually created transcripts
+        transcript = transcript_list.find_manually_created_transcript(['de', 'en'])
+
+        # or automatically generated ones
+        transcript = transcript_list.find_generated_transcript(['de', 'en'])
+        ```
+
+        :param video_id: the ID of the video you want to retrieve the transcript for.
+            Make sure that this is the actual ID, NOT the full URL to the video!
+        """
+        return await self._fetcher.fetch(video_id)

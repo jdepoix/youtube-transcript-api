@@ -8,8 +8,10 @@ from typing import List, Dict, Iterator, Iterable, Pattern, Optional
 from defusedxml import ElementTree
 
 import re
+import asyncio
 
 from requests import HTTPError, Session, Response
+from httpx import AsyncClient
 
 from .proxies import ProxyConfig
 from ._settings import WATCH_URL, INNERTUBE_CONTEXT, INNERTUBE_API_URL
@@ -103,7 +105,7 @@ def _raise_http_errors(response: Response, video_id: str) -> Response:
 class Transcript:
     def __init__(
         self,
-        http_client: Session,
+        http_client: AsyncClient,
         video_id: str,
         url: str,
         language: str,
@@ -127,14 +129,14 @@ class Transcript:
             for translation_language in translation_languages
         }
 
-    def fetch(self, preserve_formatting: bool = False) -> FetchedTranscript:
+    async def fetch(self, preserve_formatting: bool = False) -> FetchedTranscript:
         """
         Loads the actual transcript data.
         :param preserve_formatting: whether to keep select HTML text formatting
         """
         if "&exp=xpe" in self._url:
             raise PoTokenRequired(self.video_id)
-        response = self._http_client.get(self._url)
+        response = await self._http_client.get(self._url)
         snippets = _TranscriptParser(preserve_formatting=preserve_formatting).parse(
             _raise_http_errors(response, self.video_id).text,
         )
@@ -145,6 +147,10 @@ class Transcript:
             language_code=self.language_code,
             is_generated=self.is_generated,
         )
+    
+    def fetch_sync(self, preserve_formatting: bool = False) -> FetchedTranscript:
+        loop = asyncio.get_event_loop()
+        return loop.run_until_complete(self.fetch(preserve_formatting=preserve_formatting))
 
     def __str__(self) -> str:
         return '{language_code} ("{language}"){translation_description}'.format(
@@ -345,22 +351,26 @@ class TranscriptList:
 
 
 class TranscriptListFetcher:
-    def __init__(self, http_client: Session, proxy_config: Optional[ProxyConfig]):
+    def __init__(self, http_client: AsyncClient, proxy_config: Optional[ProxyConfig]):
         self._http_client = http_client
         self._proxy_config = proxy_config
 
-    def fetch(self, video_id: str) -> TranscriptList:
+    async def fetch(self, video_id: str) -> TranscriptList:
         return TranscriptList.build(
             self._http_client,
             video_id,
-            self._fetch_captions_json(video_id),
+            await self._fetch_captions_json(video_id),
         )
+    
+    def fetch_sync(self, video_id: str) -> TranscriptList:
+        loop = asyncio.get_event_loop()
+        return loop.run_until_complete(self.fetch(video_id))
 
-    def _fetch_captions_json(self, video_id: str, try_number: int = 0) -> Dict:
+    async def _fetch_captions_json(self, video_id: str, try_number: int = 0) -> Dict:
         try:
-            html = self._fetch_video_html(video_id)
+            html = await self._fetch_video_html(video_id)
             api_key = self._extract_innertube_api_key(html, video_id)
-            innertube_data = self._fetch_innertube_data(video_id, api_key)
+            innertube_data = await self._fetch_innertube_data(video_id, api_key)
             return self._extract_captions_json(innertube_data, video_id)
         except RequestBlocked as exception:
             retries = (
@@ -429,21 +439,22 @@ class TranscriptListFetcher:
             "CONSENT", "YES+" + match.group(1), domain=".youtube.com"
         )
 
-    def _fetch_video_html(self, video_id: str) -> str:
-        html = self._fetch_html(video_id)
+    async def _fetch_video_html(self, video_id: str) -> str:
+        html = await self._fetch_html(video_id)
         if 'action="https://consent.youtube.com/s"' in html:
             self._create_consent_cookie(html, video_id)
-            html = self._fetch_html(video_id)
+            html = await self._fetch_html(video_id)
             if 'action="https://consent.youtube.com/s"' in html:
                 raise FailedToCreateConsentCookie(video_id)
         return html
 
-    def _fetch_html(self, video_id: str) -> str:
-        response = self._http_client.get(WATCH_URL.format(video_id=video_id))
+    async def _fetch_html(self, video_id: str) -> str:
+        
+        response = await self._http_client.get(WATCH_URL.format(video_id=video_id))
         return unescape(_raise_http_errors(response, video_id).text)
 
-    def _fetch_innertube_data(self, video_id: str, api_key: str) -> Dict:
-        response = self._http_client.post(
+    async def _fetch_innertube_data(self, video_id: str, api_key: str) -> Dict:
+        response = await self._http_client.post(
             INNERTUBE_API_URL.format(api_key=api_key),
             json={
                 "context": INNERTUBE_CONTEXT,

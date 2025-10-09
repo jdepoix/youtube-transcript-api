@@ -1,5 +1,5 @@
 # ruff: noqa: F401
-from ._api import YouTubeTranscriptApi
+from ._api import YouTubeTranscriptApi, YoutubeTranscriptAsyncApi
 from ._transcripts import (
     TranscriptList,
     Transcript,
@@ -30,6 +30,7 @@ from ._errors import (
 
 __all__ = [
     "YouTubeTranscriptApi",
+    "YoutubeTranscriptAsyncApi",
     "TranscriptList",
     "Transcript",
     "FetchedTranscript",
