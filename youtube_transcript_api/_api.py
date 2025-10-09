@@ -1,13 +1,8 @@
 from typing import Optional, Iterable, List
-from requests import Session
-from requests.adapters import HTTPAdapter
-from urllib3 import Retry
-
 from .proxies import ProxyConfig
 
 from ._transcripts import TranscriptListFetcher, FetchedTranscript, TranscriptList
 from ._transcripts_async import (
-    TranscriptListFetcherAsync,
     AsyncTranscriptHandler,
     BulkFetchResults,
 )
@@ -19,7 +14,7 @@ class YouTubeTranscriptApi:
     def __init__(
         self,
         proxy_config: Optional[ProxyConfig] = None,
-        http_client: Optional[Session] = None,
+        http_client: Optional[AsyncClient] = None,
     ):
         """
         Note on thread-safety: As this class will initialize a `requests.Session`
@@ -35,7 +30,7 @@ class YouTubeTranscriptApi:
             manually want to share cookies between different instances of
             `YouTubeTranscriptApi`, overwrite defaults, specify SSL certificates, etc.
         """
-        http_client = Session() if http_client is None else http_client
+        http_client = AsyncClient(timeout=20) if http_client is None else http_client
         http_client.headers.update({"Accept-Language": "en-US"})
         # Cookie auth has been temporarily disabled, as it is not working properly with
         # YouTube's most recent changes.
@@ -46,12 +41,10 @@ class YouTubeTranscriptApi:
             if proxy_config.prevent_keeping_connections_alive:
                 http_client.headers.update({"Connection": "close"})
             if proxy_config.retries_when_blocked > 0:
-                retry_config = Retry(
-                    total=proxy_config.retries_when_blocked,
-                    status_forcelist=[429],
+                transport = AsyncHTTPTransport(
+                    retries=proxy_config.retries_when_blocked
                 )
-                http_client.mount("http://", HTTPAdapter(max_retries=retry_config))
-                http_client.mount("https://", HTTPAdapter(max_retries=retry_config))
+                http_client._transport = transport
         self._fetcher = TranscriptListFetcher(http_client, proxy_config=proxy_config)
 
     def fetch(
@@ -76,7 +69,7 @@ class YouTubeTranscriptApi:
         return (
             self.list(video_id)
             .find_transcript(languages)
-            .fetch(preserve_formatting=preserve_formatting)
+            .fetch_sync(preserve_formatting=preserve_formatting)
         )
 
     def list(
@@ -130,7 +123,7 @@ class YouTubeTranscriptApi:
         :param video_id: the ID of the video you want to retrieve the transcript for.
             Make sure that this is the actual ID, NOT the full URL to the video!
         """
-        return self._fetcher.fetch(video_id)
+        return self._fetcher.fetch_sync(video_id)
 
 
 class YoutubeTranscriptAsyncApi:
@@ -150,10 +143,9 @@ class YoutubeTranscriptAsyncApi:
                 transport = AsyncHTTPTransport(
                     retries=proxy_config.retries_when_blocked
                 )
-                async_client.mount("http://", transport)
-                async_client.mount("https://", transport)
+                async_client._transport = transport
 
-        self._fetcher = TranscriptListFetcherAsync(
+        self._fetcher = TranscriptListFetcher(
             async_client, proxy_config=proxy_config
         )
         self._handler = AsyncTranscriptHandler(self._fetcher, proxy_config)
