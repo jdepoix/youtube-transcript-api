@@ -54,6 +54,14 @@
       <img alt="Dumpling AI" src="https://www.dumplingai.com/logos/logo-light.svg" height="40px" style="vertical-align: middle;">
     </picture>
   </a>
+  &nbsp;&nbsp;
+  <a href="https://vcyon.com">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://vcyon.com/logo/vcyon-logo-text-dark.png">
+      <source media="(prefers-color-scheme: light)" srcset="https://vcyon.com/logo/vcyon-logo-text-light.png">
+      <img alt="VCyon" src="https://vcyon.com/logo/vcyon-logo-text-light.png" height="40px" style="vertical-align: middle;">
+    </picture>
+  </a>
 </p>
 
 ## Install
