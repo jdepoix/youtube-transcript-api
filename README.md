@@ -534,7 +534,7 @@ youtube_transcript_api "\-abc123"
 
 ### Working around IP bans using the CLI
 
-If you are running into `ReqestBlocked` or `IpBlocked` errors, because YouTube blocks your IP, you can work around this 
+If you are running into `RequestBlocked` or `IpBlocked` errors, because YouTube blocks your IP, you can work around this 
 using residential proxies as explained in 
 [Working around IP bans](#working-around-ip-bans-requestblocked-or-ipblocked-exception). To use
 [Webshare "Residential" proxies](https://www.webshare.io/?referral_code=w0xno53eb50g) through the CLI, you will have to 
