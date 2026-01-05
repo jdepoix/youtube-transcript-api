@@ -101,7 +101,7 @@ class YouTubeTranscriptCli:
     def _parse_args(self):
         parser = argparse.ArgumentParser(
             description=(
-                "This is an python API which allows you to get the transcripts/subtitles for a given YouTube video. "
+                "This is a python API which allows you to get the transcripts/subtitles for a given YouTube video. "
                 "It also works for automatically generated subtitles and it does not require a headless browser, like "
                 "other selenium based solutions do!"
             )
