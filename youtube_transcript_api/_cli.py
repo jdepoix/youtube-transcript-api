@@ -39,6 +39,7 @@ class YouTubeTranscriptCli:
 
         ytt_api = YouTubeTranscriptApi(
             proxy_config=proxy_config,
+            cookies_from_browser=parsed_args.cookies_from_browser,
         )
 
         for video_id in parsed_args.video_ids:
@@ -188,13 +189,27 @@ class YouTubeTranscriptCli:
             metavar="URL",
             help="Use the specified HTTPS proxy.",
         )
-        # Cookie auth has been temporarily disabled, as it is not working properly with
-        # YouTube's most recent changes.
-        # parser.add_argument(
-        #     "--cookies",
-        #     default=None,
-        #     help="The cookie file that will be used for authorization with youtube.",
-        # )
+        parser.add_argument(
+            "--cookies-from-browser",
+            dest="cookies_from_browser",
+            default=None,
+            choices=[
+                "chrome",
+                "firefox",
+                "edge",
+                "brave",
+                "chromium",
+                "opera",
+                "vivaldi",
+            ],
+            help=(
+                "Extract cookies from the specified browser for authentication. "
+                "This enables access to age-restricted videos. "
+                "Supported browsers: chrome, firefox, edge, brave, chromium, opera, vivaldi. "
+                "Note: Chrome-based browsers require the 'cryptography' package. "
+                "Install with: pip install 'youtube-transcript-api[cookies]'"
+            ),
+        )
 
         return self._sanitize_video_ids(parser.parse_args(self._args))
 
