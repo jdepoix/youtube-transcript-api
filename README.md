@@ -404,9 +404,61 @@ ytt_api_2.fetch(video_id)
 
 ## Cookie Authentication
 
-Some videos are age restricted, so this module won't be able to access those videos without some sort of
-authentication. Unfortunately, some recent changes to the YouTube API have broken the current implementation of cookie 
-based authentication, so this feature is currently not available.
+Some videos are age-restricted, so this module won't be able to access those videos without authentication. You can authenticate by extracting cookies from your browser, which allows access to age-restricted content.
+
+### Automatic Browser Cookie Extraction
+
+The easiest way to authenticate is by extracting cookies directly from your browser:
+
+```python
+from youtube_transcript_api import YouTubeTranscriptApi
+
+# Extract cookies from Chrome
+ytt_api = YouTubeTranscriptApi(cookies_from_browser='chrome')
+transcript = ytt_api.fetch(video_id)
+```
+
+**Supported browsers:**
+- `chrome` - Google Chrome
+- `firefox` - Mozilla Firefox
+- `edge` - Microsoft Edge
+- `brave` - Brave Browser
+- `chromium` - Chromium
+- `opera` - Opera
+- `vivaldi` - Vivaldi
+
+**Installation:**
+
+For Chrome-based browsers (Chrome, Edge, Brave, etc.), you need the `cryptography` package:
+
+```bash
+pip install 'youtube-transcript-api[cookies]'
+```
+
+For Firefox, no additional dependencies are required (cookies are stored unencrypted).
+
+**How it works:**
+
+1. The library reads your browser's cookie database (SQLite file)
+2. For Chrome-based browsers, cookies are decrypted using platform-specific methods:
+   - **Linux**: PBKDF2 with hardcoded password or GNOME Keyring/KWallet
+   - **macOS**: PBKDF2 with password from macOS Keychain
+   - **Windows**: DPAPI (Data Protection API) + AES-GCM
+3. YouTube cookies are extracted and used for authentication
+
+**Important notes:**
+- Make sure you're logged into YouTube in the specified browser
+- The browser can be open or closed (the library copies the database to avoid lock issues)
+- Your cookies are only used locally and never transmitted anywhere
+- Firefox support works without additional dependencies as cookies aren't encrypted
+
+**Example with custom profile:**
+
+```python
+# Use a specific Chrome profile
+ytt_api = YouTubeTranscriptApi(cookies_from_browser='chrome')
+# Note: Custom profile selection not yet implemented, uses 'Default' profile
+```
 
 ## Using Formatters
 Formatters are meant to be an additional layer of processing of the transcript you pass it. The goal is to convert a
@@ -555,10 +607,32 @@ youtube_transcript_api <first_video_id> <second_video_id> --http-proxy http://us
 
 ### Cookie Authentication using the CLI
 
-To authenticate using cookies through the CLI as explained in [Cookie Authentication](#cookie-authentication) run:
+To authenticate using browser cookies through the CLI as explained in [Cookie Authentication](#cookie-authentication), run:
 
+```bash
+youtube_transcript_api <first_video_id> <second_video_id> --cookies-from-browser chrome
 ```
-youtube_transcript_api <first_video_id> <second_video_id> --cookies /path/to/your/cookies.txt
+
+This works with any supported browser:
+
+```bash
+# Chrome
+youtube_transcript_api VIDEO_ID --cookies-from-browser chrome
+
+# Firefox  
+youtube_transcript_api VIDEO_ID --cookies-from-browser firefox
+
+# Edge
+youtube_transcript_api VIDEO_ID --cookies-from-browser edge
+
+# Brave
+youtube_transcript_api VIDEO_ID --cookies-from-browser brave
+```
+
+Remember to install the optional dependencies for Chrome-based browsers:
+
+```bash
+pip install 'youtube-transcript-api[cookies]'
 ```
 
 ## Warning  
