@@ -8,9 +8,7 @@ version = "1.2.3"
 description = "This is a python API which allows you to get the transcripts/subtitles for a given YouTube video. It also works for automatically generated subtitles, supports translating subtitles and it does not require a headless browser, like other selenium based solutions do!"
 readme = "README.md"
 license = "MIT"
-authors = [
-    "Jonas Depoix <jonas.depoix@web.de>",
-]
+authors = ["Jonas Depoix <jonas.depoix@web.de>"]
 homepage = "https://github.com/jdepoix/youtube-transcript-api"
 repository = "https://github.com/jdepoix/youtube-transcript-api"
 keywords = [
@@ -52,6 +50,11 @@ precommit.shell = "poe format && poe lint && poe coverage"
 python = ">=3.8,<3.15"
 requests = "*"
 defusedxml = "^0.7.1"
+cryptography = { version = "*", optional = true }
+secretstorage = { version = "*", optional = true, markers = "sys_platform == 'linux'" }
+
+[tool.poetry.extras]
+cookies = ["cryptography", "secretstorage"]
 
 [tool.poetry.group.test]
 optional = true
@@ -91,6 +94,6 @@ exclude_lines = [
     # Don't complain about empty stubs of abstract methods
     "@abstractmethod",
     "@abstractclassmethod",
-    "@abstractstaticmethod"
+    "@abstractstaticmethod",
 ]
 show_missing = true
