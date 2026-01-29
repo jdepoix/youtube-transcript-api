@@ -160,8 +160,12 @@ class WebshareProxyConfig(GenericProxyConfig):
         location_codes = "".join(
             f"-{location_code.upper()}" for location_code in self._filter_ip_locations
         )
+        username = self.proxy_username
+        suffix = "-rotate"
+        if username.endswith(suffix):
+            username = username[: -len(suffix)]
         return (
-            f"http://{self.proxy_username}{location_codes}-rotate:{self.proxy_password}"
+            f"http://{username}{location_codes}{suffix}:{self.proxy_password}"
             f"@{self.domain_name}:{self.proxy_port}/"
         )
 

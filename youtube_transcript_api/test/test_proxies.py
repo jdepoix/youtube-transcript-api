@@ -91,3 +91,15 @@ class TestWebshareProxyConfig:
             "http": "http://user-DE-US-rotate:password@p.webshare.io:80/",
             "https": "http://user-DE-US-rotate:password@p.webshare.io:80/",
         }
+
+    def test_to_requests_dict__with_rotate_suffix_in_username(self):
+        proxy_config = WebshareProxyConfig(
+            proxy_username="user-rotate", proxy_password="password"
+        )
+
+        request_dict = proxy_config.to_requests_dict()
+
+        assert request_dict == {
+            "http": "http://user-rotate:password@p.webshare.io:80/",
+            "https": "http://user-rotate:password@p.webshare.io:80/",
+        }
