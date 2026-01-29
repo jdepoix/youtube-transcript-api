@@ -3,6 +3,9 @@
 </h1>
 
 <p align="center">
+  <a href="https://github.com/sponsors/jdepoix">
+    <img src="https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86" alt="Sponsor">
+  </a>
   <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BAENLEW8VUJ6G&source=url">
     <img src="https://img.shields.io/badge/Donate-PayPal-green.svg" alt="Donate">
   </a>
@@ -52,14 +55,6 @@
       <source media="(prefers-color-scheme: dark)" srcset="https://www.dumplingai.com/logos/logo-dark.svg">
       <source media="(prefers-color-scheme: light)" srcset="https://www.dumplingai.com/logos/logo-light.svg">
       <img alt="Dumpling AI" src="https://www.dumplingai.com/logos/logo-light.svg" height="40px" style="vertical-align: middle;">
-    </picture>
-  </a>
-  &nbsp;&nbsp;
-  <a href="https://vcyon.com">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://vcyon.com/logo/vcyon-logo-text-dark.png">
-      <source media="(prefers-color-scheme: light)" srcset="https://vcyon.com/logo/vcyon-logo-text-light.png">
-      <img alt="VCyon" src="https://vcyon.com/logo/vcyon-logo-text-light.png" height="40px" style="vertical-align: middle;">
     </picture>
   </a>
 </p>
@@ -594,3 +589,4 @@ If this project makes you happy by reducing your development time, you can make 
 coffee, or become a [Sponsor of this project](https://github.com/sponsors/jdepoix) :)  
 
 [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BAENLEW8VUJ6G&source=url)
+
