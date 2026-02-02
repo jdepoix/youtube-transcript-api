@@ -1,0 +1,33 @@
+.TH YOUTUBE_TRANSCRIPT_API 1 "February 2026" "1.2.4" "User Commands"
+.SH NAME
+youtube_transcript_api \- retrieve transcripts and subtitles from YouTube videos
+.SH SYNOPSIS
+.B youtube_transcript_api
+[\fIvideo_id\fR ...] [\fIoptions\fR]
+.SH DESCRIPTION
+\fByoutube_transcript_api\fR is a command line interface to retrieve transcripts
+and subtitles for a given YouTube video[cite: 2]. It supports automatically generated
+subtitles, translations, and does not require a headless browser[cite: 2].
+.SH OPTIONS
+.TP
+.BI \fIvideo_id\fR
+The ID(s) of the YouTube video(s) to retrieve transcripts for.
+.TP
+.B \-\-list
+List available transcripts for the given video ID.
+.TP
+.BI \-\-languages " lang1 lang2"
+Specify a list of language codes in order of priority.
+.TP
+.BI \-\-cookies " cookie_path"
+Path to a cookies file for authentication (required for some videos).
+.TP
+.B \-\-format
+Specify output format (json, text).
+.SH EXAMPLES
+.B youtube_transcript_api GJLlxj_dtq8
+.PP
+.B youtube_transcript_api GJLlxj_dtq8 --languages de en
+.SH AUTHOR
+Maintained by the Debian Python Team <team+python@tracker.debian.org>[cite: 2].
+Upstream author: Jonas Depoix <jonas.depoix@web.de>[cite: 2, 4].
