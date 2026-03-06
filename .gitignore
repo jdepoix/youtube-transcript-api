@@ -9,3 +9,11 @@ upload_new_version.sh
 .coverage
 coverage.xml
 .DS_STORE
+
+# Credentials - NEVER commit
+client_secret.json
+*-*.json
+youtubeanalizer23-*.json
+
+# Personal data
+data/

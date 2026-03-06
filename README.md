@@ -173,6 +173,60 @@ and `<b>` (bold).
 YouTubeTranscriptApi().fetch(video_ids, languages=['de', 'en'], preserve_formatting=True)
 ```
 
+## History inspector demo (OAuth + SQLite)
+
+This repo now includes a demo module and Flask app that syncs your YouTube history into a local SQLite DB, hides
+irrelevant videos manually ("ausblenden"), fetches transcripts in DE/EN, and generates a word cloud.
+
+Files:
+
+- `yt_history_inspector/` (Python module)
+- `demo_app/` (Flask app + neon UI)
+- `docker-compose.yml` (run locally)
+
+### Quick start (Docker)
+
+1. Create an OAuth client in Google Cloud Console (YouTube Data API v3) and download `client_secret.json`.
+2. Place `client_secret.json` at the repo root.
+3. Run:
+
+```
+docker compose up --build
+```
+
+Open `http://localhost:8080` and click **Connect YouTube**, then **Sync**.
+
+> Note: YouTube does not always expose full watch history via API. The demo uses playlist ID `HL`; if Google
+> blocks it for your account, use the Takeout import flow below.
+
+### Google Takeout import (recommended fallback)
+
+1. Go to Google Takeout and export **YouTube and YouTube Music**.
+2. Download and unzip the archive.
+3. Find the watch history file:
+   - `Takeout/YouTube and YouTube Music/history/watch-history.json`
+   - or `Takeout/YouTube and YouTube Music/history/watch-history.csv`
+4. In the app, open **Import** and upload the file.
+
+The import will also capture:
+- Search history
+- Subscriptions
+- Comments
+- Playlists + playlist items
+- Video metadata/texts (uploads)
+
+### CLI import (unzip + import)
+
+```
+yt_takeout_import "/Users/kamir/Downloads/takeout-2026*.zip"
+```
+
+Options:
+- `--db-path data/app.db`
+- `--client-secret client_secret.json`
+- `--extract-dir data/takeout_extract`
+- `--clean`
+
 ### List available transcripts
 
 If you want to list all transcripts which are available for a given video you can call:
@@ -581,6 +635,54 @@ poe lint
 If you just want to make sure that your code passes all the necessary checks to get a green build, you can simply run:
 ```shell
 poe precommit
+```
+
+## Quick Fetch Script
+
+`do_fetch.py` fetches a transcript and copies it straight to your macOS clipboard:
+
+```python
+python3 do_fetch.py
+```
+
+Edit the `video_id` variable in the script to target a different video. The full transcript text is printed to stdout and automatically copied via `pbcopy`.
+
+## macOS Menu Bar App
+
+A standalone menu bar app (`YT Transcript`) lets you fetch transcripts without touching the terminal.
+
+### Features
+
+- **YouTube icon in the menu bar** -- click to access all functions
+- **Fetch Transcript...** -- enter a video ID or full YouTube URL in a dialog
+- **Browser preview** -- the video opens in your default browser so you can verify it
+- **Progress indicator** -- the menu bar title and Status line update at each step (connecting, processing, copying)
+- **Clipboard copy** -- the full transcript is copied to your clipboard automatically
+- **macOS notification** -- you get a system notification when the transcript is ready (or if an error occurs)
+- **History** -- all fetched transcripts are saved; click any history entry to re-copy it to clipboard
+- **Logging** -- every step is logged to `~/Library/Logs/YTTranscript.log`; accessible via the "Open Log File" menu item
+
+### Install & Run
+
+```bash
+# Install dependencies
+pip3 install rumps pyobjc-framework-Cocoa defusedxml requests
+
+# Run directly (appears in menu bar)
+python3 yt_menubar.py
+
+# Or build a standalone .app and install it
+python3 setup_app.py py2app
+cp -R "dist/YT Transcript.app" /Applications/
+open "/Applications/YT Transcript.app"
+```
+
+### Rebuild after changes
+
+```bash
+rm -rf build dist
+python3 setup_app.py py2app
+cp -R "dist/YT Transcript.app" /Applications/
 ```
 
 ## Donations

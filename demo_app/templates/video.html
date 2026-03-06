@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <section class="panel">
+    <div class="panel__header">
+      <div>
+        <h2>{{ video.title }}</h2>
+        <p class="muted">{{ video.channel_title }}</p>
+      </div>
+      <div class="panel__actions">
+        {% if video.hidden %}
+          <form method="post" action="{{ url_for('show', video_id=video.video_id) }}">
+            <button class="btn btn--primary" type="submit">Show</button>
+          </form>
+        {% else %}
+          <form method="post" action="{{ url_for('hide', video_id=video.video_id) }}">
+            <input type="hidden" name="reason" value="manual">
+            <button class="btn btn--warn" type="submit">Hide</button>
+          </form>
+        {% endif %}
+        <a class="btn btn--ghost" href="{{ url_for('timeline') }}">Back</a>
+      </div>
+    </div>
+    <div class="card">
+      <p><strong>Video ID:</strong> {{ video.video_id }}</p>
+      <p><strong>Published:</strong> {{ video.published_at or "n/a" }}</p>
+      <p><strong>Views:</strong> {{ video.view_count or "n/a" }}</p>
+    </div>
+    <div class="card">
+      <h3>Transcripts</h3>
+      {% for transcript in video.transcripts %}
+        <div class="transcript">
+          <div class="pill">{{ transcript.language_code }}</div>
+          <p class="muted">{{ "auto" if transcript.is_generated else "manual" }}</p>
+          <pre>{{ transcript.transcript_text }}</pre>
+        </div>
+      {% else %}
+        <p class="muted">No transcripts stored yet.</p>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}

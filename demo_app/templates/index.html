@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <section class="hero">
+    <div class="hero__copy">
+      <p class="pill">Phase 1 · OAuth · Manual relevance</p>
+      <h1>Inspect your YouTube history with a neon timeline and transcript intelligence.</h1>
+      <p class="hero__subtitle">
+        Connect your account, fetch your recent watch history, hide what doesn't matter,
+        and build word clouds from the videos that count.
+      </p>
+      {% if error %}
+        <div class="alert">{{ error }}</div>
+      {% endif %}
+      <div class="hero__actions">
+        <a class="btn btn--primary" href="{{ url_for('auth_start') }}">Connect YouTube</a>
+        <a class="btn btn--ghost" href="{{ url_for('timeline') }}">View Timeline</a>
+      </div>
+      <div class="hero__notes">
+        <span>Language: DE → EN fallback</span>
+        <span>History source: Playlist ID HL</span>
+      </div>
+    </div>
+    <div class="hero__panel">
+      <div class="card card--glow">
+        <h3>What you get</h3>
+        <ul>
+          <li>Personal watch timeline</li>
+          <li>Manual relevance toggles</li>
+          <li>Transcript collection</li>
+          <li>Word cloud insights</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Next steps</h3>
+        <p>Click Sync after OAuth to pull the latest history + transcripts.</p>
+      </div>
+    </div>
+  </section>
+{% endblock %}

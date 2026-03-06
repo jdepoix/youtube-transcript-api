@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Neon History Inspector</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    >
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  </head>
+  <body>
+    <div class="bg-orb bg-orb--one"></div>
+    <div class="bg-orb bg-orb--two"></div>
+    <div class="bg-orb bg-orb--three"></div>
+    <header class="nav">
+      <div class="brand">
+        <span class="brand__dot"></span>
+        <span class="brand__text">Neon History Inspector</span>
+      </div>
+      <nav class="nav__links">
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('timeline') }}">Timeline</a>
+        <a href="{{ url_for('sync') }}">Sync</a>
+      </nav>
+    </header>
+    <main class="main">
+      {% block content %}{% endblock %}
+    </main>
+  </body>
+</html>

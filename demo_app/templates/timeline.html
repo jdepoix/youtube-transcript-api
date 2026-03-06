@@ -1,0 +1,87 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <section class="panel">
+    <div class="panel__header">
+      <div>
+        <h2>Timeline</h2>
+        <p class="muted">Only visible videos are shown. Use hide to "ausblenden".</p>
+      </div>
+      <div class="panel__actions">
+        <a class="btn btn--ghost" href="{{ url_for('sync') }}">Sync</a>
+        <a class="btn btn--primary" href="{{ url_for('wordcloud') }}">Word Cloud</a>
+      </div>
+    </div>
+    <form class="filter-bar" method="get" action="{{ url_for('timeline') }}">
+      <label class="filter-pill">
+        <input type="checkbox" name="include_hidden" value="1" {% if include_hidden %}checked{% endif %}>
+        <span>Show hidden</span>
+      </label>
+      <label class="filter-pill">
+        <input type="checkbox" name="no_transcript" value="1" {% if no_transcript %}checked{% endif %}>
+        <span>No transcript</span>
+      </label>
+      <input type="hidden" name="per_page" value="{{ per_page }}">
+      <button class="btn btn--ghost btn--small" type="submit">Apply</button>
+    </form>
+    {% if error %}
+      <div class="alert">{{ error }}</div>
+    {% endif %}
+    <div class="timeline">
+      {% for day in timeline %}
+        <div class="timeline__day">
+          <div class="timeline__date">{{ day.date }}</div>
+          <div class="timeline__items">
+            {% for item in day["items"] %}
+              <div class="card timeline__item">
+                <div class="timeline__meta">
+                  <div class="timeline__info">
+                    <img class="timeline__thumb" src="https://i.ytimg.com/vi/{{ item.video_id }}/hqdefault.jpg" alt="thumbnail">
+                    <div>
+                      <h4>{{ item.title or item.video_id }}</h4>
+                      <p class="muted">{{ item.channel_title or "Unknown channel" }}</p>
+                    </div>
+                  </div>
+                  <div class="timeline__actions">
+                    <a class="btn btn--ghost btn--small" href="{{ url_for('video_detail', video_id=item.video_id) }}">Details</a>
+                    {% if item.has_transcript %}
+                      <a class="btn btn--primary btn--small" href="{{ url_for('video_detail', video_id=item.video_id) }}">Show transcript</a>
+                    {% else %}
+                      <form method="post" action="{{ url_for('get_transcript', video_id=item.video_id) }}">
+                        <button class="btn btn--ghost btn--small" type="submit">Get transcript</button>
+                      </form>
+                    {% endif %}
+                    <form method="post" action="{{ url_for('hide', video_id=item.video_id) }}">
+                      <input type="hidden" name="reason" value="manual">
+                      <button class="btn btn--warn btn--small" type="submit">
+                        {% if item.hidden %}Hidden{% else %}Hide{% endif %}
+                      </button>
+                    </form>
+                  </div>
+                </div>
+                <div class="timeline__time">{{ item.watched_at }}</div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% else %}
+        <div class="card">
+          <p>No history loaded yet. Click Sync to pull your recent videos.</p>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="pagination">
+      {% if has_prev %}
+        <a class="btn btn--ghost" href="{{ url_for('timeline', page=page-1, per_page=per_page, include_hidden='1' if include_hidden else None, no_transcript='1' if no_transcript else None) }}">Previous</a>
+      {% else %}
+        <span class="btn btn--ghost btn--disabled">Previous</span>
+      {% endif %}
+      <span class="muted">Page {{ page }}</span>
+      {% if has_next %}
+        <a class="btn btn--ghost" href="{{ url_for('timeline', page=page+1, per_page=per_page, include_hidden='1' if include_hidden else None, no_transcript='1' if no_transcript else None) }}">Next</a>
+      {% else %}
+        <span class="btn btn--ghost btn--disabled">Next</span>
+      {% endif %}
+    </div>
+  </section>
+{% endblock %}

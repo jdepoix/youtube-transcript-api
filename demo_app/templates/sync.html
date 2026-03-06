@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <section class="panel">
+    <h2>Sync Results</h2>
+    <div class="card">
+      <p>History synced: <strong>{{ result.synced }}</strong></p>
+      {% if result.error %}
+        <p class="alert">Error: {{ result.error }}</p>
+        <p class="muted">{{ result.hint }}</p>
+      {% endif %}
+      {% if transcript_result.queued is defined %}
+        <p>Transcripts queued: <strong>{{ transcript_result.queued }}</strong></p>
+      {% endif %}
+      {% if transcript_result.synced is defined %}
+        <p>Transcripts synced: <strong>{{ transcript_result.synced }}</strong></p>
+      {% endif %}
+      {% if transcript_result.blocked is defined %}
+        <p class="muted">Blocked: {{ transcript_result.blocked }}</p>
+      {% endif %}
+      {% if transcript_result.deferred is defined %}
+        <p class="muted">Deferred: {{ transcript_result.deferred }}</p>
+      {% endif %}
+    </div>
+    <div class="actions-row">
+      <a class="btn btn--primary" href="{{ url_for('timeline') }}">Go to Timeline</a>
+      <a class="btn btn--ghost" href="{{ url_for('index') }}">Back Home</a>
+    </div>
+  </section>
+{% endblock %}

@@ -38,6 +38,7 @@ classifiers = [
 
 [tool.poetry.scripts]
 youtube_transcript_api = "youtube_transcript_api.__main__:main"
+yt_takeout_import = "yt_history_inspector.takeout_import:main"
 
 [tool.poe.tasks]
 test = "pytest youtube_transcript_api"
@@ -66,6 +67,17 @@ optional = true
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.6.8"
+
+[tool.poetry.group.demo]
+optional = true
+
+[tool.poetry.group.demo.dependencies]
+flask = "^3.0.3"
+google-auth = "^2.35.0"
+google-auth-oauthlib = "^1.2.1"
+google-api-python-client = "^2.146.0"
+wordcloud = "^1.9.3"
+pillow = "^10.4.0"
 
 [tool.coverage.run]
 source = ["youtube_transcript_api"]

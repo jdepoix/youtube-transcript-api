@@ -1,0 +1,13 @@
+services:
+  ythi:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      YTHI_BASE_URL: "http://localhost:8080"
+      YTHI_CLIENT_SECRET: "/app/client_secret.json"
+      YTHI_DB_PATH: "/app/data/app.db"
+      YTHI_HISTORY_PLAYLIST_ID: "HL"
+    volumes:
+      - ./data:/app/data
+      - ./client_secret.json:/app/client_secret.json:ro
