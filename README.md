@@ -9,19 +9,17 @@ Built on top of [youtube-transcript-api](https://github.com/jdepoix/youtube-tran
 **One-liner** (downloads the latest release and installs to `/Applications`):
 
 ```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/kamir/youtube-transcript-api/kamir/yt-tools/tools/install.sh)"
+curl -fsSL 'https://api.github.com/repos/kamir/youtube-transcript-api/contents/tools/install.sh?ref=kamir/yt-tools' -H 'Accept: application/vnd.github.raw' | bash
 ```
 
-**Manual** (build from source):
+**From source:**
 
 ```bash
 git clone https://github.com/kamir/youtube-transcript-api.git
 cd youtube-transcript-api
 git checkout kamir/yt-tools
-pip3 install rumps pyobjc-framework-Cocoa defusedxml requests py2app
-python3 setup_app.py py2app
-cp -R "dist/YT Transcript.app" /Applications/
-open "/Applications/YT Transcript.app"
+tools/build.sh
+tools/deploy.sh
 ```
 
 ## How it works
@@ -44,20 +42,27 @@ open "/Applications/YT Transcript.app"
 | History | Last 20 transcripts stored; re-copy any entry from the History submenu |
 | Logging | All activity logged to `~/Library/Logs/YTTranscript.log` |
 
-## Release (maintainer)
+## Lifecycle scripts
+
+All scripts live in `tools/`. Run from the repo root.
+
+| Script | What it does |
+|--------|-------------|
+| `tools/status.sh` | Show install, running, build, log, and history status |
+| `tools/pull.sh` | Pull latest changes from remote |
+| `tools/build.sh` | Clean build the .app bundle |
+| `tools/deploy.sh` | Stop running instance, install to /Applications, launch |
+| `tools/update.sh` | **Pull + build + deploy** (one command) |
+| `tools/start.sh` | Launch the installed app |
+| `tools/stop.sh` | Stop the running app |
+| `tools/uninstall.sh` | Remove app, data, and logs |
+| `tools/release.sh` | Build + package zip for a GitHub release |
+| `tools/install.sh` | Remote install from latest GitHub release |
+
+**Daily workflow** -- pull the latest and redeploy:
 
 ```bash
-tools/release.sh 1.1.0
-```
-
-This builds the `.app`, zips it, and prints the `git tag` + `gh release create` commands to run.
-
-## Rebuild after changes
-
-```bash
-rm -rf build dist
-python3 setup_app.py py2app
-cp -R "dist/YT Transcript.app" /Applications/
+tools/update.sh
 ```
 
 ## Credits
