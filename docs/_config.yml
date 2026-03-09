@@ -1,0 +1,24 @@
+title: YT Tools
+description: YouTube Transcript Toolkit — fetch, inspect, and analyze YouTube transcripts
+remote_theme: pages-themes/minimal@v0.2.0
+plugins:
+  - jekyll-remote-theme
+
+baseurl: /youtube-transcript-api
+url: https://kamir.github.io
+
+nav:
+  - title: Home
+    url: /
+  - title: Getting Started
+    url: /getting-started
+  - title: Authentication
+    url: /authentication
+  - title: Menu Bar App
+    url: /menubar-app
+  - title: History Inspector
+    url: /history-inspector
+  - title: ER1 Integration
+    url: /requirements-er1-integration
+  - title: Roadmap
+    url: /roadmap
