@@ -50,7 +50,6 @@ precommit.shell = "poe format && poe lint && poe coverage"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.15"
-requests = "*"
 defusedxml = "^0.7.1"
 aiohttp = "^3.13.3"
 
