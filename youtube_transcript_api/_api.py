@@ -2,6 +2,7 @@ from typing import Optional, Iterable
 
 from requests import Session
 from requests.adapters import HTTPAdapter
+from aiohttp import ClientSession
 from urllib3 import Retry
 
 from .proxies import ProxyConfig
@@ -125,3 +126,48 @@ class YouTubeTranscriptApi:
             Make sure that this is the actual ID, NOT the full URL to the video!
         """
         return self._fetcher.fetch(video_id)
+
+class YouTubeTranscriptAsyncApi:
+    def __init__(
+        self,
+        proxy_config: Optional[ProxyConfig] = None,
+        http_client: Optional[ClientSession] = None,
+    ):
+        self._owns_session = http_client is None
+        self._http_client = http_client or ClientSession()
+
+        self._http_client.headers.update({"Accept-Language": "en-US"})
+
+        if proxy_config and proxy_config.prevent_keeping_connections_alive:
+            self._http_client.headers.update({"Connection": "close"})
+
+        self._fetcher = TranscriptListFetcher(
+            self._http_client, proxy_config=proxy_config
+        )
+
+    async def close(self):
+        if self._owns_session and not self._http_client.closed:
+            await self._http_client.close()
+
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, exc_type, exc, tb):
+        await self.close()
+        return False
+
+    async def fetch(
+        self,
+        video_id: str,
+        languages: Iterable[str] = ("en",),
+        preserve_formatting: bool = False,
+    ) -> FetchedTranscript:
+        transcript_list = await self.list(video_id)
+        transcript = transcript_list.find_transcript(languages)
+        return await transcript.fetch(preserve_formatting=preserve_formatting)
+
+    async def list(
+        self,
+        video_id: str,
+    ) -> TranscriptList:
+        return await self._fetcher.fetch(video_id)
