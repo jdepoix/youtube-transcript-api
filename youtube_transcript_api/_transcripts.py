@@ -109,6 +109,7 @@ class Transcript:
         language_code: str,
         is_generated: bool,
         translation_languages: List[_TranslationLanguage],
+        proxy_url: Optional[str] = None
     ):
         """
         You probably don't want to initialize this directly. Usually you'll access Transcript objects using a
@@ -125,6 +126,7 @@ class Transcript:
             translation_language.language_code: translation_language.language
             for translation_language in translation_languages
         }
+        self._proxy_url = proxy_url
 
     async def fetch(self, preserve_formatting: bool = False) -> FetchedTranscript:
         """
@@ -134,8 +136,8 @@ class Transcript:
         if "&exp=xpe" in self._url:
             raise PoTokenRequired(self.video_id)
         
-        async with self._http_client.get(self._url) as response:
-            await self._raise_http_errors(response, self.video_id)
+        async with self._http_client.get(self._url, proxy=self._proxy_url) as response:
+            await _raise_http_errors(response, self.video_id)
             raw_text = await response.text()
             snippets = _TranscriptParser(preserve_formatting=preserve_formatting).parse(raw_data=raw_text)
             return FetchedTranscript(
@@ -205,7 +207,7 @@ class TranscriptList:
 
     @staticmethod
     def build(
-        http_client: ClientSession, video_id: str, captions_json: Dict
+        http_client: ClientSession, video_id: str, captions_json: dict, proxy_url: Optional[str] = None
     ) -> "TranscriptList":
         """
         Factory method for TranscriptList.
@@ -240,6 +242,7 @@ class TranscriptList:
                 caption["languageCode"],
                 caption.get("kind", "") == "asr",
                 translation_languages if caption.get("isTranslatable", False) else [],
+                proxy_url=proxy_url
             )
 
         return TranscriptList(
@@ -350,10 +353,13 @@ class TranscriptListFetcher:
         self._proxy_config = proxy_config
 
     async def fetch(self, video_id: str) -> TranscriptList:
+        proxy_url = self._proxy_config.to_requests_dict().get('https') if self._proxy_config else None
+
         return TranscriptList.build(
             self._http_client,
             video_id,
             await self._fetch_captions_json(video_id),
+            proxy_url=proxy_url
         )
 
     async def _fetch_captions_json(self, video_id: str, try_number: int = 0) -> Dict:
@@ -441,18 +447,21 @@ class TranscriptListFetcher:
         return html
 
     async def _fetch_html(self, video_id: str) -> str:
-        async with self._http_client.get(WATCH_URL.format(video_id=video_id)) as response:
+        proxy = self._proxy_config.to_requests_dict().get('https') if self._proxy_config else None
+        async with self._http_client.get(WATCH_URL.format(video_id=video_id), proxy=proxy) as response:
             await _raise_http_errors(response, video_id)
             html_content = await response.text()
             return unescape(html_content)
 
     async def _fetch_innertube_data(self, video_id: str, api_key: str) -> Dict:
+        proxy = self._proxy_config.to_requests_dict().get('https') if self._proxy_config else None
         async with self._http_client.post(
             INNERTUBE_API_URL.format(api_key=api_key),
             json={
                 "context": INNERTUBE_CONTEXT,
                 "videoId": video_id,
             },
+            proxy=proxy
         ) as response:
             await _raise_http_errors(response, video_id)
             return await response.json()
