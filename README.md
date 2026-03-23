@@ -6,7 +6,7 @@
   <a href="https://github.com/sponsors/jdepoix">
     <img src="https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86" alt="Sponsor">
   </a>
-  <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BAENLEW8VUJ6G&source=url">
+  <a href="https://www.paypal.com/donate/?hosted_button_id=9W5ZHV22FD63G">
     <img src="https://img.shields.io/badge/Donate-PayPal-green.svg" alt="Donate">
   </a>
   <a href="https://github.com/jdepoix/youtube-transcript-api/actions">
