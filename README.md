@@ -27,6 +27,18 @@
 </p>
 
 <p align="center">
+  <!-- Keep these links. Translations will automatically update with the README. -->
+  <a href="https://www.readme-i18n.com/jdepoix/youtube-transcript-api?lang=de">Deutsch</a> | 
+  <a href="https://www.readme-i18n.com/jdepoix/youtube-transcript-api?lang=es">Español</a> | 
+  <a href="https://www.readme-i18n.com/jdepoix/youtube-transcript-api?lang=fr">français</a> | 
+  <a href="https://www.readme-i18n.com/jdepoix/youtube-transcript-api?lang=ja">日本語</a> | 
+  <a href="https://www.readme-i18n.com/jdepoix/youtube-transcript-api?lang=ko">한국어</a> | 
+  <a href="https://www.readme-i18n.com/jdepoix/youtube-transcript-api?lang=pt">Português</a> | 
+  <a href="https://www.readme-i18n.com/jdepoix/youtube-transcript-api?lang=ru">Русский</a> | 
+  <a href="https://www.readme-i18n.com/jdepoix/youtube-transcript-api?lang=zh">中文</a>
+</p>
+
+<p align="center">
   <b>This is a python API which allows you to retrieve the transcript/subtitles for a given YouTube video. It also works for automatically generated subtitles, supports translating subtitles and it does not require a headless browser, like other selenium based solutions do!</b>
 </p>
 <p align="center">
