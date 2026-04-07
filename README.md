@@ -27,10 +27,13 @@
 </p>
 
 <p align="center">
-  <b>This is a python API which allows you to retrieve the transcript/subtitles for a given YouTube video. It also works for automatically generated subtitles, supports translating subtitles and it does not require a headless browser, like other selenium based solutions do!</b>
+  This is a python API which allows you to retrieve the transcript/subtitles for a given YouTube video. It also works for automatically generated subtitles, supports translating subtitles and it does not require a headless browser, like other selenium based solutions do!
 </p>
+
+<br />
+
 <p align="center">
- Maintenance of this project is made possible by all the <a href="https://github.com/jdepoix/youtube-transcript-api/graphs/contributors">contributors</a> and <a href="https://github.com/sponsors/jdepoix">sponsors</a>. If you'd like to sponsor this project and have your avatar or company logo appear below <a href="https://github.com/sponsors/jdepoix">click here</a>. 💖
+ <b>If you feel more comfortable using a hosted solution, you can use the services of any of our amazing sponsors:</b>
 </p>
 
 <p align="center">
@@ -42,7 +45,7 @@
     </picture>
   </a>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <a href="https://supadata.ai">
+  <a href="https://supadata.ai/youtube-transcript-api?ref=ytt-api">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://supadata.ai/logo-dark.svg">
       <source media="(prefers-color-scheme: light)" srcset="https://supadata.ai/logo-light.svg">
@@ -50,13 +53,19 @@
     </picture>
   </a>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <a href="https://www.dumplingai.com">
+  <a href="https://www.dumplingai.com/endpoints/get-youtube-transcript?via=ytt-api">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://www.dumplingai.com/logos/logo-dark.svg">
       <source media="(prefers-color-scheme: light)" srcset="https://www.dumplingai.com/logos/logo-light.svg">
       <img alt="Dumpling AI" src="https://www.dumplingai.com/logos/logo-light.svg" height="40px" style="vertical-align: middle;">
     </picture>
   </a>
+</p>
+
+<br />
+
+<p align="center">
+  Maintenance of this project is made possible by all the <a href="https://github.com/jdepoix/youtube-transcript-api/graphs/contributors">contributors</a> and <a href="https://github.com/sponsors/jdepoix">sponsors</a>. If you'd like to sponsor this project and have your avatar or company logo appear above <a href="https://github.com/sponsors/jdepoix">click here</a>. 💖
 </p>
 
 ## Install
