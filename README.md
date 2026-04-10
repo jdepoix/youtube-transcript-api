@@ -37,7 +37,7 @@
 </p>
 
 <p align="center">
-  <a href="https://www.searchapi.io">
+  <a href="http://searchapi.io/youtube?via=ytt-api">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://www.searchapi.io/press/v1/svg/searchapi_logo_white_h.svg">
       <source media="(prefers-color-scheme: light)" srcset="https://www.searchapi.io/press/v1/svg/searchapi_logo_black_h.svg">
