@@ -38,6 +38,7 @@ classifiers = [
 
 [tool.poetry.scripts]
 youtube_transcript_api = "youtube_transcript_api.__main__:main"
+youtube-transcript-api = "youtube_transcript_api.__main__:main"
 
 [tool.poe.tasks]
 test = "pytest youtube_transcript_api"
