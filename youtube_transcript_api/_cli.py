@@ -24,7 +24,8 @@ class YouTubeTranscriptCli:
                 http_url=parsed_args.http_proxy,
                 https_url=parsed_args.https_proxy,
             )
-
+            if parsed_args.insecure_proxy:
+                proxy_config.allow_self_signed = True
         if (
             parsed_args.webshare_proxy_username is not None
             or parsed_args.webshare_proxy_password is not None
@@ -187,6 +188,11 @@ class YouTubeTranscriptCli:
             default="",
             metavar="URL",
             help="Use the specified HTTPS proxy.",
+        )
+        parser.add_argument(
+            "--insecure-proxy",
+            action="store_true",
+            help="Allow insecure proxy connections with self-signed certificates.",
         )
         # Cookie auth has been temporarily disabled, as it is not working properly with
         # YouTube's most recent changes.
