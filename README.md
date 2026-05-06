@@ -37,27 +37,40 @@
 </p>
 
 <p align="center">
-  <a href="http://searchapi.io/youtube?via=ytt-api">
+  <a href="https://serpapi.com/youtube-video-transcript">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://www.searchapi.io/press/v1/svg/searchapi_logo_white_h.svg">
-      <source media="(prefers-color-scheme: light)" srcset="https://www.searchapi.io/press/v1/svg/searchapi_logo_black_h.svg">
-      <img alt="SearchAPI" src="https://www.searchapi.io/press/v1/svg/searchapi_logo_black_h.svg" height="40px" style="vertical-align: middle;">
+      <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/87d28ff2-c478-4fbf-b27e-9bced1271603">
+      <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/43f6fa61-9ee4-442b-9e11-6d2b6d3116ee">
+      <img alt="SerpApi" src="https://github.com/user-attachments/assets/43f6fa61-9ee4-442b-9e11-6d2b6d3116ee" height="100px" style="vertical-align: middle;">
     </picture>
   </a>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</p>
+
+<p align="center">
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="https://transcriptapi.com/">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://anacreon.ai/downloads/transcriptapi-logo-color.svg">
+      <source media="(prefers-color-scheme: light)" srcset="https://anacreon.ai/downloads/transcriptapi-logo-black.svg">
+      <img alt="TranscriptAPI.com" src="https://anacreon.ai/downloads/transcriptapi-logo-black.svg" height="50px" style="vertical-align: middle;">
+    </picture>
+  </a>
+</p>
+
+<p align="center">
   <a href="https://supadata.ai/youtube-transcript-api?ref=ytt-api">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://supadata.ai/logo-dark.svg">
       <source media="(prefers-color-scheme: light)" srcset="https://supadata.ai/logo-light.svg">
-      <img alt="supadata" src="https://supadata.ai/logo-light.svg" height="40px">
+      <img alt="supadata" src="https://supadata.ai/logo-light.svg" height="25px">
     </picture>
   </a>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;
   <a href="https://www.dumplingai.com/endpoints/get-youtube-transcript?via=ytt-api">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://www.dumplingai.com/logos/logo-dark.svg">
       <source media="(prefers-color-scheme: light)" srcset="https://www.dumplingai.com/logos/logo-light.svg">
-      <img alt="Dumpling AI" src="https://www.dumplingai.com/logos/logo-light.svg" height="40px" style="vertical-align: middle;">
+      <img alt="Dumpling AI" src="https://www.dumplingai.com/logos/logo-light.svg" height="25px" style="vertical-align: middle;">
     </picture>
   </a>
 </p>
