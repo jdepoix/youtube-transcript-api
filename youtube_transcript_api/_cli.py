@@ -1,4 +1,5 @@
 import argparse
+import re
 from importlib.metadata import PackageNotFoundError, version
 from typing import List
 
@@ -199,5 +200,22 @@ class YouTubeTranscriptCli:
         return self._sanitize_video_ids(parser.parse_args(self._args))
 
     def _sanitize_video_ids(self, args):
-        args.video_ids = [video_id.replace("\\", "") for video_id in args.video_ids]
+        sanitized = []
+        for video_id in args.video_ids:
+            video_id = video_id.replace("\\", "")
+            # Detect YouTube URLs and extract the video ID
+            url_patterns = [
+                r"(?:https?://)?(?:www\.)?youtube\.com/watch\?(?:.*&)?v=([\w-]{11})",
+                r"(?:https?://)?youtu\.be/([\w-]{11})",
+                r"(?:https?://)?(?:www\.)?youtube\.com/embed/([\w-]{11})",
+                r"(?:https?://)?(?:www\.)?youtube\.com/v/([\w-]{11})",
+            ]
+            extracted = None
+            for pattern in url_patterns:
+                match = re.search(pattern, video_id)
+                if match:
+                    extracted = match.group(1)
+                    break
+            sanitized.append(extracted if extracted else video_id)
+        args.video_ids = sanitized
         return args
