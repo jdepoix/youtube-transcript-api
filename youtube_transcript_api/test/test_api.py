@@ -1,5 +1,6 @@
 import pytest
 import os
+import sys
 from pathlib import Path
 from unittest import TestCase
 from unittest.mock import patch
@@ -7,6 +8,7 @@ from urllib.parse import urlparse, parse_qs
 
 import requests
 import responses
+import youtube_transcript_api._transcripts as transcripts_module
 
 from youtube_transcript_api import (
     YouTubeTranscriptApi,
@@ -96,6 +98,15 @@ class TestYouTubeTranscriptApi(TestCase):
             transcript,
             self.ref_transcript,
         )
+
+    def test_fetch__uses_expected_xml_backend_for_python_version(self):
+        expected_backend = (
+            "defusedxml.ElementTree"
+            if sys.version_info < (3, 11)
+            else "xml.etree.ElementTree"
+        )
+
+        self.assertEqual(transcripts_module.ElementTree.__name__, expected_backend)
 
     def test_fetch_formatted(self):
         transcript = YouTubeTranscriptApi().fetch(
