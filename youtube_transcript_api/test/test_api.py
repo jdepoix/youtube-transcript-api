@@ -1,6 +1,8 @@
+import importlib
 import pytest
 import os
 import sys
+import types
 from pathlib import Path
 from unittest import TestCase
 from unittest.mock import patch
@@ -107,6 +109,32 @@ class TestYouTubeTranscriptApi(TestCase):
         )
 
         self.assertEqual(transcripts_module.ElementTree.__name__, expected_backend)
+
+    def test_fetch__uses_defusedxml_backend_for_python_3_10_and_older(self):
+        fake_element_tree = object()
+        fake_defusedxml = types.ModuleType("defusedxml")
+        fake_defusedxml.ElementTree = fake_element_tree
+
+        with patch.object(sys, "version_info", (3, 10)):
+            with patch.dict(sys.modules, {"defusedxml": fake_defusedxml}):
+                spec = importlib.util.spec_from_file_location(
+                    "youtube_transcript_api._transcripts_py310",
+                    transcripts_module.__file__,
+                )
+                reloaded_module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(reloaded_module)
+
+        self.assertIs(reloaded_module.ElementTree, fake_element_tree)
+
+    def test_fetch__uses_stdlib_xml_backend_for_python_3_11_and_newer(self):
+        with patch.object(sys, "version_info", (3, 11)):
+            spec = importlib.util.spec_from_file_location(
+                "youtube_transcript_api._transcripts_py311", transcripts_module.__file__
+            )
+            reloaded_module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(reloaded_module)
+
+        self.assertEqual(reloaded_module.ElementTree.__name__, "xml.etree.ElementTree")
 
     def test_fetch_formatted(self):
         transcript = YouTubeTranscriptApi().fetch(
