@@ -22,6 +22,13 @@ class ProxyConfig(ABC):
     The base class for all proxy configs. Anything can be a proxy config, as longs as
     it can be turned into a `RequestsProxyConfigDict` by calling `to_requests_dict`.
     """
+    @property
+    def allow_self_signed(self) -> bool:
+        return getattr(self, "_allow_self_signed", False)
+
+    @allow_self_signed.setter
+    def allow_self_signed(self, value: bool):
+        self._allow_self_signed = bool(value)
 
     @abstractmethod
     def to_requests_dict(self) -> RequestsProxyConfigDict:
