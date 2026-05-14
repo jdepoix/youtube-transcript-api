@@ -510,6 +510,14 @@ Execute the CLI script using the video ids as parameters and the results will be
 youtube_transcript_api <first_video_id> <second_video_id> ...  
 ```  
 
+You can also run the CLI without installing it using [uvx](https://docs.astral.sh/uv/guides/tools/) or [pipx](https://pipx.pypa.io/):
+
+```
+uvx youtube-transcript-api <first_video_id> <second_video_id> ...
+```
+
+
+
 The CLI also gives you the option to provide a list of preferred languages:  
 
 ```  
