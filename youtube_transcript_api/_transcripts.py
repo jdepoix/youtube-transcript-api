@@ -9,7 +9,7 @@ from defusedxml import ElementTree
 
 import re
 
-from requests import HTTPError, Session, Response
+from aiohttp import ClientSession, ClientResponse, ClientResponseError
 
 from .proxies import ProxyConfig
 from ._settings import WATCH_URL, INNERTUBE_CONTEXT, INNERTUBE_API_URL
@@ -90,26 +90,26 @@ class _PlayabilityFailedReason(str, Enum):
     VIDEO_UNAVAILABLE = "This video is unavailable"
 
 
-def _raise_http_errors(response: Response, video_id: str) -> Response:
+async def _raise_http_errors(response: ClientResponse, video_id: str) -> ClientResponse:
     try:
-        if response.status_code == 429:
+        if response.status == 429:
             raise IpBlocked(video_id)
         response.raise_for_status()
         return response
-    except HTTPError as error:
+    except ClientResponseError as error:
         raise YouTubeRequestFailed(video_id, error)
-
 
 class Transcript:
     def __init__(
         self,
-        http_client: Session,
+        http_client: ClientSession,
         video_id: str,
         url: str,
         language: str,
         language_code: str,
         is_generated: bool,
         translation_languages: List[_TranslationLanguage],
+        proxy_url: Optional[str] = None
     ):
         """
         You probably don't want to initialize this directly. Usually you'll access Transcript objects using a
@@ -126,25 +126,27 @@ class Transcript:
             translation_language.language_code: translation_language.language
             for translation_language in translation_languages
         }
+        self._proxy_url = proxy_url
 
-    def fetch(self, preserve_formatting: bool = False) -> FetchedTranscript:
+    async def fetch(self, preserve_formatting: bool = False) -> FetchedTranscript:
         """
         Loads the actual transcript data.
         :param preserve_formatting: whether to keep select HTML text formatting
         """
         if "&exp=xpe" in self._url:
             raise PoTokenRequired(self.video_id)
-        response = self._http_client.get(self._url)
-        snippets = _TranscriptParser(preserve_formatting=preserve_formatting).parse(
-            _raise_http_errors(response, self.video_id).text,
-        )
-        return FetchedTranscript(
-            snippets=snippets,
-            video_id=self.video_id,
-            language=self.language,
-            language_code=self.language_code,
-            is_generated=self.is_generated,
-        )
+        
+        async with self._http_client.get(self._url, proxy=self._proxy_url) as response:
+            await _raise_http_errors(response, self.video_id)
+            raw_text = await response.text()
+            snippets = _TranscriptParser(preserve_formatting=preserve_formatting).parse(raw_data=raw_text)
+            return FetchedTranscript(
+                snippets=snippets,
+                video_id=self.video_id,
+                language=self.language,
+                language_code=self.language_code,
+                is_generated=self.is_generated,
+            )
 
     def __str__(self) -> str:
         return '{language_code} ("{language}"){translation_description}'.format(
@@ -205,7 +207,7 @@ class TranscriptList:
 
     @staticmethod
     def build(
-        http_client: Session, video_id: str, captions_json: Dict
+        http_client: ClientSession, video_id: str, captions_json: dict, proxy_url: Optional[str] = None
     ) -> "TranscriptList":
         """
         Factory method for TranscriptList.
@@ -240,6 +242,7 @@ class TranscriptList:
                 caption["languageCode"],
                 caption.get("kind", "") == "asr",
                 translation_languages if caption.get("isTranslatable", False) else [],
+                proxy_url=proxy_url
             )
 
         return TranscriptList(
@@ -345,22 +348,25 @@ class TranscriptList:
 
 
 class TranscriptListFetcher:
-    def __init__(self, http_client: Session, proxy_config: Optional[ProxyConfig]):
+    def __init__(self, http_client: ClientSession, proxy_config: Optional[ProxyConfig]):
         self._http_client = http_client
         self._proxy_config = proxy_config
 
-    def fetch(self, video_id: str) -> TranscriptList:
+    async def fetch(self, video_id: str) -> TranscriptList:
+        proxy_url = self._proxy_config.to_requests_dict().get('https') if self._proxy_config else None
+
         return TranscriptList.build(
             self._http_client,
             video_id,
-            self._fetch_captions_json(video_id),
+            await self._fetch_captions_json(video_id),
+            proxy_url=proxy_url
         )
 
-    def _fetch_captions_json(self, video_id: str, try_number: int = 0) -> Dict:
+    async def _fetch_captions_json(self, video_id: str, try_number: int = 0) -> Dict:
         try:
-            html = self._fetch_video_html(video_id)
+            html = await self._fetch_video_html(video_id)
             api_key = self._extract_innertube_api_key(html, video_id)
-            innertube_data = self._fetch_innertube_data(video_id, api_key)
+            innertube_data = await self._fetch_innertube_data(video_id, api_key)
             return self._extract_captions_json(innertube_data, video_id)
         except RequestBlocked as exception:
             retries = (
@@ -369,7 +375,7 @@ class TranscriptListFetcher:
                 else self._proxy_config.retries_when_blocked
             )
             if try_number + 1 < retries:
-                return self._fetch_captions_json(video_id, try_number=try_number + 1)
+                return await self._fetch_captions_json(video_id, try_number=try_number + 1)
             raise exception.with_proxy_config(self._proxy_config)
 
     def _extract_innertube_api_key(self, html: str, video_id: str) -> str:
@@ -422,37 +428,43 @@ class TranscriptListFetcher:
             )
 
     def _create_consent_cookie(self, html: str, video_id: str) -> None:
+        from yarl import URL
         match = re.search('name="v" value="(.*?)"', html)
         if match is None:
             raise FailedToCreateConsentCookie(video_id)
-        self._http_client.cookies.set(
-            "CONSENT", "YES+" + match.group(1), domain=".youtube.com"
+        self._http_client.cookie_jar.update_cookies(
+            {"CONSENT": "YES+" + match.group(1)}, 
+            URL("https://www.youtube.com")
         )
 
-    def _fetch_video_html(self, video_id: str) -> str:
-        html = self._fetch_html(video_id)
+    async def _fetch_video_html(self, video_id: str) -> str:
+        html = await self._fetch_html(video_id)
         if 'action="https://consent.youtube.com/s"' in html:
             self._create_consent_cookie(html, video_id)
-            html = self._fetch_html(video_id)
+            html = await self._fetch_html(video_id)
             if 'action="https://consent.youtube.com/s"' in html:
                 raise FailedToCreateConsentCookie(video_id)
         return html
 
-    def _fetch_html(self, video_id: str) -> str:
-        response = self._http_client.get(WATCH_URL.format(video_id=video_id))
-        return unescape(_raise_http_errors(response, video_id).text)
+    async def _fetch_html(self, video_id: str) -> str:
+        proxy = self._proxy_config.to_requests_dict().get('https') if self._proxy_config else None
+        async with self._http_client.get(WATCH_URL.format(video_id=video_id), proxy=proxy) as response:
+            await _raise_http_errors(response, video_id)
+            html_content = await response.text()
+            return unescape(html_content)
 
-    def _fetch_innertube_data(self, video_id: str, api_key: str) -> Dict:
-        response = self._http_client.post(
+    async def _fetch_innertube_data(self, video_id: str, api_key: str) -> Dict:
+        proxy = self._proxy_config.to_requests_dict().get('https') if self._proxy_config else None
+        async with self._http_client.post(
             INNERTUBE_API_URL.format(api_key=api_key),
             json={
                 "context": INNERTUBE_CONTEXT,
                 "videoId": video_id,
             },
-        )
-        data = _raise_http_errors(response, video_id).json()
-        return data
-
+            proxy=proxy
+        ) as response:
+            await _raise_http_errors(response, video_id)
+            return await response.json()
 
 class _TranscriptParser:
     _FORMATTING_TAGS = [
