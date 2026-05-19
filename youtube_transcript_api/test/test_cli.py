@@ -139,6 +139,29 @@ class TestYouTubeTranscriptCli(TestCase):
         self.assertEqual(parsed_args.format, "pretty")
         self.assertEqual(parsed_args.languages, ["en"])
 
+    def test_argument_parsing__youtube_id_starting_with_dash_is_auto_escaped(self):
+        # 11-char YouTube IDs starting with "-" must not be interpreted as
+        # options by argparse, even when other flags follow.
+        parsed_args = YouTubeTranscriptCli(
+            "-X9P8VE94Po --format text".split()
+        )._parse_args()
+        self.assertEqual(parsed_args.video_ids, ["-X9P8VE94Po"])
+        self.assertEqual(parsed_args.format, "text")
+
+        parsed_args = YouTubeTranscriptCli(
+            "-X9P8VE94Po -abcdefghij --languages de en".split()
+        )._parse_args()
+        self.assertEqual(parsed_args.video_ids, ["-X9P8VE94Po", "-abcdefghij"])
+        self.assertEqual(parsed_args.languages, ["de", "en"])
+
+        # Existing options must still be recognized; only 11-char ID-like
+        # tokens are auto-escaped.
+        parsed_args = YouTubeTranscriptCli(
+            "v1 --format json".split()
+        )._parse_args()
+        self.assertEqual(parsed_args.video_ids, ["v1"])
+        self.assertEqual(parsed_args.format, "json")
+
     def test_argument_parsing__fail_without_video_ids(self):
         with self.assertRaises(SystemExit):
             YouTubeTranscriptCli("--format json".split())._parse_args()

@@ -1,4 +1,5 @@
 import argparse
+import re
 from importlib.metadata import PackageNotFoundError, version
 from typing import List
 
@@ -8,9 +9,28 @@ from .formatters import FormatterLoader
 from ._api import YouTubeTranscriptApi, FetchedTranscript, TranscriptList
 
 
+# YouTube video IDs are 11 characters long and may contain letters, digits,
+# underscores, and hyphens. When an ID starts with a hyphen (e.g. "-X9P8VE94Po")
+# argparse mistakes it for an unknown option. We detect that pattern and
+# pre-escape it with a backslash, which is then stripped by
+# ``_sanitize_video_ids`` after parsing.
+#
+# The second character must not be ``-`` so that long options such as
+# ``--languages`` (which happens to be 11 characters long) are not
+# misclassified as video IDs. Video IDs starting with ``--`` are extremely
+# rare and can still be passed using the existing backslash escape.
+_VIDEO_ID_STARTING_WITH_DASH_RE = re.compile(r"^-[A-Za-z0-9_][A-Za-z0-9_-]{9}$")
+
+
 class YouTubeTranscriptCli:
     def __init__(self, args: List[str]):
-        self._args = args
+        self._args = [self._escape_video_id_starting_with_dash(arg) for arg in args]
+
+    @staticmethod
+    def _escape_video_id_starting_with_dash(arg: str) -> str:
+        if _VIDEO_ID_STARTING_WITH_DASH_RE.match(arg):
+            return "\\" + arg
+        return arg
 
     def run(self) -> str:
         parsed_args = self._parse_args()
