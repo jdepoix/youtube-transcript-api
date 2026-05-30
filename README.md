@@ -78,7 +78,7 @@
 <br />
 
 <p align="center">
-  Maintenance of this project is made possible by all the <a href="https://github.com/jdepoix/youtube-transcript-api/graphs/contributors">contributors</a> and <a href="https://github.com/sponsors/jdepoix">sponsors</a>. If you'd like to sponsor this project and have your avatar or company logo appear above <a href="https://github.com/sponsors/jdepoix">click here</a>. 💖
+  Maintenance of this project is made possible by all the <a href="https://github.com/jdepoix/youtube-transcript-api/graphs/contributors">contributors</a> and <a href="https://github.com/sponsors/jdepoix">sponsors</a>. If you'd like to sponsor this project <a href="https://github.com/sponsors/jdepoix">click here</a>. 💖
 </p>
 
 ## Install
