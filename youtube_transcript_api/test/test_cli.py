@@ -68,6 +68,7 @@ class TestYouTubeTranscriptCli(TestCase):
         self.assertEqual(parsed_args.languages, ["de", "en"])
         self.assertEqual(parsed_args.http_proxy, "")
         self.assertEqual(parsed_args.https_proxy, "")
+        self.assertEqual(parsed_args.socks_proxy, "")
 
         parsed_args = YouTubeTranscriptCli(
             "v1 v2 --languages de en --format json".split()
@@ -77,6 +78,7 @@ class TestYouTubeTranscriptCli(TestCase):
         self.assertEqual(parsed_args.languages, ["de", "en"])
         self.assertEqual(parsed_args.http_proxy, "")
         self.assertEqual(parsed_args.https_proxy, "")
+        self.assertEqual(parsed_args.socks_proxy, "")
 
         parsed_args = YouTubeTranscriptCli(
             " --format json v1 v2 --languages de en".split()
@@ -86,17 +88,20 @@ class TestYouTubeTranscriptCli(TestCase):
         self.assertEqual(parsed_args.languages, ["de", "en"])
         self.assertEqual(parsed_args.http_proxy, "")
         self.assertEqual(parsed_args.https_proxy, "")
+        self.assertEqual(parsed_args.socks_proxy, "")
 
         parsed_args = YouTubeTranscriptCli(
             "v1 v2 --languages de en --format json "
             "--http-proxy http://user:pass@domain:port "
-            "--https-proxy https://user:pass@domain:port".split()
+            "--https-proxy https://user:pass@domain:port "
+            "--socks-proxy socks5h://user:pass@domain:port".split()
         )._parse_args()
         self.assertEqual(parsed_args.video_ids, ["v1", "v2"])
         self.assertEqual(parsed_args.format, "json")
         self.assertEqual(parsed_args.languages, ["de", "en"])
         self.assertEqual(parsed_args.http_proxy, "http://user:pass@domain:port")
         self.assertEqual(parsed_args.https_proxy, "https://user:pass@domain:port")
+        self.assertEqual(parsed_args.socks_proxy, "socks5h://user:pass@domain:port")
 
         parsed_args = YouTubeTranscriptCli(
             "v1 v2 --languages de en --format json "
@@ -126,6 +131,16 @@ class TestYouTubeTranscriptCli(TestCase):
         self.assertEqual(parsed_args.languages, ["de", "en"])
         self.assertEqual(parsed_args.https_proxy, "https://user:pass@domain:port")
         self.assertEqual(parsed_args.http_proxy, "")
+
+        parsed_args = YouTubeTranscriptCli(
+            "v1 v2 --languages de en --format json --socks-proxy socks5h://user:pass@domain:port".split()
+        )._parse_args()
+        self.assertEqual(parsed_args.video_ids, ["v1", "v2"])
+        self.assertEqual(parsed_args.format, "json")
+        self.assertEqual(parsed_args.languages, ["de", "en"])
+        self.assertEqual(parsed_args.socks_proxy, "socks5h://user:pass@domain:port")
+        self.assertEqual(parsed_args.http_proxy, "")
+        self.assertEqual(parsed_args.https_proxy, "")
 
     def test_argument_parsing__only_video_ids(self):
         parsed_args = YouTubeTranscriptCli("v1 v2".split())._parse_args()
@@ -174,14 +189,21 @@ class TestYouTubeTranscriptCli(TestCase):
         self.assertEqual(parsed_args.https_proxy, "https://user:pass@domain:port")
 
         parsed_args = YouTubeTranscriptCli(
-            "v1 v2 --http-proxy http://user:pass@domain:port --https-proxy https://user:pass@domain:port".split()
+            "v1 v2 --socks-proxy socks5h://user:pass@domain:port".split()
+        )._parse_args()
+        self.assertEqual(parsed_args.socks_proxy, "socks5h://user:pass@domain:port")
+
+        parsed_args = YouTubeTranscriptCli(
+            "v1 v2 --http-proxy http://user:pass@domain:port --https-proxy https://user:pass@domain:port --socks-proxy socks5h://user:pass@domain:port".split()
         )._parse_args()
         self.assertEqual(parsed_args.http_proxy, "http://user:pass@domain:port")
         self.assertEqual(parsed_args.https_proxy, "https://user:pass@domain:port")
+        self.assertEqual(parsed_args.socks_proxy, "socks5h://user:pass@domain:port")
 
         parsed_args = YouTubeTranscriptCli("v1 v2".split())._parse_args()
         self.assertEqual(parsed_args.http_proxy, "")
         self.assertEqual(parsed_args.https_proxy, "")
+        self.assertEqual(parsed_args.socks_proxy, "")
 
     def test_argument_parsing__list_transcripts(self):
         parsed_args = YouTubeTranscriptCli(
@@ -329,13 +351,27 @@ class TestYouTubeTranscriptCli(TestCase):
         self.assertEqual(proxy_config.http_url, "http://user:pass@domain:port")
         self.assertEqual(proxy_config.https_url, "https://user:pass@domain:port")
 
+    def test_run__generic_socks_proxy_config(self):
+        YouTubeTranscriptCli(
+            (
+                "v1 v2 --languages de en --socks-proxy socks5h://user:pass@domain:port"
+            ).split()
+        ).run()
+
+        proxy_config = YouTubeTranscriptApi.__init__.call_args.kwargs.get(
+            "proxy_config"
+        )
+
+        self.assertIsNotNone(proxy_config)
+        self.assertEqual(proxy_config.socks_url, "socks5h://user:pass@domain:port")
+
     @pytest.mark.skip(
         reason="This test is temporarily disabled because cookie auth is currently not "
         "working due to YouTube changes."
     )
     def test_run__cookies(self):
         YouTubeTranscriptCli(
-            ("v1 v2 --languages de en " "--cookies blahblah.txt").split()
+            ("v1 v2 --languages de en --cookies blahblah.txt").split()
         ).run()
 
         YouTubeTranscriptApi.__init__.assert_any_call(
@@ -358,9 +394,9 @@ class TestYouTubeTranscriptCli(TestCase):
             check=True,
         ).stdout.strip()
 
-        assert (
-            cli_version_msg == expected_version_msg
-        ), f"Expected version '{expected_version_msg}', but got '{cli_version_msg}'"
+        assert cli_version_msg == expected_version_msg, (
+            f"Expected version '{expected_version_msg}', but got '{cli_version_msg}'"
+        )
 
     def test_get_version_package_not_found(self):
         with patch(
