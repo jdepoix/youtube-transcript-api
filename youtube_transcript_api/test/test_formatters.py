@@ -31,6 +31,7 @@ class TestFormatters(TestCase):
             language_code="en",
             is_generated=True,
             video_id="12345",
+            title="Video Title",
         )
         self.transcripts = [self.transcript, self.transcript]
         self.transcript_raw = self.transcript.to_raw_data()
