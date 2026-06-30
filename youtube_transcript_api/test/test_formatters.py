@@ -52,6 +52,24 @@ class TestFormatters(TestCase):
         self.assertEqual(lines[0], "1")
         self.assertEqual(lines[1], "00:00:00,000 --> 00:00:01,500")
 
+    def test_srt_formatter_carries_rounded_milliseconds(self):
+        transcript = FetchedTranscript(
+            snippets=[
+                FetchedTranscriptSnippet(
+                    text="Rounded boundary", start=1.9996, duration=1.0
+                ),
+            ],
+            language="English",
+            language_code="en",
+            is_generated=True,
+            video_id="12345",
+        )
+
+        content = SRTFormatter().format_transcript(transcript)
+        lines = content.split("\n")
+
+        self.assertEqual(lines[1], "00:00:02,000 --> 00:00:03,000")
+
     def test_srt_formatter_middle(self):
         content = SRTFormatter().format_transcript(self.transcript)
         lines = content.split("\n")
