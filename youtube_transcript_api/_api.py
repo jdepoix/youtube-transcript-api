@@ -37,6 +37,10 @@ class YouTubeTranscriptApi:
         #     http_client.cookies = _load_cookie_jar(cookie_path)
         if proxy_config is not None:
             http_client.proxies = proxy_config.to_requests_dict()
+
+            if proxy_config.allow_self_signed:
+                http_client.verify = False
+
             if proxy_config.prevent_keeping_connections_alive:
                 http_client.headers.update({"Connection": "close"})
             if proxy_config.retries_when_blocked > 0:
