@@ -3,7 +3,7 @@ from enum import Enum
 from itertools import chain
 
 from html import unescape
-from typing import List, Dict, Iterator, Iterable, Pattern, Optional
+from typing import List, Dict, Iterator, Iterable, Pattern, Optional, Tuple
 
 from defusedxml import ElementTree
 
@@ -55,6 +55,7 @@ class FetchedTranscript:
 
     snippets: List[FetchedTranscriptSnippet]
     video_id: str
+    title: str
     language: str
     language_code: str
     is_generated: bool
@@ -105,6 +106,7 @@ class Transcript:
         self,
         http_client: Session,
         video_id: str,
+        title: str,
         url: str,
         language: str,
         language_code: str,
@@ -117,6 +119,7 @@ class Transcript:
         """
         self._http_client = http_client
         self.video_id = video_id
+        self.title = title
         self._url = url
         self.language = language
         self.language_code = language_code
@@ -141,6 +144,7 @@ class Transcript:
         return FetchedTranscript(
             snippets=snippets,
             video_id=self.video_id,
+            title=self.title,
             language=self.language,
             language_code=self.language_code,
             is_generated=self.is_generated,
@@ -167,6 +171,7 @@ class Transcript:
         return Transcript(
             self._http_client,
             self.video_id,
+            self.title,
             "{url}&tlang={language_code}".format(
                 url=self._url, language_code=language_code
             ),
@@ -205,7 +210,7 @@ class TranscriptList:
 
     @staticmethod
     def build(
-        http_client: Session, video_id: str, captions_json: Dict
+        http_client: Session, video_id: str, captions_json: Dict, title: str
     ) -> "TranscriptList":
         """
         Factory method for TranscriptList.
@@ -213,6 +218,7 @@ class TranscriptList:
         :param http_client: http client which is used to make the transcript retrieving http calls
         :param video_id: the id of the video this TranscriptList is for
         :param captions_json: the JSON parsed from the YouTube pages static HTML
+        :param title: the title of the video
         :return: the created TranscriptList
         """
         translation_languages = [
@@ -235,6 +241,7 @@ class TranscriptList:
             transcript_dict[caption["languageCode"]] = Transcript(
                 http_client,
                 video_id,
+                title,
                 caption["baseUrl"].replace("&fmt=srv3", ""),
                 caption["name"]["runs"][0]["text"],
                 caption["languageCode"],
@@ -350,18 +357,17 @@ class TranscriptListFetcher:
         self._proxy_config = proxy_config
 
     def fetch(self, video_id: str) -> TranscriptList:
-        return TranscriptList.build(
-            self._http_client,
-            video_id,
-            self._fetch_captions_json(video_id),
-        )
+        captions_json, title = self._fetch_video_data(video_id)
+        return TranscriptList.build(self._http_client, video_id, captions_json, title)
 
-    def _fetch_captions_json(self, video_id: str, try_number: int = 0) -> Dict:
+    def _fetch_video_data(self, video_id: str, try_number: int = 0) -> Tuple[Dict, str]:
         try:
             html = self._fetch_video_html(video_id)
             api_key = self._extract_innertube_api_key(html, video_id)
             innertube_data = self._fetch_innertube_data(video_id, api_key)
-            return self._extract_captions_json(innertube_data, video_id)
+            captions_json = self._extract_captions_json(innertube_data, video_id)
+            title = self._extract_video_title(innertube_data)
+            return captions_json, title
         except RequestBlocked as exception:
             retries = (
                 0
@@ -369,7 +375,7 @@ class TranscriptListFetcher:
                 else self._proxy_config.retries_when_blocked
             )
             if try_number + 1 < retries:
-                return self._fetch_captions_json(video_id, try_number=try_number + 1)
+                return self._fetch_video_data(video_id, try_number=try_number + 1)
             raise exception.with_proxy_config(self._proxy_config)
 
     def _extract_innertube_api_key(self, html: str, video_id: str) -> str:
@@ -391,6 +397,9 @@ class TranscriptListFetcher:
             raise TranscriptsDisabled(video_id)
 
         return captions_json
+
+    def _extract_video_title(self, innertube_data: Dict) -> str:
+        return innertube_data.get("videoDetails", {}).get("title")
 
     def _assert_playability(self, playability_status_data: Dict, video_id: str) -> None:
         playability_status = playability_status_data.get("status")

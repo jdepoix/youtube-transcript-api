@@ -41,6 +41,7 @@ class TestYouTubeTranscriptCli(TestCase):
                 language_code="en",
                 is_generated=True,
                 video_id="GJLlxj_dtq8",
+                title="Video Title",
             )
         )
         self.transcript_mock.translate = MagicMock(return_value=self.transcript_mock)
