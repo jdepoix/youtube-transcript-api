@@ -47,6 +47,16 @@
 </p>
 
 <p align="center">
+  <a href="https://getanyapi.com/tools/youtube-transcript">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/aaa1bd93-a9c7-4a34-b540-3074512c738f">
+      <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/5e5602ca-6bf3-4a96-a02d-ba8109255631">
+      <img alt="AnyAPI" src="https://github.com/user-attachments/assets/5e5602ca-6bf3-4a96-a02d-ba8109255631" height="40px" style="vertical-align: middle;">
+    </picture>
+  </a>
+</p>
+
+<p align="center">
   <a href="https://transcriptapi.com/">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/2e39f6f9-71dc-407b-a465-4c37f1f22e28">
