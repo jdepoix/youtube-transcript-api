@@ -403,6 +403,21 @@ class TestYouTubeTranscriptApi(TestCase):
         self.assertEqual(request.headers.get("Connection"), "close")
 
     @patch("youtube_transcript_api.proxies.GenericProxyConfig.to_requests_dict")
+    def test_retry_config_retries_post_on_429(self, to_requests_dict):
+        # InnerTube listing is a POST. urllib3's default allowed_methods omit
+        # POST, so retries_when_blocked would never fire on a 429 there.
+        proxy_config = WebshareProxyConfig(
+            proxy_username="username",
+            proxy_password="password",
+        )
+        api = YouTubeTranscriptApi(proxy_config=proxy_config)
+        retry = api._fetcher._http_client.get_adapter("https://").max_retries
+
+        self.assertIn(429, retry.status_forcelist)
+        self.assertIn("POST", retry.allowed_methods)
+        self.assertEqual(retry.total, proxy_config.retries_when_blocked)
+
+    @patch("youtube_transcript_api.proxies.GenericProxyConfig.to_requests_dict")
     def test_fetch__with_proxy_retry_when_blocked(self, to_requests_dict):
         responses.replace(
             responses.POST,
