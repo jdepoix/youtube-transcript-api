@@ -47,12 +47,11 @@
 </p>
 
 <p align="center">
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   <a href="https://transcriptapi.com/">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://anacreon.ai/downloads/transcriptapi-logo-color.svg">
-      <source media="(prefers-color-scheme: light)" srcset="https://anacreon.ai/downloads/transcriptapi-logo-black.svg">
-      <img alt="TranscriptAPI.com" src="https://anacreon.ai/downloads/transcriptapi-logo-black.svg" height="50px" style="vertical-align: middle;">
+      <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/2e39f6f9-71dc-407b-a465-4c37f1f22e28">
+      <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/110f0219-5403-425b-b4b6-8c8abd4768ee">
+      <img alt="TranscriptAPI.com" src="https://github.com/user-attachments/assets/110f0219-5403-425b-b4b6-8c8abd4768ee" height="40px" style="vertical-align: middle;">
     </picture>
   </a>
 </p>
@@ -610,5 +609,5 @@ poe precommit
 If this project makes you happy by reducing your development time, you can make me happy by treating me to a cup of 
 coffee, or become a [Sponsor of this project](https://github.com/sponsors/jdepoix) :)  
 
-[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BAENLEW8VUJ6G&source=url)
+[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9W5ZHV22FD63G&source=url)
 
