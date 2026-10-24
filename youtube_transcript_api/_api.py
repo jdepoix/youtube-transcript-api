@@ -7,6 +7,8 @@ from urllib3 import Retry
 from .proxies import ProxyConfig
 
 from ._transcripts import TranscriptListFetcher, FetchedTranscript, TranscriptList
+from ._cookies import extract_cookies_from_browser
+from ._errors import CookieError
 
 
 class YouTubeTranscriptApi:
@@ -14,6 +16,7 @@ class YouTubeTranscriptApi:
         self,
         proxy_config: Optional[ProxyConfig] = None,
         http_client: Optional[Session] = None,
+        cookies_from_browser: Optional[str] = None,
     ):
         """
         Note on thread-safety: As this class will initialize a `requests.Session`
@@ -28,13 +31,27 @@ class YouTubeTranscriptApi:
         :param http_client: You can optionally pass in a requests.Session object, if you
             manually want to share cookies between different instances of
             `YouTubeTranscriptApi`, overwrite defaults, specify SSL certificates, etc.
+        :param cookies_from_browser: Extract cookies from a browser to enable
+            authentication for age-restricted videos. Supported browsers: 'chrome',
+            'firefox', 'edge', 'brave', 'chromium', 'opera', 'vivaldi'.
+            Note: Requires the 'cryptography' package for Chrome-based browsers.
+            Install with: pip install 'youtube-transcript-api[cookies]'
         """
         http_client = Session() if http_client is None else http_client
         http_client.headers.update({"Accept-Language": "en-US"})
-        # Cookie auth has been temporarily disabled, as it is not working properly with
-        # YouTube's most recent changes.
-        # if cookie_path is not None:
-        #     http_client.cookies = _load_cookie_jar(cookie_path)
+
+        # Extract cookies from browser if specified
+        if cookies_from_browser is not None:
+            try:
+                cookies = extract_cookies_from_browser(cookies_from_browser)
+                for name, value in cookies.items():
+                    http_client.cookies.set(name, value, domain=".youtube.com")
+            except CookieError as e:
+                # Re-raise cookie errors with context
+                raise CookieError(
+                    f"Failed to extract cookies from {cookies_from_browser}: {e}"
+                )
+
         if proxy_config is not None:
             http_client.proxies = proxy_config.to_requests_dict()
             if proxy_config.prevent_keeping_connections_alive:

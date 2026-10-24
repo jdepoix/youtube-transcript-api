@@ -213,19 +213,17 @@ class TranscriptsDisabled(CouldNotRetrieveTranscript):
 
 
 class AgeRestricted(CouldNotRetrieveTranscript):
-    # CAUSE_MESSAGE = (
-    #     "This video is age-restricted. Therefore, you will have to authenticate to be "
-    #     "able to retrieve transcripts for it. You will have to provide a cookie to "
-    #     'authenticate yourself, as explained in the "Cookie Authentication" section of '
-    #     "the README (https://github.com/jdepoix/youtube-transcript-api"
-    #     "?tab=readme-ov-file#cookie-authentication)"
-    # )
     CAUSE_MESSAGE = (
-        "This video is age-restricted. Therefore, you are unable to retrieve "
-        "transcripts for it without authenticating yourself.\n\n"
-        "Unfortunately, Cookie Authentication is temporarily unsupported in "
-        "youtube-transcript-api, as recent changes in YouTube's API broke the previous "
-        "implementation. I will do my best to re-implement it as soon as possible."
+        "This video is age-restricted. Therefore, you need to authenticate to retrieve "
+        "transcripts for it.\n\n"
+        "You can authenticate by extracting cookies from your browser. "
+        "Use the 'cookies_from_browser' parameter when initializing YouTubeTranscriptApi:\n\n"
+        "  ytt_api = YouTubeTranscriptApi(cookies_from_browser='chrome')\n\n"
+        "Or use the --cookies-from-browser CLI flag:\n\n"
+        "  youtube_transcript_api VIDEO_ID --cookies-from-browser chrome\n\n"
+        "Supported browsers: chrome, firefox, edge, brave, chromium, opera, vivaldi.\n"
+        "Note: Chrome-based browsers require the 'cryptography' package. "
+        "Install with: pip install 'youtube-transcript-api[cookies]'"
     )
 
 
