@@ -139,6 +139,49 @@ class TestYouTubeTranscriptCli(TestCase):
         self.assertEqual(parsed_args.format, "pretty")
         self.assertEqual(parsed_args.languages, ["en"])
 
+    def test_argument_parsing__youtube_watch_url(self):
+        parsed_args = YouTubeTranscriptCli(
+            ["https://www.youtube.com/watch?v=dQw4w9WgXcQ"]
+        )._parse_args()
+        self.assertEqual(parsed_args.video_ids, ["dQw4w9WgXcQ"])
+
+    def test_argument_parsing__youtu_be_url(self):
+        parsed_args = YouTubeTranscriptCli(
+            ["https://youtu.be/dQw4w9WgXcQ"]
+        )._parse_args()
+        self.assertEqual(parsed_args.video_ids, ["dQw4w9WgXcQ"])
+
+    def test_argument_parsing__youtube_embed_url(self):
+        parsed_args = YouTubeTranscriptCli(
+            ["https://www.youtube.com/embed/dQw4w9WgXcQ"]
+        )._parse_args()
+        self.assertEqual(parsed_args.video_ids, ["dQw4w9WgXcQ"])
+
+    def test_argument_parsing__youtube_v_url(self):
+        parsed_args = YouTubeTranscriptCli(
+            ["https://www.youtube.com/v/dQw4w9WgXcQ"]
+        )._parse_args()
+        self.assertEqual(parsed_args.video_ids, ["dQw4w9WgXcQ"])
+
+    def test_argument_parsing__youtube_url_with_extra_params(self):
+        parsed_args = YouTubeTranscriptCli(
+            ["https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=30s&list=PLtest"]
+        )._parse_args()
+        self.assertEqual(parsed_args.video_ids, ["dQw4w9WgXcQ"])
+
+    def test_argument_parsing__mix_of_ids_and_urls(self):
+        parsed_args = YouTubeTranscriptCli(
+            [
+                "dQw4w9WgXcQ",
+                "https://www.youtube.com/watch?v=82IOSYpY6Qo",
+                "https://youtu.be/abcdefghijk",
+            ]
+        )._parse_args()
+        self.assertEqual(
+            parsed_args.video_ids,
+            ["dQw4w9WgXcQ", "82IOSYpY6Qo", "abcdefghijk"],
+        )
+
     def test_argument_parsing__fail_without_video_ids(self):
         with self.assertRaises(SystemExit):
             YouTubeTranscriptCli("--format json".split())._parse_args()
