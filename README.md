@@ -47,6 +47,16 @@
 </p>
 
 <p align="center">
+  <a href="https://scavio.dev/youtube-api?via=yttranscript">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/cd35b10e-e0c4-4a31-9ce1-e9b5bdf1ef7b">
+      <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/4d215cc7-b5a1-46d1-b42b-9609288b5d83">
+      <img alt="Scavio" src=" https://scavio.dev/youtube-api?via=yttranscript" height="50px" style="vertical-align: middle;">
+    </picture>
+  </a>
+</p>
+
+<p align="center">
   <a href="https://transcriptapi.com/">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/2e39f6f9-71dc-407b-a465-4c37f1f22e28">
