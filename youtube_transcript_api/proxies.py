@@ -59,32 +59,41 @@ class GenericProxyConfig(ProxyConfig):
     documentation to get more detailed information on how to set up proxies:
     https://requests.readthedocs.io/en/latest/user/advanced/#proxies
 
-    If only an HTTP or an HTTPS proxy is provided, it will be used for both types of
-    connections. However, you will have to provide at least one of the two.
+    If only an HTTP, HTTPS, or SOCKS proxy is provided, it will be used for both
+    types of connections. However, you will have to provide at least one of the three.
     """
 
-    def __init__(self, http_url: Optional[str] = None, https_url: Optional[str] = None):
+    def __init__(
+        self,
+        http_url: Optional[str] = None,
+        https_url: Optional[str] = None,
+        socks_url: Optional[str] = None,
+    ):
         """
-        If only an HTTP or an HTTPS proxy is provided, it will be used for both types of
-        connections. However, you will have to provide at least one of the two.
+        If only an HTTP, HTTPS, or SOCKS proxy is provided, it will be used for both
+        types of connections. However, you will have to provide at least one of the
+        three.
 
-        :param http_url: the proxy URL used for HTTP requests. Defaults to `https_url`
-            if None.
+        :param http_url: the proxy URL used for HTTP requests. Defaults to `socks_url`
+            or `https_url` if None.
         :param https_url: the proxy URL used for HTTPS requests. Defaults to `http_url`
-            if None.
+            or `socks_url` if None.
+        :param socks_url: the proxy URL used for HTTP and HTTPS requests if `http_url`
+            or `https_url` are None.
         """
-        if not http_url and not https_url:
+        if not http_url and not https_url and not socks_url:
             raise InvalidProxyConfig(
-                "GenericProxyConfig requires you to define at least one of the two: "
-                "http or https"
+                "GenericProxyConfig requires you to define at least one of the "
+                "following: http, https, or socks"
             )
         self.http_url = http_url
         self.https_url = https_url
+        self.socks_url = socks_url
 
     def to_requests_dict(self) -> RequestsProxyConfigDict:
         return {
-            "http": self.http_url or self.https_url,
-            "https": self.https_url or self.http_url,
+            "http": self.http_url or self.socks_url or self.https_url,
+            "https": self.https_url or self.socks_url or self.http_url,
         }
 
 

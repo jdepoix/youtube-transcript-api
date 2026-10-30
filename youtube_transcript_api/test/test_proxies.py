@@ -45,6 +45,31 @@ class TestGenericProxyConfig:
             "https": "https://myproxy.com",
         }
 
+    def test_to_requests_dict__only_socks(self):
+        proxy_config = GenericProxyConfig(
+            socks_url="socks5h://myproxy.com",
+        )
+
+        request_dict = proxy_config.to_requests_dict()
+
+        assert request_dict == {
+            "http": "socks5h://myproxy.com",
+            "https": "socks5h://myproxy.com",
+        }
+
+    def test_to_requests_dict__socks_as_fallback(self):
+        proxy_config = GenericProxyConfig(
+            http_url="http://myproxy.com",
+            socks_url="socks5h://myproxy.com",
+        )
+
+        request_dict = proxy_config.to_requests_dict()
+
+        assert request_dict == {
+            "http": "http://myproxy.com",
+            "https": "socks5h://myproxy.com",
+        }
+
     def test__invalid_config(self):
         with pytest.raises(InvalidProxyConfig):
             GenericProxyConfig()

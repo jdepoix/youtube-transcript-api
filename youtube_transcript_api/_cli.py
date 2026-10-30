@@ -19,10 +19,15 @@ class YouTubeTranscriptCli:
             return ""
 
         proxy_config = None
-        if parsed_args.http_proxy != "" or parsed_args.https_proxy != "":
+        if (
+            parsed_args.http_proxy != ""
+            or parsed_args.https_proxy != ""
+            or parsed_args.socks_proxy != ""
+        ):
             proxy_config = GenericProxyConfig(
                 http_url=parsed_args.http_proxy,
                 https_url=parsed_args.https_proxy,
+                socks_url=parsed_args.socks_proxy,
             )
 
         if (
@@ -187,6 +192,12 @@ class YouTubeTranscriptCli:
             default="",
             metavar="URL",
             help="Use the specified HTTPS proxy.",
+        )
+        parser.add_argument(
+            "--socks-proxy",
+            default="",
+            metavar="URL",
+            help="Use the specified SOCKS proxy.",
         )
         # Cookie auth has been temporarily disabled, as it is not working properly with
         # YouTube's most recent changes.
