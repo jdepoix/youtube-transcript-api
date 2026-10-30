@@ -1,11 +1,15 @@
 from dataclasses import dataclass, asdict
 from enum import Enum
 from itertools import chain
+import sys
 
 from html import unescape
 from typing import List, Dict, Iterator, Iterable, Pattern, Optional
 
-from defusedxml import ElementTree
+if sys.version_info < (3, 11):
+    from defusedxml import ElementTree
+else:
+    from xml.etree import ElementTree
 
 import re
 
