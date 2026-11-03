@@ -34,6 +34,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
 ]
 
 [tool.poetry.scripts]
@@ -49,7 +50,7 @@ lint = "ruff check youtube_transcript_api"
 precommit.shell = "poe format && poe lint && poe coverage"
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.15"
+python = ">=3.8,<3.16"
 requests = "*"
 defusedxml = "^0.7.1"
 
