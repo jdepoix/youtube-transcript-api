@@ -57,6 +57,16 @@
 </p>
 
 <p align="center">
+  <a href="https://getyoutubetranscript.com/youtube-transcript-api?utm_source=ytapi-readme">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/5220d830-cd89-476a-a7ac-a444ade11cb5">
+      <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/605781b2-17d1-4fbd-9ba9-eb6303884bed">
+      <img alt="GetYouTubeTranscript" src="https://github.com/user-attachments/assets/605781b2-17d1-4fbd-9ba9-eb6303884bed" height="50px" style="vertical-align: middle;">
+    </picture>
+  </a>
+</p>
+
+<p align="center">
   <a href="https://transcriptapi.com/">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/2e39f6f9-71dc-407b-a465-4c37f1f22e28">
