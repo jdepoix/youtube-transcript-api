@@ -474,7 +474,7 @@ class _TranscriptParser:
     def _get_html_regex(self, preserve_formatting: bool) -> Pattern[str]:
         if preserve_formatting:
             formats_regex = "|".join(self._FORMATTING_TAGS)
-            formats_regex = r"<\/?(?!\/?(" + formats_regex + r")\b).*?\b>"
+            formats_regex = r"<\/?(?!\/?(" + formats_regex + r")\b).*?>"
             html_regex = re.compile(formats_regex, re.IGNORECASE)
         else:
             html_regex = re.compile(r"<[^>]*>", re.IGNORECASE)
