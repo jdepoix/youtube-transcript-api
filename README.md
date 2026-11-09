@@ -57,7 +57,7 @@
 </p>
 
 <p align="center">
-  <a href="https://getyoutubetranscript.com/youtube-transcript-api">
+  <a href="https://getyoutubetranscript.com/youtube-transcript-api?utm_source=ytapi-readme">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/5220d830-cd89-476a-a7ac-a444ade11cb5">
       <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/605781b2-17d1-4fbd-9ba9-eb6303884bed">
