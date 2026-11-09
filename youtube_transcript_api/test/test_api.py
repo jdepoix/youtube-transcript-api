@@ -529,3 +529,67 @@ class TestYouTubeTranscriptApi(TestCase):
         cookie_path = get_asset_path("expired_example_cookies.txt")
         with self.assertRaises(CookieInvalid):
             YouTubeTranscriptApi(cookie_path=cookie_path)
+
+
+class TestTranscriptListFind(TestCase):
+    """Language-code lookup on a TranscriptList built directly, no HTTP mocking."""
+
+    CAPTIONS_JSON = {
+        "captionTracks": [
+            {
+                "baseUrl": "https://example.com/api",
+                "name": {"runs": [{"text": "English"}]},
+                "languageCode": "en",
+                "isTranslatable": False,
+            }
+        ]
+    }
+
+    def _transcript_list(self):
+        from youtube_transcript_api._transcripts import TranscriptList
+
+        return TranscriptList.build(
+            None, "dQw4w9WgXcQ", self.CAPTIONS_JSON
+        )
+
+    def test_find_transcript_accepts_bare_string(self):
+        """A bare 'en' must be treated as ('en',), not per-character (issue #624)."""
+        transcript = self._transcript_list().find_transcript("en")
+
+        self.assertEqual(transcript.language_code, "en")
+
+    def test_find_generated_transcript_accepts_bare_string(self):
+        from youtube_transcript_api._transcripts import TranscriptList
+
+        captions_json = {
+            "captionTracks": [
+                {
+                    "baseUrl": "https://example.com/api",
+                    "name": {"runs": [{"text": "English (auto-generated)"}]},
+                    "languageCode": "en",
+                    "kind": "asr",
+                    "isTranslatable": False,
+                }
+            ]
+        }
+        transcript_list = TranscriptList.build(None, "dQw4w9WgXcQ", captions_json)
+
+        transcript = transcript_list.find_generated_transcript("en")
+
+        self.assertEqual(transcript.language_code, "en")
+
+    def test_find_manually_created_transcript_accepts_bare_string(self):
+        transcript = self._transcript_list().find_manually_created_transcript(
+            "en"
+        )
+
+        self.assertEqual(transcript.language_code, "en")
+
+    def test_bare_string_failure_error_lists_requested_code(self):
+        """The NoTranscriptFound message keeps the original language codes."""
+        from youtube_transcript_api import NoTranscriptFound
+
+        with self.assertRaises(NoTranscriptFound) as ctx:
+            self._transcript_list().find_transcript("de")
+
+        self.assertIn("requested language codes: de", str(ctx.exception))

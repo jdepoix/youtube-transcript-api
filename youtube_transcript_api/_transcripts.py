@@ -302,7 +302,10 @@ class TranscriptList:
         language_codes: Iterable[str],
         transcript_dicts: List[Dict[str, Transcript]],
     ) -> Transcript:
-        for language_code in language_codes:
+        # a bare str is Iterable[str] per the type hints, but iterating it
+        # would search for individual characters - treat it as a single code
+        search_codes = (language_codes,) if isinstance(language_codes, str) else language_codes
+        for language_code in search_codes:
             for transcript_dict in transcript_dicts:
                 if language_code in transcript_dict:
                     return transcript_dict[language_code]
