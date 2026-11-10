@@ -529,3 +529,48 @@ class TestYouTubeTranscriptApi(TestCase):
         cookie_path = get_asset_path("expired_example_cookies.txt")
         with self.assertRaises(CookieInvalid):
             YouTubeTranscriptApi(cookie_path=cookie_path)
+
+
+class TestTranscriptParser(TestCase):
+    """Unit tests for the XML -> snippet parsing, independent of HTTP mocking."""
+
+    def test_preserve_formatting_keeps_text_in_tags_with_attributes(self):
+        """Non-whitelisted tags with attributes must be stripped without eating
+        their content (issue #623)."""
+        from youtube_transcript_api._transcripts import _TranscriptParser
+
+        raw_data = (
+            '<transcript><text start="0.0" dur="1.0">'
+            "&lt;font color=&quot;#FF0000&quot;&gt;HELLO&lt;/font&gt; world"
+            "</text></transcript>"
+        )
+
+        snippets = _TranscriptParser(preserve_formatting=True).parse(raw_data)
+
+        self.assertEqual(snippets[0].text, "HELLO world")
+
+    def test_preserve_formatting_still_keeps_whitelisted_tags(self):
+        from youtube_transcript_api._transcripts import _TranscriptParser
+
+        raw_data = (
+            '<transcript><text start="0.0" dur="1.0">'
+            "this is &lt;i&gt;not&lt;/i&gt; the original transcript"
+            "</text></transcript>"
+        )
+
+        snippets = _TranscriptParser(preserve_formatting=True).parse(raw_data)
+
+        self.assertEqual(snippets[0].text, "this is <i>not</i> the original transcript")
+
+    def test_default_strips_all_tags(self):
+        from youtube_transcript_api._transcripts import _TranscriptParser
+
+        raw_data = (
+            '<transcript><text start="0.0" dur="1.0">'
+            "&lt;font color=&quot;#FF0000&quot;&gt;HELLO&lt;/font&gt; world"
+            "</text></transcript>"
+        )
+
+        snippets = _TranscriptParser().parse(raw_data)
+
+        self.assertEqual(snippets[0].text, "HELLO world")
