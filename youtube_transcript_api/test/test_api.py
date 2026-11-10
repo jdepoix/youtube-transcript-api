@@ -560,9 +560,7 @@ class TestTranscriptParser(TestCase):
 
         snippets = _TranscriptParser(preserve_formatting=True).parse(raw_data)
 
-        self.assertEqual(
-            snippets[0].text, "this is <i>not</i> the original transcript"
-        )
+        self.assertEqual(snippets[0].text, "this is <i>not</i> the original transcript")
 
     def test_default_strips_all_tags(self):
         from youtube_transcript_api._transcripts import _TranscriptParser
