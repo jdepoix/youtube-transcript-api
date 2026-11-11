@@ -43,6 +43,10 @@ class YouTubeTranscriptApi:
                 retry_config = Retry(
                     total=proxy_config.retries_when_blocked,
                     status_forcelist=[429],
+                    # urllib3 retries only idempotent methods by default, but
+                    # InnerTube listing uses POST. Without this, a 429 there
+                    # never rotates the proxy IP and raises IpBlocked immediately.
+                    allowed_methods=frozenset({*Retry.DEFAULT_ALLOWED_METHODS, "POST"}),
                 )
                 http_client.mount("http://", HTTPAdapter(max_retries=retry_config))
                 http_client.mount("https://", HTTPAdapter(max_retries=retry_config))
