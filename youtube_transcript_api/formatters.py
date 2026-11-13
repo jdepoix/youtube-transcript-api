@@ -174,7 +174,14 @@ class WebVTTFormatter(_TextBasedFormatter):
     def _format_transcript_helper(
         self, i: int, time_text: str, snippet: FetchedTranscriptSnippet
     ) -> str:
-        return "{}\n{}".format(time_text, snippet.text)
+        # The sequence '-->' inside cue text terminates the cue, so the
+        # text is lost when the output is parsed. Escape it per the
+        # WebVTT spec, which renders it back as '-->'.
+        # https://www.w3.org/TR/webvtt1/#webvtt-cue-text-span
+        return "{}\n{}".format(
+            time_text,
+            snippet.text.replace("-->", "--&gt;"),
+        )
 
 
 class FormatterLoader:
