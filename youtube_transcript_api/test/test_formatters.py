@@ -157,3 +157,23 @@ class TestFormatters(TestCase):
     def test_formatter_loader__unknown_format(self):
         with self.assertRaises(FormatterLoader.UnknownFormatterType):
             FormatterLoader().load("png")
+
+
+class WebVTTFormatterEscapeTest(TestCase):
+    def test_webvtt_formatter_escapes_arrow_in_cue_text(self):
+        transcript = FetchedTranscript(
+            snippets=[
+                FetchedTranscriptSnippet(
+                    text="use --> to separate times", start=0.0, duration=1.0
+                ),
+            ],
+            video_id="vid",
+            language="English",
+            language_code="en",
+            is_generated=False,
+        )
+        content = WebVTTFormatter().format_transcript(transcript)
+
+        # the cue timing line is the only place a bare '-->' may appear
+        self.assertIn("--&gt;", content)
+        self.assertNotIn("\n-->", content)
