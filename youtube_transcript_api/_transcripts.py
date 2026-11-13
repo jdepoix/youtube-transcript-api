@@ -135,9 +135,12 @@ class Transcript:
         if "&exp=xpe" in self._url:
             raise PoTokenRequired(self.video_id)
         response = self._http_client.get(self._url)
-        snippets = _TranscriptParser(preserve_formatting=preserve_formatting).parse(
-            _raise_http_errors(response, self.video_id).text,
-        )
+        try:
+            snippets = _TranscriptParser(preserve_formatting=preserve_formatting).parse(
+                _raise_http_errors(response, self.video_id).text,
+            )
+        except (ElementTree.ParseError, KeyError, ValueError) as error:
+            raise YouTubeDataUnparsable(self.video_id) from error
         return FetchedTranscript(
             snippets=snippets,
             video_id=self.video_id,
@@ -450,7 +453,10 @@ class TranscriptListFetcher:
                 "videoId": video_id,
             },
         )
-        data = _raise_http_errors(response, video_id).json()
+        try:
+            data = _raise_http_errors(response, video_id).json()
+        except ValueError as error:
+            raise YouTubeDataUnparsable(video_id) from error
         return data
 
 

@@ -27,6 +27,7 @@ from youtube_transcript_api import (
     RequestBlocked,
     VideoUnplayable,
     PoTokenRequired,
+    YouTubeDataUnparsable,
 )
 from youtube_transcript_api.proxies import GenericProxyConfig, WebshareProxyConfig
 
@@ -96,6 +97,47 @@ class TestYouTubeTranscriptApi(TestCase):
             transcript,
             self.ref_transcript,
         )
+
+    def test_fetch__unparsable_transcript_xml(self):
+        responses.replace(
+            responses.GET,
+            "https://www.youtube.com/api/timedtext",
+            body="this is not xml",
+        )
+
+        with self.assertRaises(YouTubeDataUnparsable):
+            YouTubeTranscriptApi().fetch("GJLlxj_dtq8")
+
+    def test_fetch__transcript_xml_with_missing_attributes(self):
+        responses.replace(
+            responses.GET,
+            "https://www.youtube.com/api/timedtext",
+            body='<transcript><text>missing attributes</text></transcript>',
+        )
+
+        with self.assertRaises(YouTubeDataUnparsable):
+            YouTubeTranscriptApi().fetch("GJLlxj_dtq8")
+
+    def test_fetch__transcript_xml_with_unparsable_timestamp(self):
+        responses.replace(
+            responses.GET,
+            "https://www.youtube.com/api/timedtext",
+            body='<transcript><text start="not-a-number">x</text></transcript>',
+        )
+
+        with self.assertRaises(YouTubeDataUnparsable):
+            YouTubeTranscriptApi().fetch("GJLlxj_dtq8")
+
+    def test_fetch__unparsable_innertube_json(self):
+        responses.replace(
+            responses.POST,
+            "https://www.youtube.com/youtubei/v1/player",
+            body="this is not json",
+            content_type="application/json",
+        )
+
+        with self.assertRaises(YouTubeDataUnparsable):
+            YouTubeTranscriptApi().fetch("GJLlxj_dtq8")
 
     def test_fetch_formatted(self):
         transcript = YouTubeTranscriptApi().fetch(
